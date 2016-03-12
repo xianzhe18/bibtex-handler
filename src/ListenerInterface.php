@@ -6,5 +6,5 @@ interface ListenerInterface
 {
     public function typeFound(string $type);
     public function keyFound(string $key);
-    public function valueFound(string $value, bool $isRaw);
+    public function valueFound(string $value, string $state);
 }

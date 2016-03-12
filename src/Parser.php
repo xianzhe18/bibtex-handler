@@ -7,7 +7,10 @@ class Parser
     const NONE = 'none';
     const COMMENT = 'comment';
     const TYPE = 'type';
+    const POST_TYPE = 'post_type';
     const KEY = 'key';
+    const POST_KEY = 'post_key';
+    const VALUE = 'value';
     const RAW_VALUE = 'raw_value';
     const DELIMITED_VALUE = 'delimited_value';
 
@@ -17,9 +20,9 @@ class Parser
     private $state;
 
     /**
-     * @var string[]
+     * @var string
      */
-    private $previousState = [];
+    private $stateAfterCommentIsGone;
 
     /**
      * @var string
@@ -37,14 +40,14 @@ class Parser
     private $column;
 
     /**
-     * @var ListenerInterface[]
+     * @var bool
      */
-    private $listeners = [];
+    private $isValueEscaped;
 
     /**
      * @var bool
      */
-    private $isValueEscaped;
+    private $mayConcatenateValue;
 
     /**
      * @var string
@@ -52,9 +55,9 @@ class Parser
     private $valueDelimiter;
 
     /**
-     * @var bool
+     * @var ListenerInterface[]
      */
-    private $mayConcatValue;
+    private $listeners = [];
 
     public function addListener(ListenerInterface $listener)
     {
@@ -65,10 +68,7 @@ class Parser
     {
         $handle = fopen($file, 'r');
         try {
-            $this->line = 1;
-            $this->column = 1;
-            $this->state = self::NONE;
-            $this->buffer = '';
+            $this->reset();
             while (!feof($handle)) {
                 $buffer = fread($handle, 128);
                 for ($key = 0, $length = strlen($buffer); $key < $length; $key++) {
@@ -82,12 +82,25 @@ class Parser
                     }
                 }
             }
-            if (self::NONE != $this->state && self::COMMENT != $this->state) {
+            if (self::NONE != $this->state &&
+                (self::COMMENT == $this->state && self::NONE != $this->stateAfterCommentIsGone)) {
                 $this->throwException("\0");
             }
         } finally {
             fclose($handle);
         }
+    }
+
+    private function reset()
+    {
+        $this->state = self::NONE;
+        $this->stateAfterCommentIsGone = null;
+        $this->buffer = '';
+        $this->line = 1;
+        $this->column = 1;
+        $this->mayConcatenateValue = false;
+        $this->isValueEscaped = false;
+        $this->valueDelimiter = null;
     }
 
     private function read(string $char)
@@ -102,8 +115,17 @@ class Parser
             case self::TYPE:
                 $this->readType($char);
                 break;
+            case self::POST_TYPE:
+                $this->readPostType($char);
+                break;
             case self::KEY:
                 $this->readKey($char);
+                break;
+            case self::POST_KEY:
+                $this->readPostKey($char);
+                break;
+            case self::VALUE:
+                $this->readValue($char);
                 break;
             case self::RAW_VALUE:
                 $this->readRawValue($char);
@@ -117,17 +139,11 @@ class Parser
     private function readNone(string $char)
     {
         if ('%' == $char) {
-            $this->previousState[] = self::NONE;
+            $this->stateAfterCommentIsGone = self::NONE;
             $this->state = self::COMMENT;
-            return;
-        }
-
-        if ('@' == $char) {
+        } elseif ('@' == $char) {
             $this->state = self::TYPE;
-            return;
-        }
-
-        if (!$this->isWhitespace($char)) {
+        } elseif (!$this->isWhitespace($char)) {
             $this->throwException($char);
         }
     }
@@ -135,133 +151,121 @@ class Parser
     private function readComment(string $char)
     {
         if ("\n" == $char) {
-            $this->state = array_shift($this->previousState);
+            $this->state = $this->stateAfterCommentIsGone;
         }
     }
 
     private function readType(string $char)
     {
         if (preg_match('/^[a-zA-Z]$/', $char)) {
-            // when previous char is an whitespace it means it's expected a "{"
-            // or multiples whitespaces before it
-            $previous = substr($this->buffer, -1);
-            if ($this->isWhitespace($previous)) {
-                $this->throwException($char);
-            }
             $this->buffer .= $char;
-            return;
+        } else {
+            $this->throwExceptionIfBufferIsEmpty($char);
+            $this->triggerListeners('typeFound');
+
+            // once $char isn't a valid character
+            // it must be interpreted as POST_TYPE
+            $this->state = self::POST_TYPE;
+            $this->readPostType($char);
         }
+    }
 
-        if ($this->isWhitespace($char)) {
-            if (empty($this->buffer)) {
-                // type reading must not start with an whitespace
-                $this->throwException($char);
-            }
-            $this->buffer .= $char;
-            return;
-        }
-
-        if ('{' == $char) {
-            $type = rtrim($this->buffer);
-            $this->buffer = '';
-            if (empty($type)) {
-                $this->throwException($char);
-            }
-            foreach ($this->listeners as $listener) {
-                $listener->typeFound($type);
-            }
-
-            // start reading a key
+    private function readPostType(string $char)
+    {
+        if ('%' == $char) {
+            $this->stateAfterCommentIsGone = self::POST_TYPE;
+            $this->state = self::COMMENT;
+        } elseif ('{' == $char) {
             $this->state = self::KEY;
-            return;
+        } elseif (!$this->isWhitespace($char)) {
+            $this->throwException($char);
         }
-
-        $this->throwException($char);
     }
 
     private function readKey(string $char)
     {
         if (preg_match('/^[a-zA-Z0-9\+:\-]$/', $char)) {
-            // when previous char is an whitespace it means it's expected a "=",
-            // "," or "}", or multiples whitespaces before them
-            $previous = substr($this->buffer, -1);
-            if ($this->isWhitespace($previous)) {
-                $this->throwException($char);
-            }
             $this->buffer .= $char;
-            return;
-        }
+        } elseif ($this->isWhitespace($char) && empty($this->buffer)) {
+            // skip
+        } elseif ('%' == $char && empty($this->buffer)) {
+            // we can't move to POST_KEY, because buffer buffer is empty
+            // so, after comment is gone, we are still looking for a key
+            $this->stateAfterCommentIsGone = self::KEY;
+            $this->state = self::COMMENT;
+        } else {
+            $this->throwExceptionIfBufferIsEmpty($char);
+            $this->triggerListeners('keyFound');
 
-        if ($this->isWhitespace($char)) {
-            if ('' != $this->buffer) {
-                $this->buffer .= $char;
-            }
-            return;
+            // once $char isn't a valid character
+            // it must be interpreted as POST_TYPE
+            $this->state = self::POST_KEY;
+            $this->readPostKey($char);
         }
+    }
 
-        if ('=' == $char || '}' == $char || ',' == $char) {
-            $key = rtrim($this->buffer);
-            $this->buffer = '';
-            if (empty($key)) {
+    private function readPostKey(string $char)
+    {
+        if ('%' == $char) {
+            $this->stateAfterCommentIsGone = self::POST_KEY;
+            $this->state = self::COMMENT;
+        } elseif ('=' == $char) {
+            $this->state = self::VALUE;
+        } elseif ('}' == $char) {
+            $this->state = self::NONE;
+        } elseif (',' == $char) {
+            $this->state = self::KEY;
+        } elseif (!$this->isWhitespace($char)) {
+            $this->throwException($char);
+        }
+    }
+
+    private function readValue(string $char)
+    {
+        if (preg_match('/^[a-zA-Z0-9]$/', $char)) {
+            $this->state = self::RAW_VALUE;
+            $this->readRawValue($char);
+        } elseif ('%' == $char) {
+            $this->stateAfterCommentIsGone = self::VALUE;
+            $this->state = self::COMMENT;
+        } elseif ('"' == $char || '{' == $char) {
+            $this->isValueEscaped = false;
+            $this->valueDelimiter = '"' == $char ? '"' : '}';
+            $this->state = self::DELIMITED_VALUE;
+        } elseif ('#' == $char || ',' == $char || '}' == $char) {
+            if (!$this->mayConcatenateValue) {
+                // it expects some value
                 $this->throwException($char);
             }
-            foreach ($this->listeners as $listener) {
-                $listener->keyFound($key);
-            }
-
-            if ('=' == $char) {
-                $this->mayConcatValue = false;
-                $this->state = self::RAW_VALUE;
-            } if ('}' == $char) {
+            $this->mayConcatenateValue = false;
+            if (',' == $char) {
+                $this->state = self::KEY;
+            } elseif ('}' == $char) {
                 $this->state = self::NONE;
             }
-            return;
         }
-
-        $this->throwException($char);
     }
 
     private function readRawValue(string $char)
     {
-        if ('"' == $char || '{' == $char) {
-            if (!empty($this->buffer)) {
-                $this->throwException($char);
-            }
-            $this->isValueEscaped = false;
-            $this->valueDelimiter = '"' == $char ? '"' : '}';
-            $this->state = self::DELIMITED_VALUE;
-            return;
-        }
-
-        if ('#' == $char) {
-            if (!empty($this->buffer)) {
-                foreach ($this->listeners as $listener) {
-                    $listener->valueFound($this->buffer, true);
-                }
-                $this->buffer = '';
-                $this->mayConcatValue = false;
-            } elseif (!$this->mayConcatValue) {
-                $this->throwException($char);
-            }
-            return;
-        }
-
-        if (',' == $char || '}' == $char) {
-            if (!empty($this->buffer)) {
-                foreach ($this->listeners as $listener) {
-                    $listener->valueFound($this->buffer, true);
-                }
-                $this->buffer = '';
-            } elseif (!$this->mayConcatValue) {
-                // here, it means no value was given for the current key
-                $this->throwException($char);
-            }
-            $this->state = ',' == $char ? self::KEY : self::NONE;
-            return;
-        }
-
-        if (!$this->isWhitespace($char)) {
+        if (preg_match('/^[a-zA-Z0-9]$/', $char)) {
             $this->buffer .= $char;
+        } elseif ('%' == $char) {
+            $this->throwExceptionIfBufferIsEmpty($char);
+            $this->triggerListeners('valueFound');
+
+            $this->mayConcatenateValue = true;
+            $this->stateAfterCommentIsGone = self::VALUE;
+            $this->state = self::COMMENT;
+        } else {
+            $this->throwExceptionIfBufferIsEmpty($char);
+            $this->triggerListeners('valueFound');
+
+            // once $char isn't a valid character
+            // it must be interpreted as VALUE
+            $this->mayConcatenateValue = true;
+            $this->state = self::VALUE;
+            $this->readValue($char);
         }
     }
 
@@ -269,30 +273,36 @@ class Parser
     {
         if ('\\' == $char) {
             $this->isValueEscaped = true;
-            return;
-        }
-
-        if ($this->valueDelimiter == $char) {
+        } elseif ($this->valueDelimiter == $char) {
             if ($this->isValueEscaped) {
                 $this->isValueEscaped = false;
                 $this->buffer .= $char;
-                return;
+            } else {
+                $this->triggerListeners('valueFound');
+                $this->mayConcatenateValue = true;
+                $this->state = self::VALUE;
             }
-
-            foreach ($this->listeners as $listener) {
-                $listener->valueFound($this->buffer, false);
+        } elseif ('%' == $char) {
+            if ($this->isValueEscaped) {
+                $this->isValueEscaped = false;
+                $this->buffer .= $char;
+            } else {
+                $this->stateAfterCommentIsGone = self::DELIMITED_VALUE;
+                $this->state = self::COMMENT;
             }
-            $this->buffer = '';
-            $this->mayConcatValue = true;
-            $this->state = self::RAW_VALUE;
-            return;
-        }
-
-        if ($this->isValueEscaped) {
+        } elseif ($this->isValueEscaped) {
             $this->isValueEscaped = false;
-            $this->buffer .= '\\';
+            $this->buffer .= '\\' . $char;
+        } else {
+            $this->buffer .= $char;
         }
-        $this->buffer .= $char;
+    }
+
+    private function throwExceptionIfBufferIsEmpty(string $char)
+    {
+        if (empty($this->buffer)) {
+            $this->throwException($char);
+        }
     }
 
     private function throwException(string $char)
@@ -303,6 +313,14 @@ class Parser
             $this->line,
             $this->column
         ));
+    }
+
+    private function triggerListeners(string $method)
+    {
+        foreach ($this->listeners as $listener) {
+            $listener->$method($this->buffer, $this->state);
+        }
+        $this->buffer = '';
     }
 
     private function isWhitespace(string $char): bool

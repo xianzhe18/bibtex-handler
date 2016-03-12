@@ -8,7 +8,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 {
     public function testBasic()
     {
-        $listener = new LogListener;
+        $listener = new DummyListener;
 
         $parser = new Parser;
         $parser->addListener($listener);
@@ -17,15 +17,15 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $expected = [
             ['type', 'basic'],
             ['key', 'foo'],
-            ['value', 'bar', true],
+            ['value', 'bar', Parser::RAW_VALUE],
         ];
 
-        $this->assertEquals($expected, $listener->log);
+        $this->assertEquals($expected, $listener->calls);
     }
 
     public function testKeyWithoutValue()
     {
-        $listener = new LogListener;
+        $listener = new DummyListener;
 
         $parser = new Parser;
         $parser->addListener($listener);
@@ -37,12 +37,12 @@ class ParserTest extends \PHPUnit_Framework_TestCase
             ['key', 'bar'],
         ];
 
-        $this->assertEquals($expected, $listener->log);
+        $this->assertEquals($expected, $listener->calls);
     }
 
     public function testValueReading()
     {
-        $listener = new LogListener;
+        $listener = new DummyListener;
 
         $parser = new Parser;
         $parser->addListener($listener);
@@ -50,20 +50,25 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
         $expected = [
             ['type', 'valuesBasic'],
+            ['key', 'kNull'],
             ['key', 'kRaw'],
-                ['value', 'raw', true],
+                ['value', 'raw', Parser::RAW_VALUE],
             ['key', 'kBraced'],
-                ['value', ' braced value ', false],
+                ['value', ' braced value ', Parser::DELIMITED_VALUE],
+            ['key', 'kBracedEmpty'],
+                ['value', '', Parser::DELIMITED_VALUE],
             ['key', 'kQuoted'],
-                ['value', ' quoted value ', false],
+                ['value', ' quoted value ', Parser::DELIMITED_VALUE],
+            ['key', 'kQuotedEmpty'],
+                ['value', '', Parser::DELIMITED_VALUE],
         ];
 
-        $this->assertEquals($expected, $listener->log);
+        $this->assertEquals($expected, $listener->calls);
     }
 
     public function testValueScaping()
     {
-        $listener = new LogListener;
+        $listener = new DummyListener;
 
         $parser = new Parser;
         $parser->addListener($listener);
@@ -72,17 +77,17 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $expected = [
             ['type', 'valuesEscaped'],
             ['key', 'braced'],
-                ['value', 'the } " \\ braced', false],
+                ['value', 'the } " \\ % braced', Parser::DELIMITED_VALUE],
             ['key', 'quoted'],
-                ['value', 'the } " \\ quoted', false],
+                ['value', 'the } " \\ % quoted', Parser::DELIMITED_VALUE],
         ];
 
-        $this->assertEquals($expected, $listener->log);
+        $this->assertEquals($expected, $listener->calls);
     }
 
     public function testMultipleValues()
     {
-        $listener = new LogListener;
+        $listener = new DummyListener;
 
         $parser = new Parser;
         $parser->addListener($listener);
@@ -91,24 +96,45 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $expected = [
             ['type', 'multipleValues'],
             ['key', 'raw'],
-                ['value', 'rawA', true],
-                ['value', 'rawB', true],
+                ['value', 'rawA', Parser::RAW_VALUE],
+                ['value', 'rawB', Parser::RAW_VALUE],
             ['key', 'quoted'],
-                ['value', 'quoted a', false],
-                ['value', 'quoted b', false],
+                ['value', 'quoted a', Parser::DELIMITED_VALUE],
+                ['value', 'quoted b', Parser::DELIMITED_VALUE],
             ['key', 'braced'],
-                ['value', 'braced a', false],
-                ['value', 'braced b', false],
+                ['value', 'braced a', Parser::DELIMITED_VALUE],
+                ['value', 'braced b', Parser::DELIMITED_VALUE],
             ['key', 'misc'],
-                ['value', 'quoted', false],
-                ['value', 'braced', false],
-                ['value', 'raw', true],
+                ['value', 'quoted', Parser::DELIMITED_VALUE],
+                ['value', 'braced', Parser::DELIMITED_VALUE],
+                ['value', 'raw', Parser::RAW_VALUE],
             ['key', 'noSpace'],
-                ['value', 'raw', true],
-                ['value', 'quoted', false],
-                ['value', 'braced', false],
+                ['value', 'raw', Parser::RAW_VALUE],
+                ['value', 'quoted', Parser::DELIMITED_VALUE],
+                ['value', 'braced', Parser::DELIMITED_VALUE],
         ];
 
-        $this->assertEquals($expected, $listener->log);
+        $this->assertEquals($expected, $listener->calls);
+    }
+
+    public function testCommentIgnoring()
+    {
+        $listener = new DummyListener;
+
+        $parser = new Parser;
+        $parser->addListener($listener);
+        $parser->parse(__DIR__ . '/resources/comment.bib');
+
+        $expected = [
+            ['type', 'comment'],
+            ['key', 'key'],
+                ['value', 'value', Parser::RAW_VALUE],
+            ['key', 'still'],
+                ['value', 'here', Parser::RAW_VALUE],
+            ['key', 'insideQuoted'],
+                ['value', 'before--after', Parser::DELIMITED_VALUE],
+        ];
+
+        $this->assertEquals($expected, $listener->calls);
     }
 }
