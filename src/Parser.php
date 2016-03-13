@@ -82,7 +82,7 @@ class Parser
                     }
                 }
             }
-            if (self::NONE != $this->state &&
+            if (self::NONE != $this->state ||
                 (self::COMMENT == $this->state && self::NONE != $this->stateAfterCommentIsGone)) {
                 $this->throwException("\0");
             }
@@ -223,12 +223,24 @@ class Parser
     private function readValue(string $char)
     {
         if (preg_match('/^[a-zA-Z0-9]$/', $char)) {
+            // when $mayConcatenateValue is true it means there is another
+            // value defined before it, so a concatenator char is expected (or
+            // a comment as well)
+            if ($this->mayConcatenateValue) {
+                $this->throwException($char);
+            }
             $this->state = self::RAW_VALUE;
             $this->readRawValue($char);
         } elseif ('%' == $char) {
             $this->stateAfterCommentIsGone = self::VALUE;
             $this->state = self::COMMENT;
         } elseif ('"' == $char || '{' == $char) {
+            // when $mayConcatenateValue is true it means there is another
+            // value defined before it, so a concatenator char is expected (or
+            // a comment as well)
+            if ($this->mayConcatenateValue) {
+                $this->throwException($char);
+            }
             $this->isValueEscaped = false;
             $this->valueDelimiter = '"' == $char ? '"' : '}';
             $this->state = self::DELIMITED_VALUE;
@@ -300,9 +312,12 @@ class Parser
 
     private function throwException(string $char)
     {
+        // avoid var_export() weird treatment for \0
+        $char = "\0" == $char ? "'\\0'" : var_export($char, true);
+
         throw new \RuntimeException(sprintf(
             "Unexpected character %s at line %d column %d",
-            var_export($char, true),
+            $char,
             $this->line,
             $this->column
         ));

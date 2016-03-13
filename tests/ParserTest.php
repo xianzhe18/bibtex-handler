@@ -164,4 +164,32 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $this->setExpectedException(\PHPUnit_Framework_Error_Warning::class);
         $parser->parse(__DIR__ . '/resources/does-not-exist');
     }
+
+    /**
+     * @dataProvider invalidProvider
+     */
+    public function testInvalid(string $file, string $message)
+    {
+        $parser = new Parser;
+
+        $this->setExpectedException(\RuntimeException::class);
+        $this->expectExceptionMessage($message);
+        $parser->parse($file);
+    }
+
+    public function invalidProvider(): array
+    {
+        $dir = __DIR__ . '/resources/invalid';
+        return [
+            [$dir . '/brace-missing.bib', "'\\0' at line 3 column 1"],
+            [$dir . '/multiple-braced-values.bib', "'{' at line 2 column 33"],
+            [$dir . '/multiple-quoted-values.bib', "'\"' at line 2 column 33"],
+            [$dir . '/multiple-raw-values.bib', "'b' at line 2 column 31"],
+            [$dir . '/space-after-at-sign.bib', "' ' at line 1 column 2"],
+            [$dir . '/splitted-key.bib', "'k' at line 2 column 14"],
+            [$dir . '/splitted-type.bib', "'T' at line 1 column 11"],
+            [$dir . '/trailing-comma.bib', "'}' at line 3 column 1"],
+            [$dir . '/no-comment.bib', "'i' at line 1 column 1"],
+        ];
+    }
 }
