@@ -271,28 +271,21 @@ class Parser
 
     private function readDelimitedValue(string $char)
     {
-        if ('\\' == $char) {
-            $this->isValueEscaped = true;
-        } elseif ($this->valueDelimiter == $char) {
-            if ($this->isValueEscaped) {
-                $this->isValueEscaped = false;
-                $this->buffer .= $char;
-            } else {
-                $this->triggerListeners('valueFound');
-                $this->mayConcatenateValue = true;
-                $this->state = self::VALUE;
-            }
-        } elseif ('%' == $char) {
-            if ($this->isValueEscaped) {
-                $this->isValueEscaped = false;
-                $this->buffer .= $char;
-            } else {
-                $this->stateAfterCommentIsGone = self::DELIMITED_VALUE;
-                $this->state = self::COMMENT;
-            }
-        } elseif ($this->isValueEscaped) {
+        if ($this->isValueEscaped) {
             $this->isValueEscaped = false;
-            $this->buffer .= '\\' . $char;
+            if ($this->valueDelimiter != $char && '\\' != $char && '%' != $char) {
+                $this->buffer .= '\\';
+            }
+            $this->buffer .= $char;
+        } elseif ($this->valueDelimiter == $char) {
+            $this->triggerListeners('valueFound');
+            $this->mayConcatenateValue = true;
+            $this->state = self::VALUE;
+        } elseif ('\\' == $char) {
+            $this->isValueEscaped = true;
+        } elseif ('%' == $char) {
+            $this->stateAfterCommentIsGone = self::DELIMITED_VALUE;
+            $this->state = self::COMMENT;
         } else {
             $this->buffer .= $char;
         }

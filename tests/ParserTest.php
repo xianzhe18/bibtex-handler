@@ -137,4 +137,23 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($expected, $listener->calls);
     }
+
+    public function testValueSlashes()
+    {
+        $listener = new DummyListener;
+
+        $parser = new Parser;
+        $parser->addListener($listener);
+        $parser->parse(__DIR__ . '/resources/values-slashes.bib');
+
+        $expected = [
+            ['type', 'valuesSlashes'],
+            ['key', 'braced'],
+                ['value', '\\}\\"\\%\\', Parser::DELIMITED_VALUE],
+            ['key', 'quoted'],
+                ['value', '\\}\\"\\%\\', Parser::DELIMITED_VALUE],
+        ];
+
+        $this->assertEquals($expected, $listener->calls);
+    }
 }
