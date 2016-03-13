@@ -156,4 +156,12 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($expected, $listener->calls);
     }
+
+    public function testFileDoesNotExist()
+    {
+        $parser = new Parser;
+
+        $this->setExpectedException(\PHPUnit_Framework_Error_Warning::class);
+        $parser->parse(__DIR__ . '/resources/does-not-exist');
+    }
 }
