@@ -64,30 +64,53 @@ class Parser
         $this->listeners[] = $listener;
     }
 
-    public function parse(string $file)
+    public function parseFile(string $file)
     {
         $handle = fopen($file, 'r');
         try {
             $this->reset();
             while (!feof($handle)) {
                 $buffer = fread($handle, 128);
-                for ($key = 0, $length = strlen($buffer); $key < $length; $key++) {
-                    $char = $buffer[$key];
-                    $this->read($char);
-                    if ("\n" == $char) {
-                        $this->line++;
-                        $this->column = 1;
-                    } else {
-                        $this->column++;
-                    }
-                }
+                $this->parse($buffer);
             }
-            if (self::NONE != $this->state ||
-                (self::COMMENT == $this->state && self::NONE != $this->stateAfterCommentIsGone)) {
-                $this->throwException("\0");
-            }
+            $this->checkFinalStatus();
         } finally {
             fclose($handle);
+        }
+    }
+
+    public function parseString(string $string)
+    {
+        $this->reset();
+        $this->parse($string);
+        $this->checkFinalStatus();
+    }
+
+    private function parse(string $text)
+    {
+        $length = strlen($text);
+        for ($position = 0; $position < $length; $position++) {
+            $char = substr($text, $position, 1);
+            $this->read($char);
+            if ("\n" == $char) {
+                $this->line++;
+                $this->column = 1;
+            } else {
+                $this->column++;
+            }
+        }
+    }
+
+    /**
+     * It's called when parsing has been done, so it checks whether the status
+     * is ok or not.
+     */
+    private function checkFinalStatus()
+    {
+        $current = $this->state;
+        $previous = $this->stateAfterCommentIsGone;
+        if (self::NONE != $current || (self::COMMENT == $current && self::NONE != $previous)) {
+            $this->throwException("\0");
         }
     }
 

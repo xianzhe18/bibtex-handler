@@ -12,7 +12,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
         $parser = new Parser;
         $parser->addListener($listener);
-        $parser->parse(__DIR__ . '/resources/basic.bib');
+        $parser->parseFile(__DIR__ . '/resources/basic.bib');
 
         $expected = [
             ['type', 'basic'],
@@ -29,7 +29,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
         $parser = new Parser;
         $parser->addListener($listener);
-        $parser->parse(__DIR__ . '/resources/no-value.bib');
+        $parser->parseFile(__DIR__ . '/resources/no-value.bib');
 
         $expected = [
             ['type', 'noValue'],
@@ -46,7 +46,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
         $parser = new Parser;
         $parser->addListener($listener);
-        $parser->parse(__DIR__ . '/resources/values-basic.bib');
+        $parser->parseFile(__DIR__ . '/resources/values-basic.bib');
 
         $expected = [
             ['type', 'valuesBasic'],
@@ -72,7 +72,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
         $parser = new Parser;
         $parser->addListener($listener);
-        $parser->parse(__DIR__ . '/resources/values-escaped.bib');
+        $parser->parseFile(__DIR__ . '/resources/values-escaped.bib');
 
         $expected = [
             ['type', 'valuesEscaped'],
@@ -91,7 +91,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
         $parser = new Parser;
         $parser->addListener($listener);
-        $parser->parse(__DIR__ . '/resources/values-multiple.bib');
+        $parser->parseFile(__DIR__ . '/resources/values-multiple.bib');
 
         $expected = [
             ['type', 'multipleValues'],
@@ -123,7 +123,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
         $parser = new Parser;
         $parser->addListener($listener);
-        $parser->parse(__DIR__ . '/resources/comment.bib');
+        $parser->parseFile(__DIR__ . '/resources/comment.bib');
 
         $expected = [
             ['type', 'comment'],
@@ -144,7 +144,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
         $parser = new Parser;
         $parser->addListener($listener);
-        $parser->parse(__DIR__ . '/resources/values-slashes.bib');
+        $parser->parseFile(__DIR__ . '/resources/values-slashes.bib');
 
         $expected = [
             ['type', 'valuesSlashes'],
@@ -162,7 +162,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $parser = new Parser;
 
         $this->setExpectedException(\PHPUnit_Framework_Error_Warning::class);
-        $parser->parse(__DIR__ . '/resources/does-not-exist');
+        $parser->parseFile(__DIR__ . '/resources/does-not-exist');
     }
 
     /**
@@ -174,7 +174,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
         $this->setExpectedException(\RuntimeException::class);
         $this->expectExceptionMessage($message);
-        $parser->parse($file);
+        $parser->parseFile($file);
     }
 
     public function invalidProvider(): array
@@ -191,5 +191,22 @@ class ParserTest extends \PHPUnit_Framework_TestCase
             [$dir . '/trailing-comma.bib', "'}' at line 3 column 1"],
             [$dir . '/no-comment.bib', "'i' at line 1 column 1"],
         ];
+    }
+
+    public function testStringParser()
+    {
+        $listener = new DummyListener;
+
+        $parser = new Parser;
+        $parser->addListener($listener);
+        $parser->parseString(file_get_contents(__DIR__ . '/resources/basic.bib'));
+
+        $expected = [
+            ['type', 'basic'],
+            ['key', 'foo'],
+            ['value', 'bar', Parser::RAW_VALUE],
+        ];
+
+        $this->assertEquals($expected, $listener->calls);
     }
 }
