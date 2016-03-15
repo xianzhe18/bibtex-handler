@@ -3,6 +3,7 @@
 namespace RenanBr\BibTexParser\Test;
 
 use RenanBr\BibTexParser\Parser;
+use RenanBr\BibTexParser\ParseException;
 
 class ParserTest extends \PHPUnit_Framework_TestCase
 {
@@ -172,7 +173,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     {
         $parser = new Parser;
 
-        $this->setExpectedException(\RuntimeException::class);
+        $this->setExpectedException(ParseException::class);
         $this->expectExceptionMessage($message);
         $parser->parseFile($file);
     }

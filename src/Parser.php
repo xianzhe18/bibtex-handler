@@ -338,7 +338,7 @@ class Parser
         // avoid var_export() weird treatment for \0
         $char = "\0" == $char ? "'\\0'" : var_export($char, true);
 
-        throw new \RuntimeException(sprintf(
+        throw new ParseException(sprintf(
             "Unexpected character %s at line %d column %d",
             $char,
             $this->line,
