@@ -55,6 +55,11 @@ class Parser
     private $valueDelimiter;
 
     /**
+     * @var int
+     */
+    private $braceLevel = 0;
+
+    /**
      * @var ListenerInterface[]
      */
     private $listeners = [];
@@ -124,6 +129,7 @@ class Parser
         $this->mayConcatenateValue = false;
         $this->isValueEscaped = false;
         $this->valueDelimiter = null;
+        $this->braceLevel = 0;
     }
 
     private function read(string $char)
@@ -312,10 +318,18 @@ class Parser
                 $this->buffer .= '\\';
             }
             $this->buffer .= $char;
+        } elseif ('}' == $this->valueDelimiter && '{' == $char) {
+            $this->braceLevel++;
+            $this->buffer .= $char;
         } elseif ($this->valueDelimiter == $char) {
-            $this->triggerListeners('valueFound');
-            $this->mayConcatenateValue = true;
-            $this->state = self::VALUE;
+            if (0 == $this->braceLevel) {
+                $this->triggerListeners('valueFound');
+                $this->mayConcatenateValue = true;
+                $this->state = self::VALUE;
+            } else {
+                $this->braceLevel--;
+                $this->buffer .= $char;
+            }
         } elseif ('\\' == $char) {
             $this->isValueEscaped = true;
         } elseif ('%' == $char) {

@@ -158,6 +158,27 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $listener->calls);
     }
 
+    public function testValueNestedBraces()
+    {
+        $listener = new DummyListener;
+
+        $parser = new Parser;
+        $parser->addListener($listener);
+        $parser->parseFile(__DIR__ . '/resources/values-nested-braces.bib');
+
+        $expected = [
+            ['type', 'valuesBraces'],
+            ['key', 'link'],
+                ['value', '\url{https://github.com}', Parser::DELIMITED_VALUE],
+            ['key', 'twoLevels'],
+                ['value', 'a{b{c}d}e', Parser::DELIMITED_VALUE],
+            ['key', 'escapedBrace'],
+                ['value', 'before{}}after', Parser::DELIMITED_VALUE],
+        ];
+
+        $this->assertEquals($expected, $listener->calls);
+    }
+
     public function testFileDoesNotExist()
     {
         $parser = new Parser;
