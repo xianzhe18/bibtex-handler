@@ -134,6 +134,8 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                 ['value', 'here', Parser::RAW_VALUE],
             ['key', 'insideQuoted'],
                 ['value', 'before--after', Parser::DELIMITED_VALUE],
+            ['key', 'commentAfterKey'],
+                ['value', 'commentAfterRaw', Parser::RAW_VALUE],
         ];
 
         $this->assertEquals($expected, $listener->calls);
