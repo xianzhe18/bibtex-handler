@@ -362,8 +362,9 @@ class Parser
 
     private function triggerListeners(string $method)
     {
+        $context = ['state' => $this->state];
         foreach ($this->listeners as $listener) {
-            $listener->$method($this->buffer, $this->state);
+            $listener->$method($this->buffer, $context);
         }
         $this->buffer = '';
     }

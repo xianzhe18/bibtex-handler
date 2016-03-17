@@ -4,7 +4,7 @@ namespace RenanBr\BibTexParser;
 
 interface ListenerInterface
 {
-    public function typeFound(string $type);
-    public function keyFound(string $key);
-    public function valueFound(string $value, string $state);
+    public function typeFound(string $type, array $context);
+    public function keyFound(string $key, array $context);
+    public function valueFound(string $value, array $context);
 }
