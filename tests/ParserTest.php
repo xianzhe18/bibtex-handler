@@ -55,13 +55,13 @@ class ParserTest extends \PHPUnit_Framework_TestCase
             ['key', 'kRaw'],
                 ['value', 'raw', Parser::RAW_VALUE],
             ['key', 'kBraced'],
-                ['value', ' braced value ', Parser::DELIMITED_VALUE],
+                ['value', ' braced value ', Parser::BRACED_VALUE],
             ['key', 'kBracedEmpty'],
-                ['value', '', Parser::DELIMITED_VALUE],
+                ['value', '', Parser::BRACED_VALUE],
             ['key', 'kQuoted'],
-                ['value', ' quoted value ', Parser::DELIMITED_VALUE],
+                ['value', ' quoted value ', Parser::QUOTED_VALUE],
             ['key', 'kQuotedEmpty'],
-                ['value', '', Parser::DELIMITED_VALUE],
+                ['value', '', Parser::QUOTED_VALUE],
         ];
 
         $this->assertEquals($expected, $listener->calls);
@@ -78,9 +78,9 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $expected = [
             ['type', 'valuesEscaped'],
             ['key', 'braced'],
-                ['value', 'the } " \\ % braced', Parser::DELIMITED_VALUE],
+                ['value', 'the } " \\ % braced', Parser::BRACED_VALUE],
             ['key', 'quoted'],
-                ['value', 'the } " \\ % quoted', Parser::DELIMITED_VALUE],
+                ['value', 'the } " \\ % quoted', Parser::QUOTED_VALUE],
         ];
 
         $this->assertEquals($expected, $listener->calls);
@@ -100,19 +100,19 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                 ['value', 'rawA', Parser::RAW_VALUE],
                 ['value', 'rawB', Parser::RAW_VALUE],
             ['key', 'quoted'],
-                ['value', 'quoted a', Parser::DELIMITED_VALUE],
-                ['value', 'quoted b', Parser::DELIMITED_VALUE],
+                ['value', 'quoted a', Parser::QUOTED_VALUE],
+                ['value', 'quoted b', Parser::QUOTED_VALUE],
             ['key', 'braced'],
-                ['value', 'braced a', Parser::DELIMITED_VALUE],
-                ['value', 'braced b', Parser::DELIMITED_VALUE],
+                ['value', 'braced a', Parser::BRACED_VALUE],
+                ['value', 'braced b', Parser::BRACED_VALUE],
             ['key', 'misc'],
-                ['value', 'quoted', Parser::DELIMITED_VALUE],
-                ['value', 'braced', Parser::DELIMITED_VALUE],
+                ['value', 'quoted', Parser::QUOTED_VALUE],
+                ['value', 'braced', Parser::BRACED_VALUE],
                 ['value', 'raw', Parser::RAW_VALUE],
             ['key', 'noSpace'],
                 ['value', 'raw', Parser::RAW_VALUE],
-                ['value', 'quoted', Parser::DELIMITED_VALUE],
-                ['value', 'braced', Parser::DELIMITED_VALUE],
+                ['value', 'quoted', Parser::QUOTED_VALUE],
+                ['value', 'braced', Parser::BRACED_VALUE],
         ];
 
         $this->assertEquals($expected, $listener->calls);
@@ -133,7 +133,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
             ['key', 'still'],
                 ['value', 'here', Parser::RAW_VALUE],
             ['key', 'insideQuoted'],
-                ['value', 'before--after', Parser::DELIMITED_VALUE],
+                ['value', 'before--after', Parser::QUOTED_VALUE],
             ['key', 'commentAfterKey'],
                 ['value', 'commentAfterRaw', Parser::RAW_VALUE],
         ];
@@ -152,9 +152,9 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $expected = [
             ['type', 'valuesSlashes'],
             ['key', 'braced'],
-                ['value', '\\}\\"\\%\\', Parser::DELIMITED_VALUE],
+                ['value', '\\}\\"\\%\\', Parser::BRACED_VALUE],
             ['key', 'quoted'],
-                ['value', '\\}\\"\\%\\', Parser::DELIMITED_VALUE],
+                ['value', '\\}\\"\\%\\', Parser::QUOTED_VALUE],
         ];
 
         $this->assertEquals($expected, $listener->calls);
@@ -171,11 +171,11 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $expected = [
             ['type', 'valuesBraces'],
             ['key', 'link'],
-                ['value', '\url{https://github.com}', Parser::DELIMITED_VALUE],
+                ['value', '\url{https://github.com}', Parser::BRACED_VALUE],
             ['key', 'twoLevels'],
-                ['value', 'a{b{c}d}e', Parser::DELIMITED_VALUE],
+                ['value', 'a{b{c}d}e', Parser::BRACED_VALUE],
             ['key', 'escapedBrace'],
-                ['value', 'before{}}after', Parser::DELIMITED_VALUE],
+                ['value', 'before{}}after', Parser::BRACED_VALUE],
         ];
 
         $this->assertEquals($expected, $listener->calls);

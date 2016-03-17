@@ -12,7 +12,8 @@ class Parser
     const POST_KEY = 'post_key';
     const VALUE = 'value';
     const RAW_VALUE = 'raw_value';
-    const DELIMITED_VALUE = 'delimited_value';
+    const BRACED_VALUE = 'braced_value';
+    const QUOTED_VALUE = 'quoted_value';
 
     /**
      * @var string
@@ -159,7 +160,8 @@ class Parser
             case self::RAW_VALUE:
                 $this->readRawValue($char);
                 break;
-            case self::DELIMITED_VALUE:
+            case self::QUOTED_VALUE:
+            case self::BRACED_VALUE:
                 $this->readDelimitedValue($char);
                 break;
         }
@@ -264,15 +266,18 @@ class Parser
             $this->stateAfterCommentIsGone = self::VALUE;
             $this->state = self::COMMENT;
         } elseif ('"' == $char || '{' == $char) {
-            // when $mayConcatenateValue is true it means there is another
-            // value defined before it, so a concatenator char is expected (or
-            // a comment as well)
+            // this verification is here for the same reason of the first case
             if ($this->mayConcatenateValue) {
                 $this->throwException($char);
             }
             $this->isValueEscaped = false;
-            $this->valueDelimiter = '"' == $char ? '"' : '}';
-            $this->state = self::DELIMITED_VALUE;
+            if ('"' == $char) {
+                $this->valueDelimiter = '"';
+                $this->state = self::QUOTED_VALUE;
+            } else {
+                $this->valueDelimiter = '}';
+                $this->state = self::BRACED_VALUE;
+            }
         } elseif ('#' == $char || ',' == $char || '}' == $char) {
             if (!$this->mayConcatenateValue) {
                 // it expects some value
@@ -333,7 +338,7 @@ class Parser
         } elseif ('\\' == $char) {
             $this->isValueEscaped = true;
         } elseif ('%' == $char) {
-            $this->stateAfterCommentIsGone = self::DELIMITED_VALUE;
+            $this->stateAfterCommentIsGone = $this->state;
             $this->state = self::COMMENT;
         } else {
             $this->buffer .= $char;
