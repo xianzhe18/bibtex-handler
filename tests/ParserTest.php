@@ -234,4 +234,47 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($expected, $listener->calls);
     }
+
+    public function testBasicOffsetContext()
+    {
+        $listener = new DummyListener;
+
+        $parser = new Parser;
+        $parser->addListener($listener);
+        $parser->parseFile(__DIR__ . '/resources/basic.bib');
+
+        $expected = [
+            ['state' => Parser::TYPE, 'offset' => 1, 'length' => 5],
+            ['state' => Parser::KEY, 'offset' => 13, 'length' => 3],
+            ['state' => Parser::RAW_VALUE, 'offset' => 19, 'length' => 3],
+        ];
+
+        $contexts = $listener->filterContexts(['state', 'offset', 'length']);
+
+        $this->assertEquals($expected, $contexts);
+    }
+
+    public function testOffsetContextWithEscapedChar()
+    {
+        $listener = new DummyListener;
+
+        $parser = new Parser;
+        $parser->addListener($listener);
+
+        // This file is interesting because the values have escaped chars, which
+        // means the value length in the file is not equal to the triggered one
+        $parser->parseFile(__DIR__ . '/resources/values-escaped.bib');
+
+        $expected = [
+            ['state' => Parser::TYPE, 'offset' => 1, 'length' => 13],
+            ['state' => Parser::KEY, 'offset' => 21, 'length' => 6],
+            ['state' => Parser::BRACED_VALUE, 'offset' => 31, 'length' => 21],
+            ['state' => Parser::KEY, 'offset' => 59, 'length' => 6],
+            ['state' => Parser::QUOTED_VALUE, 'offset' => 69, 'length' => 21],
+        ];
+
+        $contexts = $listener->filterContexts(['state', 'offset', 'length']);
+
+        $this->assertEquals($expected, $contexts);
+    }
 }

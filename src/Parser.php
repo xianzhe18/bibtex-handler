@@ -41,6 +41,11 @@ class Parser
     private $column;
 
     /**
+     * @var int
+     */
+    private $offset;
+
+    /**
      * @var bool
      */
     private $isValueEscaped;
@@ -104,6 +109,7 @@ class Parser
             } else {
                 $this->column++;
             }
+            $this->offset++;
         }
     }
 
@@ -127,6 +133,7 @@ class Parser
         $this->buffer = '';
         $this->line = 1;
         $this->column = 1;
+        $this->offset = 0;
         $this->mayConcatenateValue = false;
         $this->isValueEscaped = false;
         $this->valueDelimiter = null;
@@ -189,6 +196,9 @@ class Parser
     private function readType(string $char)
     {
         if (preg_match('/^[a-zA-Z]$/', $char)) {
+            if (empty($this->buffer)) {
+                $this->bufferOffset = $this->offset;
+            }
             $this->buffer .= $char;
         } else {
             $this->throwExceptionIfBufferIsEmpty($char);
@@ -216,6 +226,9 @@ class Parser
     private function readKey(string $char)
     {
         if (preg_match('/^[a-zA-Z0-9\+:\-]$/', $char)) {
+            if (empty($this->buffer)) {
+                $this->bufferOffset = $this->offset;
+            }
             $this->buffer .= $char;
         } elseif ($this->isWhitespace($char) && empty($this->buffer)) {
             // skip
@@ -295,28 +308,33 @@ class Parser
     private function readRawValue(string $char)
     {
         if (preg_match('/^[a-zA-Z0-9]$/', $char)) {
+            if (empty($this->buffer)) {
+                $this->bufferOffset = $this->offset;
+            }
             $this->buffer .= $char;
-        } elseif ('%' == $char) {
-            $this->throwExceptionIfBufferIsEmpty($char);
-            $this->triggerListeners('valueFound');
-
-            $this->mayConcatenateValue = true;
-            $this->stateAfterCommentIsGone = self::VALUE;
-            $this->state = self::COMMENT;
         } else {
             $this->throwExceptionIfBufferIsEmpty($char);
             $this->triggerListeners('valueFound');
 
-            // once $char isn't a valid character
-            // it must be interpreted as VALUE
-            $this->mayConcatenateValue = true;
-            $this->state = self::VALUE;
-            $this->readValue($char);
+            if ('%' == $char) {
+                $this->mayConcatenateValue = true;
+                $this->stateAfterCommentIsGone = self::VALUE;
+                $this->state = self::COMMENT;
+            } else {
+                // once $char isn't a valid character
+                // it must be interpreted as VALUE
+                $this->mayConcatenateValue = true;
+                $this->state = self::VALUE;
+                $this->readValue($char);
+            }
         }
     }
 
     private function readDelimitedValue(string $char)
     {
+        if (empty($this->buffer)) {
+            $this->bufferOffset = $this->offset;
+        }
         if ($this->isValueEscaped) {
             $this->isValueEscaped = false;
             if ($this->valueDelimiter != $char && '\\' != $char && '%' != $char) {
@@ -367,10 +385,15 @@ class Parser
 
     private function triggerListeners(string $method)
     {
-        $context = ['state' => $this->state];
+        $context = [
+            'state' => $this->state,
+            'offset' => $this->bufferOffset,
+            'length' => $this->offset - $this->bufferOffset
+        ];
         foreach ($this->listeners as $listener) {
             $listener->$method($this->buffer, $context);
         }
+        $this->bufferOffset = null;
         $this->buffer = '';
     }
 
