@@ -23,31 +23,34 @@ class Listener implements ListenerInterface
         return $this->entries;
     }
 
-    public function typeFound(string $type, array $context)
+    public function bibTexUnitFound(string $text, array $context)
     {
-        $this->entries[] = ['type' => $type];
-    }
+        switch ($context['state']) {
+            case Parser::TYPE:
+                $this->entries[] = ['type' => $text];
+                break;
 
-    public function keyFound(string $key, array $context)
-    {
-        // save key into last entry
-        end($this->entries);
-        $position = key($this->entries);
-        $this->entries[$position][$key] = null;
-    }
+            case PARSER::KEY:
+                // save key into last entry
+                end($this->entries);
+                $latest = key($this->entries);
+                $this->entries[$latest][$text] = null;
+                break;
 
-    public function valueFound(string $value, array $context)
-    {
-        if ($context['state'] == Parser::RAW_VALUE) {
-            $value = $this->processRawValue($value);
-        }
-        if (null !== $value) {
-            // save value into last key
-            end($this->entries);
-            $position = key($this->entries);
-            end($this->entries[$position]);
-            $key = key($this->entries[$position]);
-            $this->entries[$position][$key] .= $value;
+            case PARSER::RAW_VALUE:
+                $text = $this->processRawValue($text);
+                // break;
+
+            case PARSER::BRACED_VALUE:
+            case PARSER::QUOTED_VALUE:
+                if (null !== $text) {
+                    // save value into last key
+                    end($this->entries);
+                    $latest = key($this->entries);
+                    end($this->entries[$latest]);
+                    $key = key($this->entries[$latest]);
+                    $this->entries[$latest][$key] .= $text;
+                }
         }
     }
 

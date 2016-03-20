@@ -211,7 +211,7 @@ class Parser
             $this->buffer .= $char;
         } else {
             $this->throwExceptionIfBufferIsEmpty($char);
-            $this->triggerListeners('typeFound');
+            $this->triggerListeners();
 
             // once $char isn't a valid character
             // it must be interpreted as POST_TYPE
@@ -248,7 +248,7 @@ class Parser
             $this->state = self::COMMENT;
         } else {
             $this->throwExceptionIfBufferIsEmpty($char);
-            $this->triggerListeners('keyFound');
+            $this->triggerListeners();
 
             // once $char isn't a valid character
             // it must be interpreted as POST_TYPE
@@ -323,7 +323,7 @@ class Parser
             $this->buffer .= $char;
         } else {
             $this->throwExceptionIfBufferIsEmpty($char);
-            $this->triggerListeners('valueFound');
+            $this->triggerListeners();
 
             if ('%' == $char) {
                 $this->mayConcatenateValue = true;
@@ -355,7 +355,7 @@ class Parser
             $this->buffer .= $char;
         } elseif ($this->valueDelimiter == $char) {
             if (0 == $this->braceLevel) {
-                $this->triggerListeners('valueFound');
+                $this->triggerListeners();
                 $this->mayConcatenateValue = true;
                 $this->state = self::VALUE;
             } else {
@@ -392,7 +392,7 @@ class Parser
         ));
     }
 
-    private function triggerListeners(string $method)
+    private function triggerListeners()
     {
         $context = [
             'state' => $this->state,
@@ -400,7 +400,7 @@ class Parser
             'length' => $this->offset - $this->bufferOffset
         ];
         foreach ($this->listeners as $listener) {
-            $listener->$method($this->buffer, $context);
+            $listener->bibTexUnitFound($this->buffer, $context);
         }
         $this->bufferOffset = null;
         $this->buffer = '';

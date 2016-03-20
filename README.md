@@ -77,17 +77,20 @@ The `parseFile()` may even throw a native `ErrorException` if file given can't b
 ```php
 interface RenanBr\BibTexParser\ListenerInterface
 {
-    public function typeFound(string $type, array $context);
-    public function keyFound(string $key, array $context);
-    public function valueFound(string $value, array $context);
+    public function bibTexUnitFound(string $text, array $context);
 }
 ```
 
 The `$context` variable gives informations about the text found.
-The context entries are:
-- __offset__: Text beginning position.
-  May be useful for [seeking](https://php.net/fseek) a file, for example;
-- __length__: Original text length.
+The context keys are:
+- `$context['state']` contains the current Parser's state.
+  Its value may assume:
+  - `Parser::TYPE`
+  - `Parser::KEY`
+  - `Parser::RAW_VALUE`
+  - `Parser::BRACED_VALUE`
+  - `Parser::QUOTED_VALUE`
+- `$context['offset']` contains the text beginning position.
+  It may be useful, for example, to [seek](https://php.net/fseek) a file;
+- `$context['length']` contains the original text length.
   It may differ from string length sent to the listener because may there are escaped values.
-- __state__: Current Parser's state.
-  It may assume `Parser::RAW_VALUE`, `Parser::BRACED_VALUE`, `Parser::QUOTED_VALUE` or any other pre-defined state;

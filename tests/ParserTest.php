@@ -25,9 +25,9 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $parser->parseFile(__DIR__ . '/resources/basic.bib');
 
         $expected = [
-            ['type', 'basic'],
-            ['key', 'foo'],
-            ['value', 'bar', Parser::RAW_VALUE],
+            [Parser::TYPE, 'basic'],
+            [Parser::KEY, 'foo'],
+            [Parser::RAW_VALUE, 'bar'],
         ];
 
         $this->assertEquals($expected, $listener->calls);
@@ -42,9 +42,9 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $parser->parseFile(__DIR__ . '/resources/no-value.bib');
 
         $expected = [
-            ['type', 'noValue'],
-            ['key', 'foo'],
-            ['key', 'bar'],
+            [Parser::TYPE, 'noValue'],
+            [Parser::KEY, 'foo'],
+            [Parser::KEY, 'bar'],
         ];
 
         $this->assertEquals($expected, $listener->calls);
@@ -59,18 +59,18 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $parser->parseFile(__DIR__ . '/resources/values-basic.bib');
 
         $expected = [
-            ['type', 'valuesBasic'],
-            ['key', 'kNull'],
-            ['key', 'kRaw'],
-                ['value', 'raw', Parser::RAW_VALUE],
-            ['key', 'kBraced'],
-                ['value', ' braced value ', Parser::BRACED_VALUE],
-            ['key', 'kBracedEmpty'],
-                ['value', '', Parser::BRACED_VALUE],
-            ['key', 'kQuoted'],
-                ['value', ' quoted value ', Parser::QUOTED_VALUE],
-            ['key', 'kQuotedEmpty'],
-                ['value', '', Parser::QUOTED_VALUE],
+            [Parser::TYPE, 'valuesBasic'],
+            [Parser::KEY, 'kNull'],
+            [Parser::KEY, 'kRaw'],
+            [Parser::RAW_VALUE, 'raw'],
+            [Parser::KEY, 'kBraced'],
+            [Parser::BRACED_VALUE, ' braced value '],
+            [Parser::KEY, 'kBracedEmpty'],
+            [Parser::BRACED_VALUE, ''],
+            [Parser::KEY, 'kQuoted'],
+            [Parser::QUOTED_VALUE, ' quoted value '],
+            [Parser::KEY, 'kQuotedEmpty'],
+            [Parser::QUOTED_VALUE, ''],
         ];
 
         $this->assertEquals($expected, $listener->calls);
@@ -85,11 +85,11 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $parser->parseFile(__DIR__ . '/resources/values-escaped.bib');
 
         $expected = [
-            ['type', 'valuesEscaped'],
-            ['key', 'braced'],
-                ['value', 'the } " \\ % braced', Parser::BRACED_VALUE],
-            ['key', 'quoted'],
-                ['value', 'the } " \\ % quoted', Parser::QUOTED_VALUE],
+            [Parser::TYPE, 'valuesEscaped'],
+            [Parser::KEY, 'braced'],
+            [Parser::BRACED_VALUE, 'the } " \\ % braced'],
+            [Parser::KEY, 'quoted'],
+            [Parser::QUOTED_VALUE, 'the } " \\ % quoted'],
         ];
 
         $this->assertEquals($expected, $listener->calls);
@@ -104,24 +104,24 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $parser->parseFile(__DIR__ . '/resources/values-multiple.bib');
 
         $expected = [
-            ['type', 'multipleValues'],
-            ['key', 'raw'],
-                ['value', 'rawA', Parser::RAW_VALUE],
-                ['value', 'rawB', Parser::RAW_VALUE],
-            ['key', 'quoted'],
-                ['value', 'quoted a', Parser::QUOTED_VALUE],
-                ['value', 'quoted b', Parser::QUOTED_VALUE],
-            ['key', 'braced'],
-                ['value', 'braced a', Parser::BRACED_VALUE],
-                ['value', 'braced b', Parser::BRACED_VALUE],
-            ['key', 'misc'],
-                ['value', 'quoted', Parser::QUOTED_VALUE],
-                ['value', 'braced', Parser::BRACED_VALUE],
-                ['value', 'raw', Parser::RAW_VALUE],
-            ['key', 'noSpace'],
-                ['value', 'raw', Parser::RAW_VALUE],
-                ['value', 'quoted', Parser::QUOTED_VALUE],
-                ['value', 'braced', Parser::BRACED_VALUE],
+            [Parser::TYPE, 'multipleValues'],
+            [Parser::KEY, 'raw'],
+            [Parser::RAW_VALUE, 'rawA'],
+            [Parser::RAW_VALUE, 'rawB'],
+            [Parser::KEY, 'quoted'],
+            [Parser::QUOTED_VALUE, 'quoted a'],
+            [Parser::QUOTED_VALUE, 'quoted b'],
+            [Parser::KEY, 'braced'],
+            [Parser::BRACED_VALUE, 'braced a'],
+            [Parser::BRACED_VALUE, 'braced b'],
+            [Parser::KEY, 'misc'],
+            [Parser::QUOTED_VALUE, 'quoted'],
+            [Parser::BRACED_VALUE, 'braced'],
+            [Parser::RAW_VALUE, 'raw'],
+            [Parser::KEY, 'noSpace'],
+            [Parser::RAW_VALUE, 'raw'],
+            [Parser::QUOTED_VALUE, 'quoted'],
+            [Parser::BRACED_VALUE, 'braced'],
         ];
 
         $this->assertEquals($expected, $listener->calls);
@@ -136,15 +136,15 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $parser->parseFile(__DIR__ . '/resources/comment.bib');
 
         $expected = [
-            ['type', 'comment'],
-            ['key', 'key'],
-                ['value', 'value', Parser::RAW_VALUE],
-            ['key', 'still'],
-                ['value', 'here', Parser::RAW_VALUE],
-            ['key', 'insideQuoted'],
-                ['value', 'before--after', Parser::QUOTED_VALUE],
-            ['key', 'commentAfterKey'],
-                ['value', 'commentAfterRaw', Parser::RAW_VALUE],
+            [Parser::TYPE, 'comment'],
+            [Parser::KEY, 'key'],
+            [Parser::RAW_VALUE, 'value'],
+            [Parser::KEY, 'still'],
+            [Parser::RAW_VALUE, 'here'],
+            [Parser::KEY, 'insideQuoted'],
+            [Parser::QUOTED_VALUE, 'before--after'],
+            [Parser::KEY, 'commentAfterKey'],
+            [Parser::RAW_VALUE, 'commentAfterRaw'],
         ];
 
         $this->assertEquals($expected, $listener->calls);
@@ -159,11 +159,11 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $parser->parseFile(__DIR__ . '/resources/values-slashes.bib');
 
         $expected = [
-            ['type', 'valuesSlashes'],
-            ['key', 'braced'],
-                ['value', '\\}\\"\\%\\', Parser::BRACED_VALUE],
-            ['key', 'quoted'],
-                ['value', '\\}\\"\\%\\', Parser::QUOTED_VALUE],
+            [Parser::TYPE, 'valuesSlashes'],
+            [Parser::KEY, 'braced'],
+            [Parser::BRACED_VALUE, '\\}\\"\\%\\'],
+            [Parser::KEY, 'quoted'],
+            [Parser::QUOTED_VALUE, '\\}\\"\\%\\'],
         ];
 
         $this->assertEquals($expected, $listener->calls);
@@ -178,13 +178,13 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $parser->parseFile(__DIR__ . '/resources/values-nested-braces.bib');
 
         $expected = [
-            ['type', 'valuesBraces'],
-            ['key', 'link'],
-                ['value', '\url{https://github.com}', Parser::BRACED_VALUE],
-            ['key', 'twoLevels'],
-                ['value', 'a{b{c}d}e', Parser::BRACED_VALUE],
-            ['key', 'escapedBrace'],
-                ['value', 'before{}}after', Parser::BRACED_VALUE],
+            [Parser::TYPE, 'valuesBraces'],
+            [Parser::KEY, 'link'],
+            [Parser::BRACED_VALUE, '\url{https://github.com}'],
+            [Parser::KEY, 'twoLevels'],
+            [Parser::BRACED_VALUE, 'a{b{c}d}e'],
+            [Parser::KEY, 'escapedBrace'],
+            [Parser::BRACED_VALUE, 'before{}}after'],
         ];
 
         $this->assertEquals($expected, $listener->calls);
@@ -236,9 +236,9 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $parser->parseString(file_get_contents(__DIR__ . '/resources/basic.bib'));
 
         $expected = [
-            ['type', 'basic'],
-            ['key', 'foo'],
-            ['value', 'bar', Parser::RAW_VALUE],
+            [Parser::TYPE, 'basic'],
+            [Parser::KEY, 'foo'],
+            [Parser::RAW_VALUE, 'bar'],
         ];
 
         $this->assertEquals($expected, $listener->calls);

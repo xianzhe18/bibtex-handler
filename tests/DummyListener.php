@@ -18,21 +18,9 @@ class DummyListener implements ListenerInterface
     public $calls = [];
     public $contexts = [];
 
-    public function typeFound(string $text, array $context)
+    public function bibTexUnitFound(string $text, array $context)
     {
-        $this->calls[] = ['type', $text];
-        $this->contexts[] = $context;
-    }
-
-    public function keyFound(string $text, array $context)
-    {
-        $this->calls[] = ['key', $text];
-        $this->contexts[] = $context;
-    }
-
-    public function valueFound(string $text, array $context)
-    {
-        $this->calls[] = ['value', $text, $context['state']];
+        $this->calls[] = [$context['state'], $text];
         $this->contexts[] = $context;
     }
 
