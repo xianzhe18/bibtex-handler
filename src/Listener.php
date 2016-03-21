@@ -18,8 +18,25 @@ class Listener implements ListenerInterface
      */
     private $entries = [];
 
+    /**
+     * Current key name.
+     * Indicates where to save values.
+     *
+     * @var string
+     */
+    private $key;
+
+    /**
+     * @var bool
+     */
+    private $processed = false;
+
     public function export(): array
     {
+        if (!$this->processed) {
+            $this->processCitationKey();
+                $this->processed = true;
+        }
         return $this->entries;
     }
 
@@ -33,8 +50,9 @@ class Listener implements ListenerInterface
             case PARSER::KEY:
                 // save key into last entry
                 end($this->entries);
-                $latest = key($this->entries);
-                $this->entries[$latest][$text] = null;
+                $position = key($this->entries);
+                $this->key = $text;
+                $this->entries[$position][$this->key] = null;
                 break;
 
             case PARSER::RAW_VALUE:
@@ -46,11 +64,27 @@ class Listener implements ListenerInterface
                 if (null !== $text) {
                     // save value into last key
                     end($this->entries);
-                    $latest = key($this->entries);
-                    end($this->entries[$latest]);
-                    $key = key($this->entries[$latest]);
-                    $this->entries[$latest][$key] .= $text;
+                    $position = key($this->entries);
+                    $this->entries[$position][$this->key] .= $text;
                 }
+        }
+    }
+
+    private function processCitationKey()
+    {
+        foreach ($this->entries as $position => $entry) {
+            // the first key is always the "type"
+            // the second key MAY be a value of "citation-key" if its value is null
+            if (count($entry) > 1) {
+                $second = array_slice($entry, 1, 1, true);
+                list($key, $value) = each($second);
+                if (null === $value) {
+                    // once the second key value is empty, it flips the key name
+                    // as value of "citation-key"
+                    $this->entries[$position]['citation-key'] = $key;
+                    unset($this->entries[$position][$key]);
+                }
+            }
         }
     }
 

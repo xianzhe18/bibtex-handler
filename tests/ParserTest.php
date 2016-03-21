@@ -61,6 +61,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $expected = [
             [Parser::TYPE, 'valuesBasic'],
             [Parser::KEY, 'kNull'],
+            [Parser::KEY, 'kStillNull'],
             [Parser::KEY, 'kRaw'],
             [Parser::RAW_VALUE, 'raw'],
             [Parser::KEY, 'kBraced'],

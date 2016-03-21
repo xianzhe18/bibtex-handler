@@ -42,14 +42,13 @@ class ListenerTest extends \PHPUnit_Framework_TestCase
 
         $expected = [[
             'type' => 'noValue',
-            'foo' => null,
+            'citation-key' => 'foo',
             'bar' => null,
         ]];
         $actual = $listener->export();
         $this->assertEquals($expected, $actual);
 
         // because assertEquals() doesn't check variable type
-        $this->assertNull($actual[0]['foo']);
         $this->assertNull($actual[0]['bar']);
     }
 
@@ -63,7 +62,8 @@ class ListenerTest extends \PHPUnit_Framework_TestCase
 
         $expected = [[
             'type' => 'valuesBasic',
-            'kNull' => null,
+            'citation-key' => 'kNull',
+            'kStillNull' => null,
             'kRaw' => 'raw',
             'kBraced' => ' braced value ',
             'kBracedEmpty' => '',
@@ -74,7 +74,7 @@ class ListenerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $actual);
 
         // because assertEquals() doesn't check variable type
-        $this->assertNull($actual[0]['kNull']);
+        $this->assertNull($actual[0]['kStillNull']);
         $this->assertSame('', $actual[0]['kBracedEmpty']);
         $this->assertSame('', $actual[0]['kQuotedEmpty']);
     }
@@ -131,5 +131,38 @@ class ListenerTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($actual[0]['nullAbbr']);
         $this->assertSame('', $actual[2]['mustEmpty']);
         $this->assertNull($actual[2]['mustNull']);
+    }
+
+    public function testTypeOverriding()
+    {
+        $listener = new Listener;
+
+        $parser = new Parser;
+        $parser->addListener($listener);
+        $parser->parseFile(__DIR__ . '/resources/type-overriding.bib');
+
+        $expected = [[
+            'type' => 'new type value',
+            'foo' => 'bar',
+        ]];
+        $actual = $listener->export();
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function testCitationKey()
+    {
+        $listener = new Listener;
+
+        $parser = new Parser;
+        $parser->addListener($listener);
+        $parser->parseFile(__DIR__ . '/resources/citation-key.bib');
+
+        $expected = [[
+            'type' => 'citationKey',
+            'citation-key' => 'Someone2016',
+            'foo' => 'bar',
+        ]];
+        $actual = $listener->export();
+        $this->assertEquals($expected, $actual);
     }
 }
