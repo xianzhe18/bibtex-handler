@@ -25,9 +25,10 @@ $parser->addListener($listener);
 $parser->parseFile('/path/to/example.bib');
 $entries = $listener->export();
 
-$entries[0]['type'];    // article
-$entries[0]['title'];   // Managing Citations With Cost-Free Tools
-$entries[0]['journal']; // Behavioral {\&} Social Sciences Librarian
+$entries[0]['type'];         // article
+$entries[0]['citation-key']; // Ovadia2011
+$entries[0]['title'];        // Managing Citations With Cost-Free Tools
+$entries[0]['journal'];      // Behavioral {\&} Social Sciences Librarian
 ```
 
 Below we have the `example.bib` source file used in the sample above.
@@ -54,7 +55,8 @@ As you may noticed, this library provides `RenanBr\BibTexParser\Listener` as a `
 Its features are:
 - It replaces raw values according to their [abbreviations](http://www.bibtex.org/Format/), when this exists.
 - It [concatenates](http://www.bibtex.org/Format/) values when necessary;
-- It provides the `export()` method, which returns all entries found;
+- If the first key has null as value, it interprets the key name as a value of "citation-key" instead;
+- It provides the `export()` method, which returns all entries found.
 
 ## API
 
