@@ -35,7 +35,7 @@ class Listener implements ListenerInterface
     {
         if (!$this->processed) {
             $this->processCitationKey();
-                $this->processed = true;
+            $this->processed = true;
         }
         return $this->entries;
     }
@@ -62,7 +62,7 @@ class Listener implements ListenerInterface
             case PARSER::BRACED_VALUE:
             case PARSER::QUOTED_VALUE:
                 if (null !== $text) {
-                    // save value into last key
+                    // append value into current key of last entry
                     end($this->entries);
                     $position = key($this->entries);
                     $this->entries[$position][$this->key] .= $text;
@@ -74,7 +74,7 @@ class Listener implements ListenerInterface
     {
         foreach ($this->entries as $position => $entry) {
             // the first key is always the "type"
-            // the second key MAY be a value of "citation-key" if its value is null
+            // the second key MAY be actually a "citation-key" value, but only if its value is null
             if (count($entry) > 1) {
                 $second = array_slice($entry, 1, 1, true);
                 list($key, $value) = each($second);
