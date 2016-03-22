@@ -195,7 +195,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     {
         $parser = new Parser;
 
-        $this->setExpectedException(\PHPUnit_Framework_Error_Warning::class);
+        $this->expectException(\PHPUnit_Framework_Error_Warning::class);
         $parser->parseFile(__DIR__ . '/resources/does-not-exist');
     }
 
@@ -206,7 +206,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     {
         $parser = new Parser;
 
-        $this->setExpectedException(ParseException::class);
+        $this->expectException(ParseException::class);
         $this->expectExceptionMessage($message);
         $parser->parseFile($file);
     }
