@@ -205,10 +205,7 @@ class Parser
     private function readType(string $char)
     {
         if (preg_match('/^[a-zA-Z]$/', $char)) {
-            if (empty($this->buffer)) {
-                $this->bufferOffset = $this->offset;
-            }
-            $this->buffer .= $char;
+            $this->appendToBuffer($char);
         } else {
             $this->throwExceptionIfBufferIsEmpty($char);
             $this->triggerListeners();
@@ -235,10 +232,7 @@ class Parser
     private function readKey(string $char)
     {
         if (preg_match('/^[a-zA-Z0-9\+:\-]$/', $char)) {
-            if (empty($this->buffer)) {
-                $this->bufferOffset = $this->offset;
-            }
-            $this->buffer .= $char;
+            $this->appendToBuffer($char);
         } elseif ($this->isWhitespace($char) && empty($this->buffer)) {
             // skip
         } elseif ('%' == $char && empty($this->buffer)) {
@@ -318,10 +312,7 @@ class Parser
     private function readRawValue(string $char)
     {
         if (preg_match('/^[a-zA-Z0-9]$/', $char)) {
-            if (empty($this->buffer)) {
-                $this->bufferOffset = $this->offset;
-            }
-            $this->buffer .= $char;
+            $this->appendToBuffer($char);
         } else {
             $this->throwExceptionIfBufferIsEmpty($char);
             $this->triggerListeners();
@@ -342,18 +333,15 @@ class Parser
 
     private function readDelimitedValue(string $char)
     {
-        if (empty($this->buffer)) {
-            $this->bufferOffset = $this->offset;
-        }
         if ($this->isValueEscaped) {
             $this->isValueEscaped = false;
             if ($this->valueDelimiter != $char && '\\' != $char && '%' != $char) {
-                $this->buffer .= '\\';
+                $this->appendToBuffer('\\');
             }
-            $this->buffer .= $char;
+            $this->appendToBuffer($char);
         } elseif ('}' == $this->valueDelimiter && '{' == $char) {
             $this->braceLevel++;
-            $this->buffer .= $char;
+            $this->appendToBuffer($char);
         } elseif ($this->valueDelimiter == $char) {
             if (0 == $this->braceLevel) {
                 $this->triggerListeners();
@@ -361,7 +349,7 @@ class Parser
                 $this->state = self::VALUE;
             } else {
                 $this->braceLevel--;
-                $this->buffer .= $char;
+                $this->appendToBuffer($char);
             }
         } elseif ('\\' == $char) {
             $this->isValueEscaped = true;
@@ -369,7 +357,7 @@ class Parser
             $this->stateAfterCommentIsGone = $this->state;
             $this->state = self::COMMENT;
         } else {
-            $this->buffer .= $char;
+            $this->appendToBuffer($char);
         }
     }
 
@@ -391,6 +379,14 @@ class Parser
             $this->line,
             $this->column
         ));
+    }
+
+    private function appendToBuffer(string $char)
+    {
+        if (empty($this->buffer)) {
+            $this->bufferOffset = $this->offset;
+        }
+        $this->buffer .= $char;
     }
 
     private function triggerListeners()
