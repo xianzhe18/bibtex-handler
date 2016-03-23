@@ -292,7 +292,6 @@ class Parser
             if ($this->mayConcatenateValue) {
                 $this->throwException($char);
             }
-            $this->isValueEscaped = false;
             if ('"' == $char) {
                 $this->valueDelimiter = '"';
                 $this->state = self::QUOTED_VALUE;
