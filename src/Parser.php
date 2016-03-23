@@ -287,18 +287,20 @@ class Parser
         } elseif ('%' == $char) {
             $this->stateAfterCommentIsGone = self::VALUE;
             $this->state = self::COMMENT;
-        } elseif ('"' == $char || '{' == $char) {
+        } elseif ('"' == $char) {
             // this verification is here for the same reason of the first case
             if ($this->mayConcatenateValue) {
                 $this->throwException($char);
             }
-            if ('"' == $char) {
-                $this->valueDelimiter = '"';
-                $this->state = self::QUOTED_VALUE;
-            } else {
-                $this->valueDelimiter = '}';
-                $this->state = self::BRACED_VALUE;
+            $this->valueDelimiter = '"';
+            $this->state = self::QUOTED_VALUE;
+        } elseif ('{' == $char) {
+            // this verification is here for the same reason of the first case
+            if ($this->mayConcatenateValue) {
+                $this->throwException($char);
             }
+            $this->valueDelimiter = '}';
+            $this->state = self::BRACED_VALUE;
         } elseif ('#' == $char || ',' == $char || '}' == $char) {
             if (!$this->mayConcatenateValue) {
                 // it expects some value
