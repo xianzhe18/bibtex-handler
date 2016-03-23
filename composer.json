@@ -1,6 +1,6 @@
 {
     "name": "renanbr/bibtex-parser",
-    "description": "...",
+    "description": "Yet another BibTeX parser",
     "type": "library",
     "license": "MIT",
     "authors": [
