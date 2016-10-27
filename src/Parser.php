@@ -240,6 +240,8 @@ class Parser
             // so, after comment is gone, we are still looking for a key
             $this->stateAfterCommentIsGone = self::KEY;
             $this->state = self::COMMENT;
+        } elseif ('}' == $char) {
+            $this->state = self::NONE;
         } else {
             $this->throwExceptionIfBufferIsEmpty($char);
             $this->triggerListeners();
