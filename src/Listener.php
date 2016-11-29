@@ -74,7 +74,6 @@ class Listener implements ListenerInterface
             case PARSER::RAW_VALUE:
                 $text = $this->processRawValue($text);
                 // break;
-
             case PARSER::BRACED_VALUE:
             case PARSER::QUOTED_VALUE:
                 if (null !== $text) {
@@ -83,6 +82,12 @@ class Listener implements ListenerInterface
                     $position = key($this->entries);
                     $this->entries[$position][$this->key] .= $text;
                 }
+                break;
+            case Parser::ORIG_BIBTEX:
+              end($this->entries);
+              $position = key($this->entries);
+              $this->entries[$position]['bibtex'] = $text;
+              break;
         }
     }
 

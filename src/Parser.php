@@ -23,6 +23,7 @@ class Parser
     const RAW_VALUE = 'raw_value';
     const BRACED_VALUE = 'braced_value';
     const QUOTED_VALUE = 'quoted_value';
+    const ORIG_BIBTEX = 'orig_bibtex';
 
     /**
      * @var string
@@ -140,6 +141,7 @@ class Parser
         $this->state = self::NONE;
         $this->stateAfterCommentIsGone = null;
         $this->buffer = '';
+        $this->orig_entry = '';
         $this->line = 1;
         $this->column = 1;
         $this->offset = 0;
@@ -153,6 +155,16 @@ class Parser
     {
         switch ($this->state) {
             case self::NONE:
+                if(strlen($this->orig_entry) > 0) {
+                  $context = [
+                      'state' => self::ORIG_BIBTEX,
+                      'offset' => 0,
+                      'length' => 0
+                  ];
+                  foreach ($this->listeners as $listener) {
+                      $listener->bibTexUnitFound($this->orig_entry, $context);
+                  }
+                }
                 $this->readNone($char);
                 break;
             case self::COMMENT:
@@ -181,6 +193,7 @@ class Parser
                 $this->readDelimitedValue($char);
                 break;
         }
+        $this->orig_entry .= $char;
     }
 
     private function readNone($char)
@@ -189,6 +202,7 @@ class Parser
             $this->stateAfterCommentIsGone = self::NONE;
             $this->state = self::COMMENT;
         } elseif ('@' == $char) {
+            $this->orig_entry = '';
             $this->state = self::TYPE;
         } elseif (!$this->isWhitespace($char)) {
             $this->throwException($char);
