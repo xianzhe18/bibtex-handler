@@ -1,4 +1,4 @@
-<?php declare (strict_types = 1);
+<?php
 
 /*
  * This file is part of the BibTex Parser.
@@ -84,7 +84,7 @@ class Parser
         $this->listeners[] = $listener;
     }
 
-    public function parseFile(string $file)
+    public function parseFile( $file)
     {
         $handle = fopen($file, 'r');
         try {
@@ -99,14 +99,14 @@ class Parser
         }
     }
 
-    public function parseString(string $string)
+    public function parseString( $string)
     {
         $this->reset();
         $this->parse($string);
         $this->checkFinalStatus();
     }
 
-    private function parse(string $text)
+    private function parse( $text)
     {
         $length = strlen($text);
         for ($position = 0; $position < $length; $position++) {
@@ -149,7 +149,7 @@ class Parser
         $this->braceLevel = 0;
     }
 
-    private function read(string $char)
+    private function read( $char)
     {
         switch ($this->state) {
             case self::NONE:
@@ -183,7 +183,7 @@ class Parser
         }
     }
 
-    private function readNone(string $char)
+    private function readNone( $char)
     {
         if ('%' == $char) {
             $this->stateAfterCommentIsGone = self::NONE;
@@ -195,14 +195,14 @@ class Parser
         }
     }
 
-    private function readComment(string $char)
+    private function readComment( $char)
     {
         if ("\n" == $char) {
             $this->state = $this->stateAfterCommentIsGone;
         }
     }
 
-    private function readType(string $char)
+    private function readType( $char)
     {
         if (preg_match('/^[a-zA-Z]$/', $char)) {
             $this->appendToBuffer($char);
@@ -217,7 +217,7 @@ class Parser
         }
     }
 
-    private function readPostType(string $char)
+    private function readPostType( $char)
     {
         if ('%' == $char) {
             $this->stateAfterCommentIsGone = self::POST_TYPE;
@@ -229,7 +229,7 @@ class Parser
         }
     }
 
-    private function readKey(string $char)
+    private function readKey( $char)
     {
         if (preg_match('/^[a-zA-Z0-9\+:\-]$/', $char)) {
             $this->appendToBuffer($char);
@@ -251,7 +251,7 @@ class Parser
         }
     }
 
-    private function readPostKey(string $char)
+    private function readPostKey( $char)
     {
         if ('%' == $char) {
             $this->stateAfterCommentIsGone = self::POST_KEY;
@@ -267,7 +267,7 @@ class Parser
         }
     }
 
-    private function readValue(string $char)
+    private function readValue( $char)
     {
         if (preg_match('/^[a-zA-Z0-9]$/', $char)) {
             // when $mayConcatenateValue is true it means there is another
@@ -309,7 +309,7 @@ class Parser
         }
     }
 
-    private function readRawValue(string $char)
+    private function readRawValue( $char)
     {
         if (preg_match('/^[a-zA-Z0-9]$/', $char)) {
             $this->appendToBuffer($char);
@@ -331,7 +331,7 @@ class Parser
         }
     }
 
-    private function readDelimitedValue(string $char)
+    private function readDelimitedValue( $char)
     {
         if ($this->isValueEscaped) {
             $this->isValueEscaped = false;
@@ -361,14 +361,14 @@ class Parser
         }
     }
 
-    private function throwExceptionIfBufferIsEmpty(string $char)
+    private function throwExceptionIfBufferIsEmpty( $char)
     {
         if (empty($this->buffer)) {
             $this->throwException($char);
         }
     }
 
-    private function throwException(string $char)
+    private function throwException( $char)
     {
         // avoid var_export() weird treatment for \0
         $char = "\0" == $char ? "'\\0'" : var_export($char, true);
@@ -381,7 +381,7 @@ class Parser
         ));
     }
 
-    private function appendToBuffer(string $char)
+    private function appendToBuffer( $char)
     {
         if (empty($this->buffer)) {
             $this->bufferOffset = $this->offset;
@@ -403,7 +403,7 @@ class Parser
         $this->buffer = '';
     }
 
-    private function isWhitespace(string $char)
+    private function isWhitespace( $char)
     {
         return ' ' == $char || "\t" == $char || "\n" == $char || "\r" == $char;
     }
