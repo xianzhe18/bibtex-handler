@@ -31,7 +31,7 @@ class Listener implements ListenerInterface
      */
     private $processed = false;
 
-    public function export(): array
+    public function export()
     {
         if (!$this->processed) {
             $this->processCitationKey();
