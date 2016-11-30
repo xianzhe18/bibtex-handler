@@ -286,4 +286,21 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($expected, $contexts);
     }
+
+    public function testTrailingCommaMustBeAccepted()
+    {
+        $listener = new DummyListener;
+
+        $parser = new Parser;
+        $parser->addListener($listener);
+        $parser->parseFile(__DIR__ . '/resources/trailing-comma.bib');
+
+        $expected = [
+            [Parser::TYPE, 'trailingComma'],
+            [Parser::KEY, 'foo'],
+            [Parser::RAW_VALUE, 'bar'],
+        ];
+
+        $this->assertEquals($expected, $listener->calls);
+    }
 }
