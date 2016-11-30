@@ -1,4 +1,4 @@
-<?php declare (strict_types = 1);
+<?php
 
 /*
  * This file is part of the BibTex Parser.
@@ -202,7 +202,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider invalidProvider
      */
-    public function testInvalid(string $file, string $message)
+    public function testInvalid($file, $message)
     {
         $parser = new Parser;
 
@@ -211,7 +211,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $parser->parseFile($file);
     }
 
-    public function invalidProvider(): array
+    public function invalidProvider()
     {
         $dir = __DIR__ . '/resources/invalid';
         return [

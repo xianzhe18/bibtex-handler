@@ -1,4 +1,4 @@
-<?php declare (strict_types = 1);
+<?php
 
 /*
  * This file is part of the BibTex Parser.
@@ -18,7 +18,7 @@ class DummyListener implements ListenerInterface
     public $calls = [];
     public $contexts = [];
 
-    public function bibTexUnitFound(string $text, array $context)
+    public function bibTexUnitFound($text, array $context)
     {
         $this->calls[] = [$context['state'], $text];
         $this->contexts[] = $context;
