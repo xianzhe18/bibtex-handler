@@ -303,4 +303,21 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($expected, $listener->calls);
     }
+
+    public function testTagNameWithUnderscore()
+    {
+        $listener = new DummyListener;
+
+        $parser = new Parser;
+        $parser->addListener($listener);
+        $parser->parseFile(__DIR__ . '/resources/tag-name-with-underscore.bib');
+
+        $expected = [
+            [Parser::TYPE, 'tagNameWithUnderscore'],
+            [Parser::KEY, 'foo_bar'],
+            [Parser::RAW_VALUE, 'fubar'],
+        ];
+
+        $this->assertEquals($expected, $listener->calls);
+    }
 }
