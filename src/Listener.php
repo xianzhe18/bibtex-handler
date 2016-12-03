@@ -27,6 +27,11 @@ class Listener implements ListenerInterface
     private $key;
 
     /**
+     * @var int|null
+     */
+    private $case = null;
+
+    /**
      * @var bool
      */
     private $processed = false;
@@ -34,10 +39,21 @@ class Listener implements ListenerInterface
     public function export()
     {
         if (!$this->processed) {
-            $this->processCitationKey();
+            foreach ($this->entries as &$entry) {
+                $this->processCitationKey($entry);
+                $this->processTagNameCase($entry);
+            }
             $this->processed = true;
         }
         return $this->entries;
+    }
+
+    /**
+     * @param int|null $case CASE_LOWER, CASE_UPPER or null (no traitement)
+     */
+    public function setTagNameCase($case)
+    {
+        $this->case = $case;
     }
 
     public function bibTexUnitFound($text, array $context)
@@ -70,22 +86,28 @@ class Listener implements ListenerInterface
         }
     }
 
-    private function processCitationKey()
+    private function processCitationKey(array &$entry)
     {
-        foreach ($this->entries as $position => $entry) {
-            // the first key is always the "type"
-            // the second key MAY be actually a "citation-key" value, but only if its value is null
-            if (count($entry) > 1) {
-                $second = array_slice($entry, 1, 1, true);
-                list($key, $value) = each($second);
-                if (null === $value) {
-                    // once the second key value is empty, it flips the key name
-                    // as value of "citation-key"
-                    $this->entries[$position]['citation-key'] = $key;
-                    unset($this->entries[$position][$key]);
-                }
+        // the first key is always the "type"
+        // the second key MAY be actually a "citation-key" value, but only if its value is null
+        if (count($entry) > 1) {
+            $second = array_slice($entry, 1, 1, true);
+            list($key, $value) = each($second);
+            if (null === $value) {
+                // once the second key value is empty, it flips the key name
+                // as value of "citation-key"
+                $entry['citation-key'] = $key;
+                unset($entry[$key]);
             }
         }
+    }
+
+    private function processTagNameCase(array &$entry)
+    {
+        if (null === $this->case) {
+            return;
+        }
+        $entry = array_change_key_case($entry, $this->case);
     }
 
     private function processRawValue($value)
