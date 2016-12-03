@@ -165,4 +165,48 @@ class ListenerTest extends \PHPUnit_Framework_TestCase
         $actual = $listener->export();
         $this->assertEquals($expected, $actual);
     }
+
+    public function testTagNameCase()
+    {
+        $listenerStandard = new Listener;
+
+        $listenerUpper = new Listener;
+        $listenerUpper->setTagNameCase(\CASE_UPPER);
+
+        $listenerLower = new Listener;
+        $listenerLower->setTagNameCase(\CASE_LOWER);
+
+        $parser = new Parser;
+        $parser->addListener($listenerStandard);
+        $parser->addListener($listenerUpper);
+        $parser->addListener($listenerLower);
+        $parser->parseFile(__DIR__ . '/resources/tag-name-uppercased.bib');
+
+        $expectedStandard = [[
+            'type' => 'tagNameUppercased',
+            'FoO' => 'bAr',
+        ]];
+        $actualStandard = $listenerStandard->export();
+        ksort($expectedStandard);
+        ksort($actualStandard);
+        $this->assertEquals($expectedStandard, $actualStandard);
+
+        $expectedUpper = [[
+            'TYPE' => 'tagNameUppercased',
+            'FOO' => 'bAr',
+        ]];
+        $actualUpper = $listenerUpper->export();
+        ksort($expectedUpper);
+        ksort($actualUpper);
+        $this->assertEquals($expectedUpper, $actualUpper);
+
+        $expectedLower = [[
+            'type' => 'tagNameUppercased',
+            'foo' => 'bAr',
+        ]];
+        $actualLower = $listenerLower->export();
+        ksort($expectedLower);
+        ksort($actualLower);
+        $this->assertEquals($expectedLower, $actualLower);
+    }
 }
