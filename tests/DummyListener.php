@@ -34,4 +34,15 @@ class DummyListener implements ListenerInterface
         }
         return $contexts;
     }
+
+    public function getCallsFiltered(array $states)
+    {
+        $calls = $this->calls;
+        foreach ($calls as $key => $call) {
+            if (!in_array($call[0], $states)) {
+                unset($calls[$key]);
+            }
+        }
+        return $calls;
+    }
 }

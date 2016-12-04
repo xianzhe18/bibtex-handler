@@ -16,6 +16,14 @@ use RenanBr\BibTexParser\ParseException;
 
 class ParserTest extends \PHPUnit_Framework_TestCase
 {
+    private $basicStates = [
+        Parser::TYPE,
+        Parser::KEY,
+        Parser::RAW_VALUE,
+        Parser::BRACED_VALUE,
+        Parser::QUOTED_VALUE,
+    ];
+
     public function testBasic()
     {
         $listener = new DummyListener;
@@ -30,7 +38,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
             [Parser::RAW_VALUE, 'bar'],
         ];
 
-        $this->assertEquals($expected, $listener->calls);
+        $this->assertEquals($expected, $listener->getCallsFiltered($this->basicStates));
     }
 
     public function testKeyWithoutValue()
@@ -47,7 +55,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
             [Parser::KEY, 'bar'],
         ];
 
-        $this->assertEquals($expected, $listener->calls);
+        $this->assertEquals($expected, $listener->getCallsFiltered($this->basicStates));
     }
 
     public function testValueReading()
@@ -74,7 +82,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
             [Parser::QUOTED_VALUE, ''],
         ];
 
-        $this->assertEquals($expected, $listener->calls);
+        $this->assertEquals($expected, $listener->getCallsFiltered($this->basicStates));
     }
 
     public function testValueScaping()
@@ -93,7 +101,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
             [Parser::QUOTED_VALUE, 'the } " \\ % quoted'],
         ];
 
-        $this->assertEquals($expected, $listener->calls);
+        $this->assertEquals($expected, $listener->getCallsFiltered($this->basicStates));
     }
 
     public function testMultipleValues()
@@ -125,7 +133,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
             [Parser::BRACED_VALUE, 'braced'],
         ];
 
-        $this->assertEquals($expected, $listener->calls);
+        $this->assertEquals($expected, $listener->getCallsFiltered($this->basicStates));
     }
 
     public function testCommentIgnoring()
@@ -148,7 +156,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
             [Parser::RAW_VALUE, 'commentAfterRaw'],
         ];
 
-        $this->assertEquals($expected, $listener->calls);
+        $this->assertEquals($expected, $listener->getCallsFiltered($this->basicStates));
     }
 
     public function testValueSlashes()
@@ -167,7 +175,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
             [Parser::QUOTED_VALUE, '\\}\\"\\%\\'],
         ];
 
-        $this->assertEquals($expected, $listener->calls);
+        $this->assertEquals($expected, $listener->getCallsFiltered($this->basicStates));
     }
 
     public function testValueNestedBraces()
@@ -188,7 +196,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
             [Parser::BRACED_VALUE, 'before{}}after'],
         ];
 
-        $this->assertEquals($expected, $listener->calls);
+        $this->assertEquals($expected, $listener->getCallsFiltered($this->basicStates));
     }
 
     public function testFileDoesNotExist()
@@ -241,7 +249,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
             [Parser::RAW_VALUE, 'bar'],
         ];
 
-        $this->assertEquals($expected, $listener->calls);
+        $this->assertEquals($expected, $listener->getCallsFiltered($this->basicStates));
     }
 
     public function testBasicOffsetContext()
@@ -301,7 +309,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
             [Parser::RAW_VALUE, 'bar'],
         ];
 
-        $this->assertEquals($expected, $listener->calls);
+        $this->assertEquals($expected, $listener->getCallsFiltered($this->basicStates));
     }
 
     public function testTagNameWithUnderscore()
@@ -318,6 +326,6 @@ class ParserTest extends \PHPUnit_Framework_TestCase
             [Parser::RAW_VALUE, 'fubar'],
         ];
 
-        $this->assertEquals($expected, $listener->calls);
+        $this->assertEquals($expected, $listener->getCallsFiltered($this->basicStates));
     }
 }
