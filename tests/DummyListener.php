@@ -16,33 +16,13 @@ use RenanBr\BibTexParser\ListenerInterface;
 class DummyListener implements ListenerInterface
 {
     public $calls = [];
-    public $contexts = [];
 
     public function bibTexUnitFound($text, array $context)
     {
-        $this->calls[] = [$context['state'], $text];
-        $this->contexts[] = $context;
-    }
-
-    public function getContextsFiltered(array $keys)
-    {
-        $contexts = $this->contexts;
-        foreach ($contexts as $key => $context) {
-            $contexts[$key] = array_filter($context, function ($key) use ($keys) {
-                return in_array($key, $keys);
-            }, \ARRAY_FILTER_USE_KEY);
-        }
-        return $contexts;
-    }
-
-    public function getCallsFiltered(array $states)
-    {
-        $calls = $this->calls;
-        foreach ($calls as $key => $call) {
-            if (!in_array($call[0], $states)) {
-                unset($calls[$key]);
-            }
-        }
-        return $calls;
+        $this->calls[] = [
+            'state' => $context['state'],
+            'text' => $text,
+            'context' => $context,
+        ];
     }
 }
