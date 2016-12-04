@@ -24,7 +24,7 @@ class DummyListener implements ListenerInterface
         $this->contexts[] = $context;
     }
 
-    public function filterContexts(array $keys)
+    public function getContextsFiltered(array $keys)
     {
         $contexts = $this->contexts;
         foreach ($contexts as $key => $context) {

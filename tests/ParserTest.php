@@ -258,7 +258,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
             ['state' => Parser::RAW_VALUE, 'offset' => 19, 'length' => 3],
         ];
 
-        $contexts = $listener->filterContexts(['state', 'offset', 'length']);
+        $contexts = $listener->getContextsFiltered(['state', 'offset', 'length']);
 
         $this->assertEquals($expected, $contexts);
     }
@@ -282,7 +282,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
             ['state' => Parser::QUOTED_VALUE, 'offset' => 69, 'length' => 21],
         ];
 
-        $contexts = $listener->filterContexts(['state', 'offset', 'length']);
+        $contexts = $listener->getContextsFiltered(['state', 'offset', 'length']);
 
         $this->assertEquals($expected, $contexts);
     }
