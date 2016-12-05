@@ -20,9 +20,8 @@ class DummyListener implements ListenerInterface
     public function bibTexUnitFound($text, array $context)
     {
         $this->calls[] = [
-            'state' => $context['state'],
-            'text' => $text,
-            'context' => $context,
+            $text,
+            $context,
         ];
     }
 }
