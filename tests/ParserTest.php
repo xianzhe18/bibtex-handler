@@ -16,6 +16,14 @@ use RenanBr\BibTexParser\ParseException;
 
 class ParserTest extends \PHPUnit_Framework_TestCase
 {
+    public function testFileDoesNotExist()
+    {
+        $parser = new Parser;
+
+        $this->expectException(\PHPUnit_Framework_Error_Warning::class);
+        $parser->parseFile(__DIR__ . '/resources/does-not-exist');
+    }
+
     public function testBasic()
     {
         $listener = new DummyListener;
@@ -24,19 +32,32 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $parser->addListener($listener);
         $parser->parseFile(__DIR__ . '/resources/basic.bib');
 
-        $this->assertCount(3, $listener->calls);
+        $this->assertCount(4, $listener->calls);
 
-        $call = $listener->calls[0];
-        $this->assertSame(Parser::TYPE, $call['state']);
-        $this->assertSame('basic', $call['text']);
+        list($text, $context) = $listener->calls[0];
+        $this->assertSame(Parser::TYPE, $context['state']);
+        $this->assertSame('basic', $text);
+        $this->assertSame(1, $context['offset']);
+        $this->assertSame(5, $context['length']);
 
-        $call = $listener->calls[1];
-        $this->assertSame(Parser::KEY, $call['state']);
-        $this->assertSame('foo', $call['text']);
+        list($text, $context) = $listener->calls[1];
+        $this->assertSame(Parser::KEY, $context['state']);
+        $this->assertSame('foo', $text);
+        $this->assertSame(13, $context['offset']);
+        $this->assertSame(3, $context['length']);
 
-        $call = $listener->calls[2];
-        $this->assertSame(Parser::RAW_VALUE, $call['state']);
-        $this->assertSame('bar', $call['text']);
+        list($text, $context) = $listener->calls[2];
+        $this->assertSame(Parser::RAW_VALUE, $context['state']);
+        $this->assertSame('bar', $text);
+        $this->assertSame(19, $context['offset']);
+        $this->assertSame(3, $context['length']);
+
+        list($text, $context) = $listener->calls[3];
+        $this->assertSame(Parser::ORIGINAL_ENTRY, $context['state']);
+        $original = trim(file_get_contents(__DIR__ . '/resources/basic.bib'));
+        $this->assertSame($original, $text);
+        $this->assertSame(0, $context['offset']);
+        $this->assertSame(24, $context['length']);
     }
 
     public function testKeyWithoutValue()
@@ -47,19 +68,24 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $parser->addListener($listener);
         $parser->parseFile(__DIR__ . '/resources/no-value.bib');
 
-        $this->assertCount(3, $listener->calls);
+        $this->assertCount(4, $listener->calls);
 
-        $call = $listener->calls[0];
-        $this->assertSame(Parser::TYPE, $call['state']);
-        $this->assertSame('noValue', $call['text']);
+        list($text, $context) = $listener->calls[0];
+        $this->assertSame(Parser::TYPE, $context['state']);
+        $this->assertSame('noValue', $text);
 
-        $call = $listener->calls[1];
-        $this->assertSame(Parser::KEY, $call['state']);
-        $this->assertSame('foo', $call['text']);
+        list($text, $context) = $listener->calls[1];
+        $this->assertSame(Parser::KEY, $context['state']);
+        $this->assertSame('foo', $text);
 
-        $call = $listener->calls[2];
-        $this->assertSame(Parser::KEY, $call['state']);
-        $this->assertSame('bar', $call['text']);
+        list($text, $context) = $listener->calls[2];
+        $this->assertSame(Parser::KEY, $context['state']);
+        $this->assertSame('bar', $text);
+
+        list($text, $context) = $listener->calls[3];
+        $this->assertSame(Parser::ORIGINAL_ENTRY, $context['state']);
+        $original = trim(file_get_contents(__DIR__ . '/resources/no-value.bib'));
+        $this->assertSame($original, $text);
     }
 
     public function testValueReading()
@@ -70,59 +96,64 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $parser->addListener($listener);
         $parser->parseFile(__DIR__ . '/resources/values-basic.bib');
 
-        $this->assertCount(13, $listener->calls);
+        $this->assertCount(14, $listener->calls);
 
-        $call = $listener->calls[0];
-        $this->assertSame(Parser::TYPE, $call['state']);
-        $this->assertSame('valuesBasic', $call['text']);
+        list($text, $context) = $listener->calls[0];
+        $this->assertSame(Parser::TYPE, $context['state']);
+        $this->assertSame('valuesBasic', $text);
 
-        $call = $listener->calls[1];
-        $this->assertSame(Parser::KEY, $call['state']);
-        $this->assertSame('kNull', $call['text']);
+        list($text, $context) = $listener->calls[1];
+        $this->assertSame(Parser::KEY, $context['state']);
+        $this->assertSame('kNull', $text);
 
-        $call = $listener->calls[2];
-        $this->assertSame(Parser::KEY, $call['state']);
-        $this->assertSame('kStillNull', $call['text']);
+        list($text, $context) = $listener->calls[2];
+        $this->assertSame(Parser::KEY, $context['state']);
+        $this->assertSame('kStillNull', $text);
 
-        $call = $listener->calls[3];
-        $this->assertSame(Parser::KEY, $call['state']);
-        $this->assertSame('kRaw', $call['text']);
+        list($text, $context) = $listener->calls[3];
+        $this->assertSame(Parser::KEY, $context['state']);
+        $this->assertSame('kRaw', $text);
 
-        $call = $listener->calls[4];
-        $this->assertSame(Parser::RAW_VALUE, $call['state']);
-        $this->assertSame('raw', $call['text']);
+        list($text, $context) = $listener->calls[4];
+        $this->assertSame(Parser::RAW_VALUE, $context['state']);
+        $this->assertSame('raw', $text);
 
-        $call = $listener->calls[5];
-        $this->assertSame(Parser::KEY, $call['state']);
-        $this->assertSame('kBraced', $call['text']);
+        list($text, $context) = $listener->calls[5];
+        $this->assertSame(Parser::KEY, $context['state']);
+        $this->assertSame('kBraced', $text);
 
-        $call = $listener->calls[6];
-        $this->assertSame(Parser::BRACED_VALUE, $call['state']);
-        $this->assertSame(' braced value ', $call['text']);
+        list($text, $context) = $listener->calls[6];
+        $this->assertSame(Parser::BRACED_VALUE, $context['state']);
+        $this->assertSame(' braced value ', $text);
 
-        $call = $listener->calls[7];
-        $this->assertSame(Parser::KEY, $call['state']);
-        $this->assertSame('kBracedEmpty', $call['text']);
+        list($text, $context) = $listener->calls[7];
+        $this->assertSame(Parser::KEY, $context['state']);
+        $this->assertSame('kBracedEmpty', $text);
 
-        $call = $listener->calls[8];
-        $this->assertSame(Parser::BRACED_VALUE, $call['state']);
-        $this->assertSame('', $call['text']);
+        list($text, $context) = $listener->calls[8];
+        $this->assertSame(Parser::BRACED_VALUE, $context['state']);
+        $this->assertSame('', $text);
 
-        $call = $listener->calls[9];
-        $this->assertSame(Parser::KEY, $call['state']);
-        $this->assertSame('kQuoted', $call['text']);
+        list($text, $context) = $listener->calls[9];
+        $this->assertSame(Parser::KEY, $context['state']);
+        $this->assertSame('kQuoted', $text);
 
-        $call = $listener->calls[10];
-        $this->assertSame(Parser::QUOTED_VALUE, $call['state']);
-        $this->assertSame(' quoted value ', $call['text']);
+        list($text, $context) = $listener->calls[10];
+        $this->assertSame(Parser::QUOTED_VALUE, $context['state']);
+        $this->assertSame(' quoted value ', $text);
 
-        $call = $listener->calls[11];
-        $this->assertSame(Parser::KEY, $call['state']);
-        $this->assertSame('kQuotedEmpty', $call['text']);
+        list($text, $context) = $listener->calls[11];
+        $this->assertSame(Parser::KEY, $context['state']);
+        $this->assertSame('kQuotedEmpty', $text);
 
-        $call = $listener->calls[12];
-        $this->assertSame(Parser::QUOTED_VALUE, $call['state']);
-        $this->assertSame('', $call['text']);
+        list($text, $context) = $listener->calls[12];
+        $this->assertSame(Parser::QUOTED_VALUE, $context['state']);
+        $this->assertSame('', $text);
+
+        list($text, $context) = $listener->calls[13];
+        $this->assertSame(Parser::ORIGINAL_ENTRY, $context['state']);
+        $original = trim(file_get_contents(__DIR__ . '/resources/values-basic.bib'));
+        $this->assertSame($original, $text);
     }
 
     public function testValueScaping()
@@ -133,27 +164,52 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $parser->addListener($listener);
         $parser->parseFile(__DIR__ . '/resources/values-escaped.bib');
 
-        $this->assertCount(5, $listener->calls);
+        $this->assertCount(6, $listener->calls);
 
-        $call = $listener->calls[0];
-        $this->assertSame(Parser::TYPE, $call['state']);
-        $this->assertSame('valuesEscaped', $call['text']);
+        // we test also the "offset" and "length" because this file contains
+        // values with escaped chars, which means that the value length in the
+        // file is not equal to the triggered one
 
-        $call = $listener->calls[1];
-        $this->assertSame(Parser::KEY, $call['state']);
-        $this->assertSame('braced', $call['text']);
+        list($text, $context) = $listener->calls[0];
+        $this->assertSame(Parser::TYPE, $context['state']);
+        $this->assertSame('valuesEscaped', $text);
+        $this->assertSame(1, $context['offset']);
+        $this->assertSame(13, $context['length']);
 
-        $call = $listener->calls[2];
-        $this->assertSame(Parser::BRACED_VALUE, $call['state']);
-        $this->assertSame('the } " \\ % braced', $call['text']);
+        list($text, $context) = $listener->calls[1];
+        $this->assertSame(Parser::KEY, $context['state']);
+        $this->assertSame('braced', $text);
+        $this->assertSame(21, $context['offset']);
+        $this->assertSame(6, $context['length']);
 
-        $call = $listener->calls[3];
-        $this->assertSame(Parser::KEY, $call['state']);
-        $this->assertSame('quoted', $call['text']);
+        list($text, $context) = $listener->calls[2];
+        $this->assertSame(Parser::BRACED_VALUE, $context['state']);
+        // here we have two scaped characters ("}" and "%"), then the length
+        // returned in the context (21) is bigger than the $text value (18)
+        $this->assertSame('the } " \\ % braced', $text);
+        $this->assertSame(31, $context['offset']);
+        $this->assertSame(21, $context['length']);
 
-        $call = $listener->calls[4];
-        $this->assertSame(Parser::QUOTED_VALUE, $call['state']);
-        $this->assertSame('the } " \\ % quoted', $call['text']);
+        list($text, $context) = $listener->calls[3];
+        $this->assertSame(Parser::KEY, $context['state']);
+        $this->assertSame('quoted', $text);
+        $this->assertSame(59, $context['offset']);
+        $this->assertSame(6, $context['length']);
+
+        list($text, $context) = $listener->calls[4];
+        $this->assertSame(Parser::QUOTED_VALUE, $context['state']);
+        // here we have two scaped characters ("}" and "%"), then the length
+        // returned in the context (21) is bigger than the $text value (18)
+        $this->assertSame('the } " \\ % quoted', $text);
+        $this->assertSame(69, $context['offset']);
+        $this->assertSame(21, $context['length']);
+
+        list($text, $context) = $listener->calls[5];
+        $this->assertSame(Parser::ORIGINAL_ENTRY, $context['state']);
+        $original = trim(file_get_contents(__DIR__ . '/resources/values-escaped.bib'));
+        $this->assertSame($original, $text);
+        $this->assertSame(0, $context['offset']);
+        $this->assertSame(93, $context['length']);
     }
 
     public function testMultipleValues()
@@ -164,79 +220,84 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $parser->addListener($listener);
         $parser->parseFile(__DIR__ . '/resources/values-multiple.bib');
 
-        $this->assertCount(18, $listener->calls);
+        $this->assertCount(19, $listener->calls);
 
-        $call = $listener->calls[0];
-        $this->assertSame(Parser::TYPE, $call['state']);
-        $this->assertSame('multipleValues', $call['text']);
+        list($text, $context) = $listener->calls[0];
+        $this->assertSame(Parser::TYPE, $context['state']);
+        $this->assertSame('multipleValues', $text);
 
-        $call = $listener->calls[1];
-        $this->assertSame(Parser::KEY, $call['state']);
-        $this->assertSame('raw', $call['text']);
+        list($text, $context) = $listener->calls[1];
+        $this->assertSame(Parser::KEY, $context['state']);
+        $this->assertSame('raw', $text);
 
-        $call = $listener->calls[2];
-        $this->assertSame(Parser::RAW_VALUE, $call['state']);
-        $this->assertSame('rawA', $call['text']);
+        list($text, $context) = $listener->calls[2];
+        $this->assertSame(Parser::RAW_VALUE, $context['state']);
+        $this->assertSame('rawA', $text);
 
-        $call = $listener->calls[3];
-        $this->assertSame(Parser::RAW_VALUE, $call['state']);
-        $this->assertSame('rawB', $call['text']);
+        list($text, $context) = $listener->calls[3];
+        $this->assertSame(Parser::RAW_VALUE, $context['state']);
+        $this->assertSame('rawB', $text);
 
-        $call = $listener->calls[4];
-        $this->assertSame(Parser::KEY, $call['state']);
-        $this->assertSame('quoted', $call['text']);
+        list($text, $context) = $listener->calls[4];
+        $this->assertSame(Parser::KEY, $context['state']);
+        $this->assertSame('quoted', $text);
 
-        $call = $listener->calls[5];
-        $this->assertSame(Parser::QUOTED_VALUE, $call['state']);
-        $this->assertSame('quoted a', $call['text']);
+        list($text, $context) = $listener->calls[5];
+        $this->assertSame(Parser::QUOTED_VALUE, $context['state']);
+        $this->assertSame('quoted a', $text);
 
-        $call = $listener->calls[6];
-        $this->assertSame(Parser::QUOTED_VALUE, $call['state']);
-        $this->assertSame('quoted b', $call['text']);
+        list($text, $context) = $listener->calls[6];
+        $this->assertSame(Parser::QUOTED_VALUE, $context['state']);
+        $this->assertSame('quoted b', $text);
 
-        $call = $listener->calls[7];
-        $this->assertSame(Parser::KEY, $call['state']);
-        $this->assertSame('braced', $call['text']);
+        list($text, $context) = $listener->calls[7];
+        $this->assertSame(Parser::KEY, $context['state']);
+        $this->assertSame('braced', $text);
 
-        $call = $listener->calls[8];
-        $this->assertSame(Parser::BRACED_VALUE, $call['state']);
-        $this->assertSame('braced a', $call['text']);
+        list($text, $context) = $listener->calls[8];
+        $this->assertSame(Parser::BRACED_VALUE, $context['state']);
+        $this->assertSame('braced a', $text);
 
-        $call = $listener->calls[9];
-        $this->assertSame(Parser::BRACED_VALUE, $call['state']);
-        $this->assertSame('braced b', $call['text']);
+        list($text, $context) = $listener->calls[9];
+        $this->assertSame(Parser::BRACED_VALUE, $context['state']);
+        $this->assertSame('braced b', $text);
 
-        $call = $listener->calls[10];
-        $this->assertSame(Parser::KEY, $call['state']);
-        $this->assertSame('misc', $call['text']);
+        list($text, $context) = $listener->calls[10];
+        $this->assertSame(Parser::KEY, $context['state']);
+        $this->assertSame('misc', $text);
 
-        $call = $listener->calls[11];
-        $this->assertSame(Parser::QUOTED_VALUE, $call['state']);
-        $this->assertSame('quoted', $call['text']);
+        list($text, $context) = $listener->calls[11];
+        $this->assertSame(Parser::QUOTED_VALUE, $context['state']);
+        $this->assertSame('quoted', $text);
 
-        $call = $listener->calls[12];
-        $this->assertSame(Parser::BRACED_VALUE, $call['state']);
-        $this->assertSame('braced', $call['text']);
+        list($text, $context) = $listener->calls[12];
+        $this->assertSame(Parser::BRACED_VALUE, $context['state']);
+        $this->assertSame('braced', $text);
 
-        $call = $listener->calls[13];
-        $this->assertSame(Parser::RAW_VALUE, $call['state']);
-        $this->assertSame('raw', $call['text']);
+        list($text, $context) = $listener->calls[13];
+        $this->assertSame(Parser::RAW_VALUE, $context['state']);
+        $this->assertSame('raw', $text);
 
-        $call = $listener->calls[14];
-        $this->assertSame(Parser::KEY, $call['state']);
-        $this->assertSame('noSpace', $call['text']);
+        list($text, $context) = $listener->calls[14];
+        $this->assertSame(Parser::KEY, $context['state']);
+        $this->assertSame('noSpace', $text);
 
-        $call = $listener->calls[15];
-        $this->assertSame(Parser::RAW_VALUE, $call['state']);
-        $this->assertSame('raw', $call['text']);
+        list($text, $context) = $listener->calls[15];
+        $this->assertSame(Parser::RAW_VALUE, $context['state']);
+        $this->assertSame('raw', $text);
 
-        $call = $listener->calls[16];
-        $this->assertSame(Parser::QUOTED_VALUE, $call['state']);
-        $this->assertSame('quoted', $call['text']);
+        list($text, $context) = $listener->calls[16];
+        $this->assertSame(Parser::QUOTED_VALUE, $context['state']);
+        $this->assertSame('quoted', $text);
 
-        $call = $listener->calls[17];
-        $this->assertSame(Parser::BRACED_VALUE, $call['state']);
-        $this->assertSame('braced', $call['text']);
+        list($text, $context) = $listener->calls[17];
+        $this->assertSame(Parser::BRACED_VALUE, $context['state']);
+        $this->assertSame('braced', $text);
+
+        list($text, $context) = $listener->calls[18];
+        $this->assertSame(Parser::ORIGINAL_ENTRY, $context['state']);
+        $original = trim(file_get_contents(__DIR__ . '/resources/values-multiple.bib'));
+        $this->assertSame($original, $text);
     }
 
     public function testCommentIgnoring()
@@ -247,43 +308,53 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $parser->addListener($listener);
         $parser->parseFile(__DIR__ . '/resources/comment.bib');
 
-        $this->assertCount(9, $listener->calls);
+        $this->assertCount(10, $listener->calls);
 
-        $call = $listener->calls[0];
-        $this->assertSame(Parser::TYPE, $call['state']);
-        $this->assertSame('comment', $call['text']);
+        list($text, $context) = $listener->calls[0];
+        $this->assertSame(Parser::TYPE, $context['state']);
+        $this->assertSame('comment', $text);
 
-        $call = $listener->calls[1];
-        $this->assertSame(Parser::KEY, $call['state']);
-        $this->assertSame('key', $call['text']);
+        list($text, $context) = $listener->calls[1];
+        $this->assertSame(Parser::KEY, $context['state']);
+        $this->assertSame('key', $text);
 
-        $call = $listener->calls[2];
-        $this->assertSame(Parser::RAW_VALUE, $call['state']);
-        $this->assertSame('value', $call['text']);
+        list($text, $context) = $listener->calls[2];
+        $this->assertSame(Parser::RAW_VALUE, $context['state']);
+        $this->assertSame('value', $text);
 
-        $call = $listener->calls[3];
-        $this->assertSame(Parser::KEY, $call['state']);
-        $this->assertSame('still', $call['text']);
+        list($text, $context) = $listener->calls[3];
+        $this->assertSame(Parser::KEY, $context['state']);
+        $this->assertSame('still', $text);
 
-        $call = $listener->calls[4];
-        $this->assertSame(Parser::RAW_VALUE, $call['state']);
-        $this->assertSame('here', $call['text']);
+        list($text, $context) = $listener->calls[4];
+        $this->assertSame(Parser::RAW_VALUE, $context['state']);
+        $this->assertSame('here', $text);
 
-        $call = $listener->calls[5];
-        $this->assertSame(Parser::KEY, $call['state']);
-        $this->assertSame('insideQuoted', $call['text']);
+        list($text, $context) = $listener->calls[5];
+        $this->assertSame(Parser::KEY, $context['state']);
+        $this->assertSame('insideQuoted', $text);
 
-        $call = $listener->calls[6];
-        $this->assertSame(Parser::QUOTED_VALUE, $call['state']);
-        $this->assertSame('before--after', $call['text']);
+        list($text, $context) = $listener->calls[6];
+        $this->assertSame(Parser::QUOTED_VALUE, $context['state']);
+        $this->assertSame('before--after', $text);
 
-        $call = $listener->calls[7];
-        $this->assertSame(Parser::KEY, $call['state']);
-        $this->assertSame('commentAfterKey', $call['text']);
+        list($text, $context) = $listener->calls[7];
+        $this->assertSame(Parser::KEY, $context['state']);
+        $this->assertSame('commentAfterKey', $text);
 
-        $call = $listener->calls[8];
-        $this->assertSame(Parser::RAW_VALUE, $call['state']);
-        $this->assertSame('commentAfterRaw', $call['text']);
+        list($text, $context) = $listener->calls[8];
+        $this->assertSame(Parser::RAW_VALUE, $context['state']);
+        $this->assertSame('commentAfterRaw', $text);
+
+        list($text, $context) = $listener->calls[9];
+        $this->assertSame(Parser::ORIGINAL_ENTRY, $context['state']);
+        // the file contains comments in the first line and a trailing comment
+        // character at the end, the code bellow remove both
+        $original = file(__DIR__ . '/resources/comment.bib');
+        unset($original[0]);
+        $original = rtrim(trim(implode('', $original)), '%');
+        // and then run the comparison
+        $this->assertSame($original, $text);
     }
 
     public function testValueSlashes()
@@ -294,27 +365,32 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $parser->addListener($listener);
         $parser->parseFile(__DIR__ . '/resources/values-slashes.bib');
 
-        $this->assertCount(5, $listener->calls);
+        $this->assertCount(6, $listener->calls);
 
-        $call = $listener->calls[0];
-        $this->assertSame(Parser::TYPE, $call['state']);
-        $this->assertSame('valuesSlashes', $call['text']);
+        list($text, $context) = $listener->calls[0];
+        $this->assertSame(Parser::TYPE, $context['state']);
+        $this->assertSame('valuesSlashes', $text);
 
-        $call = $listener->calls[1];
-        $this->assertSame(Parser::KEY, $call['state']);
-        $this->assertSame('braced', $call['text']);
+        list($text, $context) = $listener->calls[1];
+        $this->assertSame(Parser::KEY, $context['state']);
+        $this->assertSame('braced', $text);
 
-        $call = $listener->calls[2];
-        $this->assertSame(Parser::BRACED_VALUE, $call['state']);
-        $this->assertSame('\\}\\"\\%\\', $call['text']);
+        list($text, $context) = $listener->calls[2];
+        $this->assertSame(Parser::BRACED_VALUE, $context['state']);
+        $this->assertSame('\\}\\"\\%\\', $text);
 
-        $call = $listener->calls[3];
-        $this->assertSame(Parser::KEY, $call['state']);
-        $this->assertSame('quoted', $call['text']);
+        list($text, $context) = $listener->calls[3];
+        $this->assertSame(Parser::KEY, $context['state']);
+        $this->assertSame('quoted', $text);
 
-        $call = $listener->calls[4];
-        $this->assertSame(Parser::QUOTED_VALUE, $call['state']);
-        $this->assertSame('\\}\\"\\%\\', $call['text']);
+        list($text, $context) = $listener->calls[4];
+        $this->assertSame(Parser::QUOTED_VALUE, $context['state']);
+        $this->assertSame('\\}\\"\\%\\', $text);
+
+        list($text, $context) = $listener->calls[5];
+        $this->assertSame(Parser::ORIGINAL_ENTRY, $context['state']);
+        $original = trim(file_get_contents(__DIR__ . '/resources/values-slashes.bib'));
+        $this->assertSame($original, $text);
     }
 
     public function testValueNestedBraces()
@@ -325,49 +401,185 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $parser->addListener($listener);
         $parser->parseFile(__DIR__ . '/resources/values-nested-braces.bib');
 
-        $this->assertCount(7, $listener->calls);
+        $this->assertCount(8, $listener->calls);
 
-        $call = $listener->calls[0];
-        $this->assertSame(Parser::TYPE, $call['state']);
-        $this->assertSame('valuesBraces', $call['text']);
+        list($text, $context) = $listener->calls[0];
+        $this->assertSame(Parser::TYPE, $context['state']);
+        $this->assertSame('valuesBraces', $text);
 
-        $call = $listener->calls[1];
-        $this->assertSame(Parser::KEY, $call['state']);
-        $this->assertSame('link', $call['text']);
+        list($text, $context) = $listener->calls[1];
+        $this->assertSame(Parser::KEY, $context['state']);
+        $this->assertSame('link', $text);
 
-        $call = $listener->calls[2];
-        $this->assertSame(Parser::BRACED_VALUE, $call['state']);
-        $this->assertSame('\url{https://github.com}', $call['text']);
+        list($text, $context) = $listener->calls[2];
+        $this->assertSame(Parser::BRACED_VALUE, $context['state']);
+        $this->assertSame('\url{https://github.com}', $text);
 
-        $call = $listener->calls[3];
-        $this->assertSame(Parser::KEY, $call['state']);
-        $this->assertSame('twoLevels', $call['text']);
+        list($text, $context) = $listener->calls[3];
+        $this->assertSame(Parser::KEY, $context['state']);
+        $this->assertSame('twoLevels', $text);
 
-        $call = $listener->calls[4];
-        $this->assertSame(Parser::BRACED_VALUE, $call['state']);
-        $this->assertSame('a{b{c}d}e', $call['text']);
+        list($text, $context) = $listener->calls[4];
+        $this->assertSame(Parser::BRACED_VALUE, $context['state']);
+        $this->assertSame('a{b{c}d}e', $text);
 
-        $call = $listener->calls[5];
-        $this->assertSame(Parser::KEY, $call['state']);
-        $this->assertSame('escapedBrace', $call['text']);
+        list($text, $context) = $listener->calls[5];
+        $this->assertSame(Parser::KEY, $context['state']);
+        $this->assertSame('escapedBrace', $text);
 
-        $call = $listener->calls[6];
-        $this->assertSame(Parser::BRACED_VALUE, $call['state']);
-        $this->assertSame('before{}}after', $call['text']);
+        list($text, $context) = $listener->calls[6];
+        $this->assertSame(Parser::BRACED_VALUE, $context['state']);
+        $this->assertSame('before{}}after', $text);
+
+        list($text, $context) = $listener->calls[7];
+        $this->assertSame(Parser::ORIGINAL_ENTRY, $context['state']);
+        $original = trim(file_get_contents(__DIR__ . '/resources/values-nested-braces.bib'));
+        $this->assertSame($original, $text);
     }
 
-    public function testFileDoesNotExist()
+    public function testTrailingComma()
     {
-        $parser = new Parser;
+        $listener = new DummyListener;
 
-        $this->expectException(\PHPUnit_Framework_Error_Warning::class);
-        $parser->parseFile(__DIR__ . '/resources/does-not-exist');
+        $parser = new Parser;
+        $parser->addListener($listener);
+        $parser->parseFile(__DIR__ . '/resources/trailing-comma.bib');
+
+        $this->assertCount(4, $listener->calls);
+
+        list($text, $context) = $listener->calls[0];
+        $this->assertSame(Parser::TYPE, $context['state']);
+        $this->assertSame('trailingComma', $text);
+
+        list($text, $context) = $listener->calls[1];
+        $this->assertSame(Parser::KEY, $context['state']);
+        $this->assertSame('foo', $text);
+
+        list($text, $context) = $listener->calls[2];
+        $this->assertSame(Parser::RAW_VALUE, $context['state']);
+        $this->assertSame('bar', $text);
+
+        list($text, $context) = $listener->calls[3];
+        $this->assertSame(Parser::ORIGINAL_ENTRY, $context['state']);
+        $original = trim(file_get_contents(__DIR__ . '/resources/trailing-comma.bib'));
+        $this->assertSame($original, $text);
+    }
+
+    public function testTagNameWithUnderscore()
+    {
+        $listener = new DummyListener;
+
+        $parser = new Parser;
+        $parser->addListener($listener);
+        $parser->parseFile(__DIR__ . '/resources/tag-name-with-underscore.bib');
+
+        $this->assertCount(4, $listener->calls);
+
+        list($text, $context) = $listener->calls[0];
+        $this->assertSame(Parser::TYPE, $context['state']);
+        $this->assertSame('tagNameWithUnderscore', $text);
+
+        list($text, $context) = $listener->calls[1];
+        $this->assertSame(Parser::KEY, $context['state']);
+        $this->assertSame('foo_bar', $text);
+
+        list($text, $context) = $listener->calls[2];
+        $this->assertSame(Parser::RAW_VALUE, $context['state']);
+        $this->assertSame('fubar', $text);
+
+        list($text, $context) = $listener->calls[3];
+        $this->assertSame(Parser::ORIGINAL_ENTRY, $context['state']);
+        $original = trim(file_get_contents(__DIR__ . '/resources/tag-name-with-underscore.bib'));
+        $this->assertSame($original, $text);
+    }
+
+    public function testMultipleEntries()
+    {
+        $listener = new DummyListener;
+
+        $parser = new Parser;
+        $parser->addListener($listener);
+        $parser->parseFile(__DIR__ . '/resources/multiples-entries.bib');
+
+        $this->assertCount(8, $listener->calls);
+
+        list($text, $context) = $listener->calls[0];
+        $this->assertSame(Parser::TYPE, $context['state']);
+        $this->assertSame('entryFooWithSpaces', $text);
+
+        list($text, $context) = $listener->calls[1];
+        $this->assertSame(Parser::KEY, $context['state']);
+        $this->assertSame('foo', $text);
+
+        list($text, $context) = $listener->calls[2];
+        $this->assertSame(Parser::RAW_VALUE, $context['state']);
+        $this->assertSame('oof', $text);
+
+        list($text, $context) = $listener->calls[3];
+        $this->assertSame(Parser::ORIGINAL_ENTRY, $context['state']);
+        $this->assertSame('@entryFooWithSpaces { foo = oof }', $text);
+
+        list($text, $context) = $listener->calls[4];
+        $this->assertSame(Parser::TYPE, $context['state']);
+        $this->assertSame('entryBarWithoutSpaces', $text);
+
+        list($text, $context) = $listener->calls[5];
+        $this->assertSame(Parser::KEY, $context['state']);
+        $this->assertSame('bar', $text);
+
+        list($text, $context) = $listener->calls[6];
+        $this->assertSame(Parser::RAW_VALUE, $context['state']);
+        $this->assertSame('rab', $text);
+
+        list($text, $context) = $listener->calls[7];
+        $this->assertSame(Parser::ORIGINAL_ENTRY, $context['state']);
+        $this->assertSame('@entryBarWithoutSpaces{bar=rab}', $text);
     }
 
     /**
-     * @dataProvider invalidProvider
+     * @dataProvider validFileProvider
      */
-    public function testInvalid($file, $message)
+    public function testStringParserAndFileParserMustWorksIdentically($file)
+    {
+        $listenerFile = new DummyListener;
+        $parserFile = new Parser;
+        $parserFile->addListener($listenerFile);
+        $parserFile->parseFile($file);
+
+        $listenerString = new DummyListener;
+        $parserString = new Parser;
+        $parserString->addListener($listenerString);
+        $parserString->parseString(file_get_contents($file));
+
+        $this->assertSame($listenerFile->calls, $listenerString->calls);
+    }
+
+    public function validFileProvider()
+    {
+        $dir = __DIR__ . '/resources';
+        return [
+            [$dir . '/abbreviation.bib'],
+            [$dir . '/basic.bib'],
+            [$dir . '/citation-key.bib'],
+            [$dir . '/comment.bib'],
+            [$dir . '/multiples-entries.bib'],
+            [$dir . '/no-value.bib'],
+            [$dir . '/tag-name-uppercased.bib'],
+            [$dir . '/tag-name-with-underscore.bib'],
+            [$dir . '/trailing-comma.bib'],
+            [$dir . '/type-overriding.bib'],
+            [$dir . '/values-basic.bib'],
+            [$dir . '/values-escaped.bib'],
+            [$dir . '/values-multiple.bib'],
+            [$dir . '/values-nested-braces.bib'],
+            [$dir . '/values-slashes.bib'],
+        ];
+    }
+
+    /**
+     * @dataProvider invalidFileProvider
+     */
+    public function testInvalidInputMustCauseException($file, $message)
     {
         $parser = new Parser;
 
@@ -376,7 +588,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $parser->parseFile($file);
     }
 
-    public function invalidProvider()
+    public function invalidFileProvider()
     {
         $dir = __DIR__ . '/resources/invalid';
         return [
@@ -390,139 +602,5 @@ class ParserTest extends \PHPUnit_Framework_TestCase
             [$dir . '/no-comment.bib', "'i' at line 1 column 1"],
             [$dir . '/double-concat.bib', "'#' at line 2 column 20"],
         ];
-    }
-
-    public function testStringParser()
-    {
-        $listener = new DummyListener;
-
-        $parser = new Parser;
-        $parser->addListener($listener);
-        $parser->parseString(file_get_contents(__DIR__ . '/resources/basic.bib'));
-
-        $this->assertCount(3, $listener->calls);
-
-        $call = $listener->calls[0];
-        $this->assertSame(Parser::TYPE, $call['state']);
-        $this->assertSame('basic', $call['text']);
-
-        $call = $listener->calls[1];
-        $this->assertSame(Parser::KEY, $call['state']);
-        $this->assertSame('foo', $call['text']);
-
-        $call = $listener->calls[2];
-        $this->assertSame(Parser::RAW_VALUE, $call['state']);
-        $this->assertSame('bar', $call['text']);
-    }
-
-    public function testBasicOffsetContext()
-    {
-        $listener = new DummyListener;
-
-        $parser = new Parser;
-        $parser->addListener($listener);
-        $parser->parseFile(__DIR__ . '/resources/basic.bib');
-
-        $this->assertCount(3, $listener->calls);
-
-        $context = $listener->calls[0]['context'];
-        $this->assertSame(Parser::TYPE, $context['state']);
-        $this->assertSame(1, $context['offset']);
-        $this->assertSame(5, $context['length']);
-
-        $context = $listener->calls[1]['context'];
-        $this->assertSame(Parser::KEY, $context['state']);
-        $this->assertSame(13, $context['offset']);
-        $this->assertSame(3, $context['length']);
-
-        $context = $listener->calls[2]['context'];
-        $this->assertSame(Parser::RAW_VALUE, $context['state']);
-        $this->assertSame(19, $context['offset']);
-        $this->assertSame(3, $context['length']);
-    }
-
-    public function testOffsetContextWithEscapedChar()
-    {
-        $listener = new DummyListener;
-
-        $parser = new Parser;
-        $parser->addListener($listener);
-
-        // This file is interesting because the values have escaped chars, which
-        // means the value length in the file is not equal to the triggered one
-        $parser->parseFile(__DIR__ . '/resources/values-escaped.bib');
-
-        $this->assertCount(5, $listener->calls);
-
-        $context = $listener->calls[0]['context'];
-        $this->assertSame(Parser::TYPE, $context['state']);
-        $this->assertSame(1, $context['offset']);
-        $this->assertSame(13, $context['length']);
-
-        $context = $listener->calls[1]['context'];
-        $this->assertSame(Parser::KEY, $context['state']);
-        $this->assertSame(21, $context['offset']);
-        $this->assertSame(6, $context['length']);
-
-        $context = $listener->calls[2]['context'];
-        $this->assertSame(Parser::BRACED_VALUE, $context['state']);
-        $this->assertSame(31, $context['offset']);
-        $this->assertSame(21, $context['length']);
-
-        $context = $listener->calls[3]['context'];
-        $this->assertSame(Parser::KEY, $context['state']);
-        $this->assertSame(59, $context['offset']);
-        $this->assertSame(6, $context['length']);
-
-        $context = $listener->calls[4]['context'];
-        $this->assertSame(Parser::QUOTED_VALUE, $context['state']);
-        $this->assertSame(69, $context['offset']);
-        $this->assertSame(21, $context['length']);
-    }
-
-    public function testTrailingComma()
-    {
-        $listener = new DummyListener;
-
-        $parser = new Parser;
-        $parser->addListener($listener);
-        $parser->parseFile(__DIR__ . '/resources/trailing-comma.bib');
-
-        $this->assertCount(3, $listener->calls);
-
-        $call = $listener->calls[0];
-        $this->assertSame(Parser::TYPE, $call['state']);
-        $this->assertSame('trailingComma', $call['text']);
-
-        $call = $listener->calls[1];
-        $this->assertSame(Parser::KEY, $call['state']);
-        $this->assertSame('foo', $call['text']);
-
-        $call = $listener->calls[2];
-        $this->assertSame(Parser::RAW_VALUE, $call['state']);
-        $this->assertSame('bar', $call['text']);
-    }
-
-    public function testTagNameWithUnderscore()
-    {
-        $listener = new DummyListener;
-
-        $parser = new Parser;
-        $parser->addListener($listener);
-        $parser->parseFile(__DIR__ . '/resources/tag-name-with-underscore.bib');
-
-        $this->assertCount(3, $listener->calls);
-
-        $call = $listener->calls[0];
-        $this->assertSame(Parser::TYPE, $call['state']);
-        $this->assertSame('tagNameWithUnderscore', $call['text']);
-
-        $call = $listener->calls[1];
-        $this->assertSame(Parser::KEY, $call['state']);
-        $this->assertSame('foo_bar', $call['text']);
-
-        $call = $listener->calls[2];
-        $this->assertSame(Parser::RAW_VALUE, $call['state']);
-        $this->assertSame('fubar', $call['text']);
     }
 }
