@@ -29,7 +29,7 @@ class Listener implements ListenerInterface
     /**
      * @var int|null
      */
-    private $case = null;
+    private $tagNameCase = null;
 
     /**
      * @var bool
@@ -53,7 +53,7 @@ class Listener implements ListenerInterface
      */
     public function setTagNameCase($case)
     {
-        $this->case = $case;
+        $this->tagNameCase = $case;
     }
 
     public function bibTexUnitFound($text, array $context)
@@ -111,10 +111,10 @@ class Listener implements ListenerInterface
 
     private function processTagNameCase(array &$entry)
     {
-        if (null === $this->case) {
+        if (null === $this->tagNameCase) {
             return;
         }
-        $entry = array_change_key_case($entry, $this->case);
+        $entry = array_change_key_case($entry, $this->tagNameCase);
     }
 
     private function processRawValue($value)
