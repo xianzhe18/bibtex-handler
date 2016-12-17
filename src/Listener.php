@@ -24,7 +24,7 @@ class Listener implements ListenerInterface
      *
      * @var string
      */
-    private $key;
+    private $currentKey;
 
     /**
      * @var int|null
@@ -67,8 +67,8 @@ class Listener implements ListenerInterface
                 // save key into last entry
                 end($this->entries);
                 $position = key($this->entries);
-                $this->key = $text;
-                $this->entries[$position][$this->key] = null;
+                $this->currentKey = $text;
+                $this->entries[$position][$this->currentKey] = null;
                 break;
 
             case PARSER::RAW_VALUE:
@@ -81,7 +81,7 @@ class Listener implements ListenerInterface
                     // append value into current key of last entry
                     end($this->entries);
                     $position = key($this->entries);
-                    $this->entries[$position][$this->key] .= $text;
+                    $this->entries[$position][$this->currentKey] .= $text;
                 }
                 break;
 
