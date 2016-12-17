@@ -1,12 +1,14 @@
 # BibTex Parser
 
-[![Build Status](https://travis-ci.org/renanbr/bibtex-parser.svg?branch=master)](https://travis-ci.org/renanbr/bibtex-parser)
+_BibTex Parser_ is a PHP library that provides an API to read [.bib](http://mirrors.ctan.org/biblio/bibtex/base/btxdoc.pdf) files programmatically.
 
-_Bibtex Parser_ is PHP library that provides an API to read [.bib](http://mirrors.ctan.org/biblio/bibtex/base/btxdoc.pdf) files programmatically.
+[![Build Status](https://travis-ci.org/renanbr/bibtex-parser.svg?branch=master)](https://travis-ci.org/renanbr/bibtex-parser)
 
 ## Install
 
 `composer require renanbr/bibtex-parser`
+
+<small>See the [changelog](CHANGELOG.md).</small>
 
 ## Usage
 
@@ -15,8 +17,6 @@ _Bibtex Parser_ is PHP library that provides an API to read [.bib](http://mirror
 3. Attach the Listener to the Parser;
 4. Parse a _file_ calling `parseFile()`, or a _string_ calling `parseString()`;
 5. Get data from the Listener (it depends on the implementation).
-
-Sample:
 
 ```php
 $listener = new RenanBr\BibTexParser\Listener;
@@ -53,10 +53,11 @@ Below we have the `example.bib` source file used in the sample above.
 
 As you may noticed, this library provides `RenanBr\BibTexParser\Listener` as a `RenanBr\BibTexParser\ListenerInterface` implementation.
 Its features are:
-- It replaces raw values according to their [abbreviations](http://www.bibtex.org/Format/), when this exists.
+- It provides the `export()` method, which returns all entries found;
+- It exposes the original entry text in the `_original` key of each entry;
+- It replaces raw values according to their [abbreviations](http://www.bibtex.org/Format/), when this exists;
 - It [concatenates](http://www.bibtex.org/Format/) values when necessary;
-- If the first key has null as value, it interprets the key name as a value of "citation-key" instead;
-- It provides the `export()` method, which returns all entries found.
+- If the first key has null as value, it interprets the key name as a value of "citation-key" instead.
 
 ## API
 
@@ -65,9 +66,9 @@ Its features are:
 ```php
 class RenanBr\BibTexParser\Parser
 {
-    public function parseFile(string $file);
-    public function parseString(string $string);
-    public function addListener(RenanBr\BibTexParser\ListenerInterface $listener);
+    public function parseFile(string $file): void;
+    public function parseString(string $string): void;
+    public function addListener(RenanBr\BibTexParser\ListenerInterface $listener): void;
 }
 ```
 
@@ -79,7 +80,7 @@ The `parseFile()` may even throw a native `ErrorException` if file given can't b
 ```php
 interface RenanBr\BibTexParser\ListenerInterface
 {
-    public function bibTexUnitFound(string $text, array $context);
+    public function bibTexUnitFound(string $text, array $context): void;
 }
 ```
 
@@ -92,7 +93,20 @@ The context keys are:
   - `Parser::RAW_VALUE`
   - `Parser::BRACED_VALUE`
   - `Parser::QUOTED_VALUE`
+  - `Parser::ORIGINAL_ENTRY`
 - `$context['offset']` contains the text beginning position.
   It may be useful, for example, to [seek](https://php.net/fseek) a file;
 - `$context['length']` contains the original text length.
   It may differ from string length sent to the listener because may there are escaped values.
+
+#### Listener
+
+```php
+class RenanBr\BibTexParser\Listener implements RenanBr\BibTexParser\ListenerInterface
+{
+    public function export(): array;
+    public function setTagNameCase(int|null $case): void;
+
+    public function bibTexUnitFound(string $text, array $context): void;
+}
+```
