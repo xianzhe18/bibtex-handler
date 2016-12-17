@@ -1,6 +1,7 @@
 {
     "name": "renanbr/bibtex-parser",
-    "description": "Yet another BibTeX parser",
+    "description": "BibTex Parser provides an API to read .bib files programmatically",
+    "keywords": ["bib", "bibtex", "parser"],
     "type": "library",
     "license": "MIT",
     "authors": [
