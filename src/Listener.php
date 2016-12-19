@@ -32,6 +32,11 @@ class Listener implements ListenerInterface
     private $tagNameCase = null;
 
     /**
+     * @var callable
+     */
+    private $tagValueProcessor = null;
+
+    /**
      * @var bool
      */
     private $processed = false;
@@ -42,6 +47,7 @@ class Listener implements ListenerInterface
             foreach ($this->entries as &$entry) {
                 $this->processCitationKey($entry);
                 $this->processTagNameCase($entry);
+                $this->processTagValue($entry);
             }
             $this->processed = true;
         }
@@ -54,6 +60,14 @@ class Listener implements ListenerInterface
     public function setTagNameCase($case)
     {
         $this->tagNameCase = $case;
+    }
+
+    /**
+     * @param callable|null $processor
+     */
+    public function setTagValueProcessor(callable $processor = null)
+    {
+        $this->tagValueProcessor = $processor;
     }
 
     public function bibTexUnitFound($text, array $context)
@@ -93,6 +107,17 @@ class Listener implements ListenerInterface
         }
     }
 
+    private function processRawValue($value)
+    {
+        // find for an abbreviation
+        foreach ($this->entries as $entry) {
+            if ('string' == $entry['type'] && array_key_exists($value, $entry)) {
+                return $entry[$value];
+            }
+        }
+        return $value;
+    }
+
     private function processCitationKey(array &$entry)
     {
         // the first key is always the "type"
@@ -117,14 +142,13 @@ class Listener implements ListenerInterface
         $entry = array_change_key_case($entry, $this->tagNameCase);
     }
 
-    private function processRawValue($value)
+    private function processTagValue(array &$entry)
     {
-        // find for an abbreviation
-        foreach ($this->entries as $entry) {
-            if ('string' == $entry['type'] && array_key_exists($value, $entry)) {
-                return $entry[$value];
-            }
+        if (null === $this->tagValueProcessor) {
+            return;
         }
-        return $value;
+        foreach ($entry as $tag => &$value) {
+            $value = call_user_func($this->tagValueProcessor, $value, $tag);
+        }
     }
 }

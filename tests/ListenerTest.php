@@ -188,4 +188,21 @@ class ListenerTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('tagNameUppercased', $entry['type']);
         $this->assertSame('bAr', $entry['foo']);
     }
+
+    public function testTagValueProcessor()
+    {
+        $listener = new Listener;
+        $listener->setTagValueProcessor(function ($text, $tag) {
+            return "processed-$tag-$text";
+        });
+
+        $parser = new Parser;
+        $parser->addListener($listener);
+        $parser->parseFile(__DIR__ . '/resources/basic.bib');
+
+        $entries = $listener->export();
+        $entry = $entries[0];
+        $this->assertSame('processed-type-basic', $entry['type']);
+        $this->assertSame('processed-foo-bar', $entry['foo']);
+    }
 }
