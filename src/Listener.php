@@ -147,8 +147,6 @@ class Listener implements ListenerInterface
         if (null === $this->tagValueProcessor) {
             return;
         }
-        foreach ($entry as $tag => &$value) {
-            $value = call_user_func($this->tagValueProcessor, $value, $tag);
-        }
+        array_walk($entry, $this->tagValueProcessor);
     }
 }

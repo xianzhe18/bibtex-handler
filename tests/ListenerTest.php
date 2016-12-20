@@ -192,8 +192,8 @@ class ListenerTest extends \PHPUnit_Framework_TestCase
     public function testTagValueProcessor()
     {
         $listener = new Listener;
-        $listener->setTagValueProcessor(function ($text, $tag) {
-            return "processed-$tag-$text";
+        $listener->setTagValueProcessor(function (&$text, $tag) {
+            $text = "processed-$tag-$text";
         });
 
         $parser = new Parser;
