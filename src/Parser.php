@@ -95,6 +95,11 @@ class Parser
         $this->listeners[] = $listener;
     }
 
+    /**
+     * @param string $file
+     * @throws RenanBr\BibTexParser\ParseException If $file given is not a valid BibTeX.
+     * @throws ErrorException If file givens is not readable.
+     */
     public function parseFile($file)
     {
         $handle = fopen($file, 'r');
@@ -110,6 +115,10 @@ class Parser
         }
     }
 
+    /**
+     * @param string $string
+     * @throws RenanBr\BibTexParser\ParseException If $string given is not a valid BibTeX.
+     */
     public function parseString($string)
     {
         $this->reset();

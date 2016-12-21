@@ -41,6 +41,9 @@ class Listener implements ListenerInterface
      */
     private $processed = false;
 
+    /**
+     * @return array All entries found during a parsing process.
+     */
     public function export()
     {
         if (!$this->processed) {
@@ -63,13 +66,17 @@ class Listener implements ListenerInterface
     }
 
     /**
-     * @param callable|null $processor
+     * @param callable|null $processor Function to be applied to every member of a BibTeX entry.
+     *                                 It uses array_walk() engine.
      */
     public function setTagValueProcessor(callable $processor = null)
     {
         $this->tagValueProcessor = $processor;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function bibTexUnitFound($text, array $context)
     {
         switch ($context['state']) {

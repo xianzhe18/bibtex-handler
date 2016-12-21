@@ -13,5 +13,10 @@ namespace RenanBr\BibTexParser;
 
 interface ListenerInterface
 {
+    /**
+     * @param string $text The original content of the unit found.
+     *                     Escape character will not be sent.
+     * @param array $context Contains details of the unit found.
+     */
     public function bibTexUnitFound($text, array $context);
 }
