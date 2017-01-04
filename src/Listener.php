@@ -66,8 +66,10 @@ class Listener implements ListenerInterface
     }
 
     /**
-     * @param callable|null $processor Function to be applied to every member of a BibTeX entry.
-     *                                 It uses array_walk() engine.
+     * @param callable|null $processor Function to be applied to every member of an BibTeX entry.
+     *                                 It uses array_walk() internally.
+     *                                 The suggested signature for the argument is:
+     *                                 function (string &$value, string $tag);
      */
     public function setTagValueProcessor(callable $processor = null)
     {

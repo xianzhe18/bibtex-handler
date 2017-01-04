@@ -98,7 +98,7 @@ class Parser
     /**
      * @param string $file
      * @throws RenanBr\BibTexParser\ParseException If $file given is not a valid BibTeX.
-     * @throws ErrorException If file givens is not readable.
+     * @throws ErrorException If $file given is not readable.
      */
     public function parseFile($file)
     {
