@@ -381,9 +381,6 @@ class Parser
             }
         } elseif ('\\' == $char) {
             $this->isValueEscaped = true;
-        } elseif ('%' == $char) {
-            $this->stateAfterCommentIsGone = $this->state;
-            $this->state = self::COMMENT;
         } else {
             $this->appendToBuffer($char);
         }
