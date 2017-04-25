@@ -336,7 +336,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
         list($text, $context) = $listener->calls[6];
         $this->assertSame(Parser::QUOTED_VALUE, $context['state']);
-        $this->assertSame('before--after', $text);
+        $this->assertSame('before-%-after', $text);
 
         list($text, $context) = $listener->calls[7];
         $this->assertSame(Parser::KEY, $context['state']);
