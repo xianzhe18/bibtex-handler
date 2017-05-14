@@ -11,16 +11,22 @@
 
 namespace RenanBr\BibTexParser\Test;
 
+use PHPUnit\Framework\TestCase;
 use RenanBr\BibTexParser\Parser;
 use RenanBr\BibTexParser\ParseException;
 
-class ParserTest extends \PHPUnit_Framework_TestCase
+class ParserTest extends TestCase
 {
     public function testFileDoesNotExist()
     {
         $parser = new Parser;
 
-        $this->expectException(\PHPUnit_Framework_Error_Warning::class);
+        // Keeps compatibility with phpunit 5 and 6
+        $warningClass = class_exists(\PHPUnit_Framework_Error_Warning::class)
+            ? \PHPUnit_Framework_Error_Warning::class
+            : \PHPUnit\Framework\Error\Warning::class;
+        $this->expectException($warningClass);
+
         $parser->parseFile(__DIR__ . '/resources/does-not-exist');
     }
 
@@ -336,7 +342,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
         list($text, $context) = $listener->calls[6];
         $this->assertSame(Parser::QUOTED_VALUE, $context['state']);
-        $this->assertSame('before--after', $text);
+        $this->assertSame('before-%-after', $text);
 
         list($text, $context) = $listener->calls[7];
         $this->assertSame(Parser::KEY, $context['state']);
