@@ -5,5 +5,4 @@ php:
   - 7.0
 
 before_script:
-  - phpunit --self-update
   - composer install
