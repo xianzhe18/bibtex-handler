@@ -11,10 +11,11 @@
 
 namespace RenanBr\BibTexParser\Test;
 
+use PHPUnit\Framework\TestCase;
 use RenanBr\BibTexParser\Parser;
 use RenanBr\BibTexParser\Listener;
 
-class ListenerTest extends \PHPUnit_Framework_TestCase
+class ListenerTest extends TestCase
 {
     public function testBasic()
     {
