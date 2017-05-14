@@ -416,7 +416,7 @@ class Parser
             $context = [
                 'state' => self::ORIGINAL_ENTRY,
                 'offset' => $this->originalEntryOffset,
-                'length' => $this->offset - $this->originalEntryOffset
+                'length' => $this->offset - $this->originalEntryOffset,
             ];
             $this->triggerListeners($this->originalEntry, $context);
             $this->originalEntryOffset = null;
@@ -457,7 +457,7 @@ class Parser
         $context = [
             'state' => $this->state,
             'offset' => $this->bufferOffset,
-            'length' => $this->offset - $this->bufferOffset
+            'length' => $this->offset - $this->bufferOffset,
         ];
         $this->triggerListeners($this->buffer, $context);
         $this->bufferOffset = null;
