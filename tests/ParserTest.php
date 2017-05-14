@@ -563,6 +563,7 @@ class ParserTest extends TestCase
     public function validFileProvider()
     {
         $dir = __DIR__ . '/resources';
+
         return [
             [$dir . '/abbreviation.bib'],
             [$dir . '/basic.bib'],
@@ -597,6 +598,7 @@ class ParserTest extends TestCase
     public function invalidFileProvider()
     {
         $dir = __DIR__ . '/resources/invalid';
+
         return [
             [$dir . '/brace-missing.bib', "'\\0' at line 3 column 1"],
             [$dir . '/multiple-braced-values.bib', "'{' at line 2 column 33"],

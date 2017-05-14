@@ -54,6 +54,7 @@ class Listener implements ListenerInterface
             }
             $this->processed = true;
         }
+
         return $this->entries;
     }
 
@@ -124,6 +125,7 @@ class Listener implements ListenerInterface
                 return $entry[$value];
             }
         }
+
         return $value;
     }
 
