@@ -15,5 +15,12 @@
     },
     "autoload-dev": {
         "psr-4": { "RenanBr\\BibTexParser\\Test\\": "tests/" }
+    },
+    "scripts": {
+        "cs-check": "php-cs-fixer fix --dry-run -vvv --ansi",
+        "cs-fix": "php-cs-fixer fix --ansi"
+    },
+    "config": {
+        "sort-packages": true
     }
 }
