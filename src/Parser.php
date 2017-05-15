@@ -33,11 +33,6 @@ class Parser
     /**
      * @var string
      */
-    private $stateAfterCommentIsGone;
-
-    /**
-     * @var string
-     */
     private $buffer;
 
     /**
@@ -148,9 +143,7 @@ class Parser
      */
     private function checkFinalStatus()
     {
-        $current = $this->state;
-        $previous = $this->stateAfterCommentIsGone;
-        if (self::NONE != $current || (self::COMMENT == $current && self::NONE != $previous)) {
+        if (self::NONE != $this->state && self::COMMENT != $this->state) {
             $this->throwException("\0");
         }
     }
@@ -158,7 +151,6 @@ class Parser
     private function reset()
     {
         $this->state = self::NONE;
-        $this->stateAfterCommentIsGone = null;
         $this->buffer = '';
         $this->originalEntry = '';
         $this->originalEntryOffset = null;
@@ -211,20 +203,17 @@ class Parser
 
     private function readNone($char)
     {
-        if ('%' == $char) {
-            $this->stateAfterCommentIsGone = self::NONE;
-            $this->state = self::COMMENT;
-        } elseif ('@' == $char) {
+        if ('@' == $char) {
             $this->state = self::TYPE;
         } elseif (!$this->isWhitespace($char)) {
-            $this->throwException($char);
+            $this->state = self::COMMENT;
         }
     }
 
     private function readComment($char)
     {
-        if ("\n" == $char) {
-            $this->state = $this->stateAfterCommentIsGone;
+        if ($this->isWhitespace($char)) {
+            $this->state = self::NONE;
         }
     }
 
@@ -245,10 +234,7 @@ class Parser
 
     private function readPostType($char)
     {
-        if ('%' == $char) {
-            $this->stateAfterCommentIsGone = self::POST_TYPE;
-            $this->state = self::COMMENT;
-        } elseif ('{' == $char) {
+        if ('{' == $char) {
             $this->state = self::KEY;
         } elseif (!$this->isWhitespace($char)) {
             $this->throwException($char);
@@ -261,11 +247,6 @@ class Parser
             $this->appendToBuffer($char);
         } elseif ($this->isWhitespace($char) && empty($this->buffer)) {
             // skip
-        } elseif ('%' == $char && empty($this->buffer)) {
-            // we can't move to POST_KEY, because buffer buffer is empty
-            // so, after comment is gone, we are still looking for a key
-            $this->stateAfterCommentIsGone = self::KEY;
-            $this->state = self::COMMENT;
         } elseif ('}' == $char) {
             $this->state = self::NONE;
         } else {
@@ -281,10 +262,7 @@ class Parser
 
     private function readPostKey($char)
     {
-        if ('%' == $char) {
-            $this->stateAfterCommentIsGone = self::POST_KEY;
-            $this->state = self::COMMENT;
-        } elseif ('=' == $char) {
+        if ('=' == $char) {
             $this->state = self::VALUE;
         } elseif ('}' == $char) {
             $this->state = self::NONE;
@@ -306,9 +284,6 @@ class Parser
             }
             $this->state = self::RAW_VALUE;
             $this->readRawValue($char);
-        } elseif ('%' == $char) {
-            $this->stateAfterCommentIsGone = self::VALUE;
-            $this->state = self::COMMENT;
         } elseif ('"' == $char) {
             // this verification is here for the same reason of the first case
             if ($this->mayConcatenateValue) {
@@ -345,17 +320,11 @@ class Parser
             $this->throwExceptionIfBufferIsEmpty($char);
             $this->triggerListenersWithCurrentBuffer();
 
-            if ('%' == $char) {
-                $this->mayConcatenateValue = true;
-                $this->stateAfterCommentIsGone = self::VALUE;
-                $this->state = self::COMMENT;
-            } else {
-                // once $char isn't a valid character
-                // it must be interpreted as VALUE
-                $this->mayConcatenateValue = true;
-                $this->state = self::VALUE;
-                $this->readValue($char);
-            }
+            // once $char isn't a valid character
+            // it must be interpreted as VALUE
+            $this->mayConcatenateValue = true;
+            $this->state = self::VALUE;
+            $this->readValue($char);
         }
     }
 
@@ -388,22 +357,12 @@ class Parser
 
     private function readOriginalEntry($char, $previousState)
     {
-        // normalize states, because comments always belongs to some context
-        $currentState = $this->state == self::COMMENT
-            ? $this->stateAfterCommentIsGone
-            : $this->state;
-        $previousState = $previousState == self::COMMENT
-            ? $currentState // assume current state, whatever it is
-            : $previousState;
-
-        // check if we are reading an entry character
+        // check whether we are reading an entry character or not
+        // $isEntryChar is TRUE when previous or current indicates it
         $isEntryChar =
-            // when $char simply belongs to an entry
-            $currentState != self::NONE ||
-            // when $previousState is not equal to "none", it means that $char
-            // has just changed the state from something to "none", it happens
-            // when $char closes an entry, for example
-            $previousState != self::NONE;
+            ($previousState != self::NONE && $previousState != self::COMMENT) ||
+            ($this->state != self::NONE && $this->state != self::COMMENT)
+        ;
 
         if ($isEntryChar) {
             // append to the buffer

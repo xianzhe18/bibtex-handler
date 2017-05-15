@@ -306,63 +306,6 @@ class ParserTest extends TestCase
         $this->assertSame($original, $text);
     }
 
-    public function testCommentIgnoring()
-    {
-        $listener = new DummyListener;
-
-        $parser = new Parser;
-        $parser->addListener($listener);
-        $parser->parseFile(__DIR__ . '/resources/comment.bib');
-
-        $this->assertCount(10, $listener->calls);
-
-        list($text, $context) = $listener->calls[0];
-        $this->assertSame(Parser::TYPE, $context['state']);
-        $this->assertSame('comment', $text);
-
-        list($text, $context) = $listener->calls[1];
-        $this->assertSame(Parser::KEY, $context['state']);
-        $this->assertSame('key', $text);
-
-        list($text, $context) = $listener->calls[2];
-        $this->assertSame(Parser::RAW_VALUE, $context['state']);
-        $this->assertSame('value', $text);
-
-        list($text, $context) = $listener->calls[3];
-        $this->assertSame(Parser::KEY, $context['state']);
-        $this->assertSame('still', $text);
-
-        list($text, $context) = $listener->calls[4];
-        $this->assertSame(Parser::RAW_VALUE, $context['state']);
-        $this->assertSame('here', $text);
-
-        list($text, $context) = $listener->calls[5];
-        $this->assertSame(Parser::KEY, $context['state']);
-        $this->assertSame('insideQuoted', $text);
-
-        list($text, $context) = $listener->calls[6];
-        $this->assertSame(Parser::QUOTED_VALUE, $context['state']);
-        $this->assertSame('before-%-after', $text);
-
-        list($text, $context) = $listener->calls[7];
-        $this->assertSame(Parser::KEY, $context['state']);
-        $this->assertSame('commentAfterKey', $text);
-
-        list($text, $context) = $listener->calls[8];
-        $this->assertSame(Parser::RAW_VALUE, $context['state']);
-        $this->assertSame('commentAfterRaw', $text);
-
-        list($text, $context) = $listener->calls[9];
-        $this->assertSame(Parser::ORIGINAL_ENTRY, $context['state']);
-        // the file contains comments in the first line and a trailing comment
-        // character at the end, the code bellow remove both
-        $original = file(__DIR__ . '/resources/comment.bib');
-        unset($original[0]);
-        $original = rtrim(trim(implode('', $original)), '%');
-        // and then run the comparison
-        $this->assertSame($original, $text);
-    }
-
     public function testValueSlashes()
     {
         $listener = new DummyListener;
@@ -568,7 +511,6 @@ class ParserTest extends TestCase
             [$dir . '/abbreviation.bib'],
             [$dir . '/basic.bib'],
             [$dir . '/citation-key.bib'],
-            [$dir . '/comment.bib'],
             [$dir . '/multiples-entries.bib'],
             [$dir . '/no-value.bib'],
             [$dir . '/tag-name-uppercased.bib'],
@@ -607,7 +549,6 @@ class ParserTest extends TestCase
             [$dir . '/space-after-at-sign.bib', "' ' at line 1 column 2"],
             [$dir . '/splitted-key.bib', "'k' at line 2 column 14"],
             [$dir . '/splitted-type.bib', "'T' at line 1 column 11"],
-            [$dir . '/no-comment.bib', "'i' at line 1 column 1"],
             [$dir . '/double-concat.bib', "'#' at line 2 column 20"],
         ];
     }
