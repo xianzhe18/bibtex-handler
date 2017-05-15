@@ -23,7 +23,7 @@ class ListenerTest extends TestCase
 
         $parser = new Parser;
         $parser->addListener($listener);
-        $parser->parseFile(__DIR__ . '/resources/basic.bib');
+        $parser->parseFile(__DIR__ . '/resources/valid/basic.bib');
 
         $entries = $listener->export();
         $this->assertCount(1, $entries);
@@ -39,7 +39,7 @@ class ListenerTest extends TestCase
 
         $parser = new Parser;
         $parser->addListener($listener);
-        $parser->parseFile(__DIR__ . '/resources/no-value.bib');
+        $parser->parseFile(__DIR__ . '/resources/valid/no-value.bib');
 
         $entries = $listener->export();
         $this->assertCount(1, $entries);
@@ -56,7 +56,7 @@ class ListenerTest extends TestCase
 
         $parser = new Parser;
         $parser->addListener($listener);
-        $parser->parseFile(__DIR__ . '/resources/values-basic.bib');
+        $parser->parseFile(__DIR__ . '/resources/valid/values-basic.bib');
 
         $entries = $listener->export();
         $this->assertCount(1, $entries);
@@ -78,7 +78,7 @@ class ListenerTest extends TestCase
 
         $parser = new Parser;
         $parser->addListener($listener);
-        $parser->parseFile(__DIR__ . '/resources/values-multiple.bib');
+        $parser->parseFile(__DIR__ . '/resources/valid/values-multiple.bib');
 
         $entries = $listener->export();
         $this->assertCount(1, $entries);
@@ -98,7 +98,7 @@ class ListenerTest extends TestCase
 
         $parser = new Parser;
         $parser->addListener($listener);
-        $parser->parseFile(__DIR__ . '/resources/abbreviation.bib');
+        $parser->parseFile(__DIR__ . '/resources/valid/abbreviation.bib');
 
         $entries = $listener->export();
         $this->assertCount(3, $entries);
@@ -128,7 +128,7 @@ class ListenerTest extends TestCase
 
         $parser = new Parser;
         $parser->addListener($listener);
-        $parser->parseFile(__DIR__ . '/resources/type-overriding.bib');
+        $parser->parseFile(__DIR__ . '/resources/valid/type-overriding.bib');
 
         $entries = $listener->export();
         $this->assertCount(1, $entries);
@@ -144,7 +144,7 @@ class ListenerTest extends TestCase
 
         $parser = new Parser;
         $parser->addListener($listener);
-        $parser->parseFile(__DIR__ . '/resources/citation-key.bib');
+        $parser->parseFile(__DIR__ . '/resources/valid/citation-key.bib');
 
         $entries = $listener->export();
         $this->assertCount(1, $entries);
@@ -169,7 +169,7 @@ class ListenerTest extends TestCase
         $parser->addListener($listenerStandard);
         $parser->addListener($listenerUpper);
         $parser->addListener($listenerLower);
-        $parser->parseFile(__DIR__ . '/resources/tag-name-uppercased.bib');
+        $parser->parseFile(__DIR__ . '/resources/valid/tag-name-uppercased.bib');
 
         $entries = $listenerStandard->export();
         $this->assertCount(1, $entries);
@@ -199,7 +199,7 @@ class ListenerTest extends TestCase
 
         $parser = new Parser;
         $parser->addListener($listener);
-        $parser->parseFile(__DIR__ . '/resources/basic.bib');
+        $parser->parseFile(__DIR__ . '/resources/valid/basic.bib');
 
         $entries = $listener->export();
         $entry = $entries[0];

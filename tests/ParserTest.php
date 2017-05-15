@@ -27,7 +27,7 @@ class ParserTest extends TestCase
             : \PHPUnit\Framework\Error\Warning::class;
         $this->expectException($warningClass);
 
-        $parser->parseFile(__DIR__ . '/resources/does-not-exist');
+        $parser->parseFile(__DIR__ . '/resources/valid/does-not-exist');
     }
 
     public function testBasic()
@@ -36,7 +36,7 @@ class ParserTest extends TestCase
 
         $parser = new Parser;
         $parser->addListener($listener);
-        $parser->parseFile(__DIR__ . '/resources/basic.bib');
+        $parser->parseFile(__DIR__ . '/resources/valid/basic.bib');
 
         $this->assertCount(4, $listener->calls);
 
@@ -60,7 +60,7 @@ class ParserTest extends TestCase
 
         list($text, $context) = $listener->calls[3];
         $this->assertSame(Parser::ORIGINAL_ENTRY, $context['state']);
-        $original = trim(file_get_contents(__DIR__ . '/resources/basic.bib'));
+        $original = trim(file_get_contents(__DIR__ . '/resources/valid/basic.bib'));
         $this->assertSame($original, $text);
         $this->assertSame(0, $context['offset']);
         $this->assertSame(24, $context['length']);
@@ -72,7 +72,7 @@ class ParserTest extends TestCase
 
         $parser = new Parser;
         $parser->addListener($listener);
-        $parser->parseFile(__DIR__ . '/resources/no-value.bib');
+        $parser->parseFile(__DIR__ . '/resources/valid/no-value.bib');
 
         $this->assertCount(4, $listener->calls);
 
@@ -90,7 +90,7 @@ class ParserTest extends TestCase
 
         list($text, $context) = $listener->calls[3];
         $this->assertSame(Parser::ORIGINAL_ENTRY, $context['state']);
-        $original = trim(file_get_contents(__DIR__ . '/resources/no-value.bib'));
+        $original = trim(file_get_contents(__DIR__ . '/resources/valid/no-value.bib'));
         $this->assertSame($original, $text);
     }
 
@@ -100,7 +100,7 @@ class ParserTest extends TestCase
 
         $parser = new Parser;
         $parser->addListener($listener);
-        $parser->parseFile(__DIR__ . '/resources/values-basic.bib');
+        $parser->parseFile(__DIR__ . '/resources/valid/values-basic.bib');
 
         $this->assertCount(14, $listener->calls);
 
@@ -158,7 +158,7 @@ class ParserTest extends TestCase
 
         list($text, $context) = $listener->calls[13];
         $this->assertSame(Parser::ORIGINAL_ENTRY, $context['state']);
-        $original = trim(file_get_contents(__DIR__ . '/resources/values-basic.bib'));
+        $original = trim(file_get_contents(__DIR__ . '/resources/valid/values-basic.bib'));
         $this->assertSame($original, $text);
     }
 
@@ -168,7 +168,7 @@ class ParserTest extends TestCase
 
         $parser = new Parser;
         $parser->addListener($listener);
-        $parser->parseFile(__DIR__ . '/resources/values-escaped.bib');
+        $parser->parseFile(__DIR__ . '/resources/valid/values-escaped.bib');
 
         $this->assertCount(6, $listener->calls);
 
@@ -212,7 +212,7 @@ class ParserTest extends TestCase
 
         list($text, $context) = $listener->calls[5];
         $this->assertSame(Parser::ORIGINAL_ENTRY, $context['state']);
-        $original = trim(file_get_contents(__DIR__ . '/resources/values-escaped.bib'));
+        $original = trim(file_get_contents(__DIR__ . '/resources/valid/values-escaped.bib'));
         $this->assertSame($original, $text);
         $this->assertSame(0, $context['offset']);
         $this->assertSame(93, $context['length']);
@@ -224,7 +224,7 @@ class ParserTest extends TestCase
 
         $parser = new Parser;
         $parser->addListener($listener);
-        $parser->parseFile(__DIR__ . '/resources/values-multiple.bib');
+        $parser->parseFile(__DIR__ . '/resources/valid/values-multiple.bib');
 
         $this->assertCount(19, $listener->calls);
 
@@ -302,7 +302,7 @@ class ParserTest extends TestCase
 
         list($text, $context) = $listener->calls[18];
         $this->assertSame(Parser::ORIGINAL_ENTRY, $context['state']);
-        $original = trim(file_get_contents(__DIR__ . '/resources/values-multiple.bib'));
+        $original = trim(file_get_contents(__DIR__ . '/resources/valid/values-multiple.bib'));
         $this->assertSame($original, $text);
     }
 
@@ -312,7 +312,7 @@ class ParserTest extends TestCase
 
         $parser = new Parser;
         $parser->addListener($listener);
-        $parser->parseFile(__DIR__ . '/resources/values-slashes.bib');
+        $parser->parseFile(__DIR__ . '/resources/valid/values-slashes.bib');
 
         $this->assertCount(6, $listener->calls);
 
@@ -338,7 +338,7 @@ class ParserTest extends TestCase
 
         list($text, $context) = $listener->calls[5];
         $this->assertSame(Parser::ORIGINAL_ENTRY, $context['state']);
-        $original = trim(file_get_contents(__DIR__ . '/resources/values-slashes.bib'));
+        $original = trim(file_get_contents(__DIR__ . '/resources/valid/values-slashes.bib'));
         $this->assertSame($original, $text);
     }
 
@@ -348,7 +348,7 @@ class ParserTest extends TestCase
 
         $parser = new Parser;
         $parser->addListener($listener);
-        $parser->parseFile(__DIR__ . '/resources/values-nested-braces.bib');
+        $parser->parseFile(__DIR__ . '/resources/valid/values-nested-braces.bib');
 
         $this->assertCount(8, $listener->calls);
 
@@ -382,7 +382,7 @@ class ParserTest extends TestCase
 
         list($text, $context) = $listener->calls[7];
         $this->assertSame(Parser::ORIGINAL_ENTRY, $context['state']);
-        $original = trim(file_get_contents(__DIR__ . '/resources/values-nested-braces.bib'));
+        $original = trim(file_get_contents(__DIR__ . '/resources/valid/values-nested-braces.bib'));
         $this->assertSame($original, $text);
     }
 
@@ -392,7 +392,7 @@ class ParserTest extends TestCase
 
         $parser = new Parser;
         $parser->addListener($listener);
-        $parser->parseFile(__DIR__ . '/resources/trailing-comma.bib');
+        $parser->parseFile(__DIR__ . '/resources/valid/trailing-comma.bib');
 
         $this->assertCount(4, $listener->calls);
 
@@ -410,7 +410,7 @@ class ParserTest extends TestCase
 
         list($text, $context) = $listener->calls[3];
         $this->assertSame(Parser::ORIGINAL_ENTRY, $context['state']);
-        $original = trim(file_get_contents(__DIR__ . '/resources/trailing-comma.bib'));
+        $original = trim(file_get_contents(__DIR__ . '/resources/valid/trailing-comma.bib'));
         $this->assertSame($original, $text);
     }
 
@@ -420,7 +420,7 @@ class ParserTest extends TestCase
 
         $parser = new Parser;
         $parser->addListener($listener);
-        $parser->parseFile(__DIR__ . '/resources/tag-name-with-underscore.bib');
+        $parser->parseFile(__DIR__ . '/resources/valid/tag-name-with-underscore.bib');
 
         $this->assertCount(4, $listener->calls);
 
@@ -438,7 +438,7 @@ class ParserTest extends TestCase
 
         list($text, $context) = $listener->calls[3];
         $this->assertSame(Parser::ORIGINAL_ENTRY, $context['state']);
-        $original = trim(file_get_contents(__DIR__ . '/resources/tag-name-with-underscore.bib'));
+        $original = trim(file_get_contents(__DIR__ . '/resources/valid/tag-name-with-underscore.bib'));
         $this->assertSame($original, $text);
     }
 
@@ -448,7 +448,7 @@ class ParserTest extends TestCase
 
         $parser = new Parser;
         $parser->addListener($listener);
-        $parser->parseFile(__DIR__ . '/resources/multiples-entries.bib');
+        $parser->parseFile(__DIR__ . '/resources/valid/multiples-entries.bib');
 
         $this->assertCount(8, $listener->calls);
 
@@ -505,7 +505,7 @@ class ParserTest extends TestCase
 
     public function validFileProvider()
     {
-        $dir = __DIR__ . '/resources';
+        $dir = __DIR__ . '/resources/valid';
 
         return [
             [$dir . '/abbreviation.bib'],
