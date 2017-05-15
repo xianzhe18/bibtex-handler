@@ -9,10 +9,11 @@
  * file that was distributed with this source code.
  */
 
-namespace RenanBr\BibTexParser\Test;
+namespace RenanBr\BibTexParser\Test\Parser;
 
 use PHPUnit\Framework\TestCase;
 use RenanBr\BibTexParser\Parser;
+use RenanBr\BibTexParser\Test\DummyListener;
 
 class CommentTest extends TestCase
 {
