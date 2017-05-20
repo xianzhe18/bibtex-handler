@@ -20,7 +20,7 @@ class ValueParsingTest extends TestCase
     /**
      * Tests if parser is able to handle raw, null, braced and quoted values ate the same time.
      */
-    public function testMultipleNatureReading()
+    public function testMultipleNature()
     {
         $listener = new DummyListener();
 

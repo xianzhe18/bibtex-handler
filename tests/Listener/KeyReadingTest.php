@@ -17,7 +17,7 @@ use RenanBr\BibTexParser\Parser;
 
 class KeyReadingTest extends TestCase
 {
-    public function testWhenFirstKeyIsNullItMustBeReadAsTypeValueInstead()
+    public function testWhenFirstKeyIsNullItMustBeInterpretedAsTypeValueInstead()
     {
         $listener = new Listener();
 
