@@ -14,7 +14,6 @@ namespace RenanBr\BibTexParser\Test\Parser;
 use PHPUnit\Framework\TestCase;
 use RenanBr\BibTexParser\Parser;
 use RenanBr\BibTexParser\ParseException;
-use RenanBr\BibTexParser\Test\DummyListener;
 
 class InvalidFilesTest extends TestCase
 {
@@ -48,35 +47,35 @@ class InvalidFilesTest extends TestCase
         return [
             'brace missing' => [
                 $dir . '/brace-missing.bib',
-                "'\\0' at line 3 column 1"
+                "'\\0' at line 3 column 1",
             ],
             'multiple braced values' => [
                 $dir . '/multiple-braced-values.bib',
-                "'{' at line 2 column 33"
+                "'{' at line 2 column 33",
             ],
             'multiple quoted values' => [
                 $dir . '/multiple-quoted-values.bib',
-                "'\"' at line 2 column 33"
+                "'\"' at line 2 column 33",
             ],
             'multiple raw values' => [
                 $dir . '/multiple-raw-values.bib',
-                "'b' at line 2 column 31"
+                "'b' at line 2 column 31",
             ],
             'space after @' => [
                 $dir . '/space-after-at-sign.bib',
-                "' ' at line 1 column 2"
+                "' ' at line 1 column 2",
             ],
             'splitted key' => [
                 $dir . '/splitted-key.bib',
-                "'k' at line 2 column 14"
+                "'k' at line 2 column 14",
             ],
             'splitted type' => [
                 $dir . '/splitted-type.bib',
-                "'T' at line 1 column 11"
+                "'T' at line 1 column 11",
             ],
             'double concat' => [
                 $dir . '/double-concat.bib',
-                "'#' at line 2 column 20"
+                "'#' at line 2 column 20",
             ],
         ];
     }
