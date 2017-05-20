@@ -23,7 +23,7 @@ class TagParsingTest extends TestCase
 
         $parser = new Parser();
         $parser->addListener($listener);
-        $parser->parseFile(__DIR__ . '/resources/valid/tag-name-with-underscore.bib');
+        $parser->parseFile(__DIR__ . '/../resources/valid/tag-name-with-underscore.bib');
 
         $this->assertCount(4, $listener->calls);
 
@@ -41,7 +41,7 @@ class TagParsingTest extends TestCase
 
         list($text, $context) = $listener->calls[3];
         $this->assertSame(Parser::ORIGINAL_ENTRY, $context['state']);
-        $original = trim(file_get_contents(__DIR__ . '/resources/valid/tag-name-with-underscore.bib'));
+        $original = trim(file_get_contents(__DIR__ . '/../resources/valid/tag-name-with-underscore.bib'));
         $this->assertSame($original, $text);
     }
 }
