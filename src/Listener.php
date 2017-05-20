@@ -13,32 +13,25 @@ namespace RenanBr\BibTexParser;
 
 class Listener implements ListenerInterface
 {
-    /**
-     * @var array
-     */
+    /** @var array */
     private $entries = [];
 
     /**
      * Current key name.
+     *
      * Indicates where to save values.
      *
      * @var string
      */
     private $currentKey;
 
-    /**
-     * @var int|null
-     */
+    /** @var int|null */
     private $tagNameCase = null;
 
-    /**
-     * @var callable
-     */
+    /** @var callable|null */
     private $tagValueProcessor = null;
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     private $processed = false;
 
     /**
@@ -77,9 +70,6 @@ class Listener implements ListenerInterface
         $this->tagValueProcessor = $processor;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function bibTexUnitFound($text, array $context)
     {
         switch ($context['state']) {

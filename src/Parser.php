@@ -25,64 +25,40 @@ class Parser
     const QUOTED_VALUE = 'quoted_value';
     const ORIGINAL_ENTRY = 'original_entry';
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $state;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $buffer;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $originalEntry;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     private $originalEntryOffset;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     private $line;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     private $column;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     private $offset;
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     private $isValueEscaped;
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     private $mayConcatenateValue;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $valueDelimiter;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     private $braceLevel = 0;
 
-    /**
-     * @var ListenerInterface[]
-     */
+    /** @var ListenerInterface[] */
     private $listeners = [];
 
     public function addListener(ListenerInterface $listener)
@@ -137,12 +113,10 @@ class Parser
         }
     }
 
-    /**
-     * It's called when parsing has been done, so it checks whether the status
-     * is ok or not.
-     */
     private function checkFinalStatus()
     {
+        // it's called when parsing has been done
+        // so it checks whether the status is ok or not
         if (self::NONE != $this->state && self::COMMENT != $this->state) {
             $this->throwException("\0");
         }
@@ -358,7 +332,7 @@ class Parser
     private function readOriginalEntry($char, $previousState)
     {
         // check whether we are reading an entry character or not
-        // $isEntryChar is TRUE when previous or current indicates it
+        // $isEntryChar is TRUE when previous or current state indicates it
         $isEntryChar =
             ($previousState != self::NONE && $previousState != self::COMMENT) ||
             ($this->state != self::NONE && $this->state != self::COMMENT)

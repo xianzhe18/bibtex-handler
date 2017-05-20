@@ -9,98 +9,24 @@
  * file that was distributed with this source code.
  */
 
-namespace RenanBr\BibTexParser\Test;
+namespace RenanBr\BibTexParser\Test\Parser;
 
 use PHPUnit\Framework\TestCase;
 use RenanBr\BibTexParser\Parser;
-use RenanBr\BibTexParser\ParseException;
+use RenanBr\BibTexParser\Test\DummyListener;
 
-class ParserTest extends TestCase
+class ValueParsingTest extends TestCase
 {
-    public function testFileDoesNotExist()
+    /**
+     * Tests if parser is able to handle raw, null, braced and quoted values ate the same time.
+     */
+    public function testMultipleNature()
     {
-        $parser = new Parser;
+        $listener = new DummyListener();
 
-        // Keeps compatibility with phpunit 5 and 6
-        $warningClass = class_exists(\PHPUnit_Framework_Error_Warning::class)
-            ? \PHPUnit_Framework_Error_Warning::class
-            : \PHPUnit\Framework\Error\Warning::class;
-        $this->expectException($warningClass);
-
-        $parser->parseFile(__DIR__ . '/resources/does-not-exist');
-    }
-
-    public function testBasic()
-    {
-        $listener = new DummyListener;
-
-        $parser = new Parser;
+        $parser = new Parser();
         $parser->addListener($listener);
-        $parser->parseFile(__DIR__ . '/resources/basic.bib');
-
-        $this->assertCount(4, $listener->calls);
-
-        list($text, $context) = $listener->calls[0];
-        $this->assertSame(Parser::TYPE, $context['state']);
-        $this->assertSame('basic', $text);
-        $this->assertSame(1, $context['offset']);
-        $this->assertSame(5, $context['length']);
-
-        list($text, $context) = $listener->calls[1];
-        $this->assertSame(Parser::KEY, $context['state']);
-        $this->assertSame('foo', $text);
-        $this->assertSame(13, $context['offset']);
-        $this->assertSame(3, $context['length']);
-
-        list($text, $context) = $listener->calls[2];
-        $this->assertSame(Parser::RAW_VALUE, $context['state']);
-        $this->assertSame('bar', $text);
-        $this->assertSame(19, $context['offset']);
-        $this->assertSame(3, $context['length']);
-
-        list($text, $context) = $listener->calls[3];
-        $this->assertSame(Parser::ORIGINAL_ENTRY, $context['state']);
-        $original = trim(file_get_contents(__DIR__ . '/resources/basic.bib'));
-        $this->assertSame($original, $text);
-        $this->assertSame(0, $context['offset']);
-        $this->assertSame(24, $context['length']);
-    }
-
-    public function testKeyWithoutValue()
-    {
-        $listener = new DummyListener;
-
-        $parser = new Parser;
-        $parser->addListener($listener);
-        $parser->parseFile(__DIR__ . '/resources/no-value.bib');
-
-        $this->assertCount(4, $listener->calls);
-
-        list($text, $context) = $listener->calls[0];
-        $this->assertSame(Parser::TYPE, $context['state']);
-        $this->assertSame('noValue', $text);
-
-        list($text, $context) = $listener->calls[1];
-        $this->assertSame(Parser::KEY, $context['state']);
-        $this->assertSame('foo', $text);
-
-        list($text, $context) = $listener->calls[2];
-        $this->assertSame(Parser::KEY, $context['state']);
-        $this->assertSame('bar', $text);
-
-        list($text, $context) = $listener->calls[3];
-        $this->assertSame(Parser::ORIGINAL_ENTRY, $context['state']);
-        $original = trim(file_get_contents(__DIR__ . '/resources/no-value.bib'));
-        $this->assertSame($original, $text);
-    }
-
-    public function testValueReading()
-    {
-        $listener = new DummyListener;
-
-        $parser = new Parser;
-        $parser->addListener($listener);
-        $parser->parseFile(__DIR__ . '/resources/values-basic.bib');
+        $parser->parseFile(__DIR__ . '/../resources/valid/values-basic.bib');
 
         $this->assertCount(14, $listener->calls);
 
@@ -158,17 +84,17 @@ class ParserTest extends TestCase
 
         list($text, $context) = $listener->calls[13];
         $this->assertSame(Parser::ORIGINAL_ENTRY, $context['state']);
-        $original = trim(file_get_contents(__DIR__ . '/resources/values-basic.bib'));
+        $original = trim(file_get_contents(__DIR__ . '/../resources/valid/values-basic.bib'));
         $this->assertSame($original, $text);
     }
 
     public function testValueScaping()
     {
-        $listener = new DummyListener;
+        $listener = new DummyListener();
 
-        $parser = new Parser;
+        $parser = new Parser();
         $parser->addListener($listener);
-        $parser->parseFile(__DIR__ . '/resources/values-escaped.bib');
+        $parser->parseFile(__DIR__ . '/../resources/valid/values-escaped.bib');
 
         $this->assertCount(6, $listener->calls);
 
@@ -212,7 +138,7 @@ class ParserTest extends TestCase
 
         list($text, $context) = $listener->calls[5];
         $this->assertSame(Parser::ORIGINAL_ENTRY, $context['state']);
-        $original = trim(file_get_contents(__DIR__ . '/resources/values-escaped.bib'));
+        $original = trim(file_get_contents(__DIR__ . '/../resources/valid/values-escaped.bib'));
         $this->assertSame($original, $text);
         $this->assertSame(0, $context['offset']);
         $this->assertSame(93, $context['length']);
@@ -220,11 +146,11 @@ class ParserTest extends TestCase
 
     public function testMultipleValues()
     {
-        $listener = new DummyListener;
+        $listener = new DummyListener();
 
-        $parser = new Parser;
+        $parser = new Parser();
         $parser->addListener($listener);
-        $parser->parseFile(__DIR__ . '/resources/values-multiple.bib');
+        $parser->parseFile(__DIR__ . '/../resources/valid/values-multiple.bib');
 
         $this->assertCount(19, $listener->calls);
 
@@ -302,17 +228,17 @@ class ParserTest extends TestCase
 
         list($text, $context) = $listener->calls[18];
         $this->assertSame(Parser::ORIGINAL_ENTRY, $context['state']);
-        $original = trim(file_get_contents(__DIR__ . '/resources/values-multiple.bib'));
+        $original = trim(file_get_contents(__DIR__ . '/../resources/valid/values-multiple.bib'));
         $this->assertSame($original, $text);
     }
 
     public function testValueSlashes()
     {
-        $listener = new DummyListener;
+        $listener = new DummyListener();
 
-        $parser = new Parser;
+        $parser = new Parser();
         $parser->addListener($listener);
-        $parser->parseFile(__DIR__ . '/resources/values-slashes.bib');
+        $parser->parseFile(__DIR__ . '/../resources/valid/values-slashes.bib');
 
         $this->assertCount(6, $listener->calls);
 
@@ -338,17 +264,17 @@ class ParserTest extends TestCase
 
         list($text, $context) = $listener->calls[5];
         $this->assertSame(Parser::ORIGINAL_ENTRY, $context['state']);
-        $original = trim(file_get_contents(__DIR__ . '/resources/values-slashes.bib'));
+        $original = trim(file_get_contents(__DIR__ . '/../resources/valid/values-slashes.bib'));
         $this->assertSame($original, $text);
     }
 
     public function testValueNestedBraces()
     {
-        $listener = new DummyListener;
+        $listener = new DummyListener();
 
-        $parser = new Parser;
+        $parser = new Parser();
         $parser->addListener($listener);
-        $parser->parseFile(__DIR__ . '/resources/values-nested-braces.bib');
+        $parser->parseFile(__DIR__ . '/../resources/valid/values-nested-braces.bib');
 
         $this->assertCount(8, $listener->calls);
 
@@ -382,174 +308,7 @@ class ParserTest extends TestCase
 
         list($text, $context) = $listener->calls[7];
         $this->assertSame(Parser::ORIGINAL_ENTRY, $context['state']);
-        $original = trim(file_get_contents(__DIR__ . '/resources/values-nested-braces.bib'));
+        $original = trim(file_get_contents(__DIR__ . '/../resources/valid/values-nested-braces.bib'));
         $this->assertSame($original, $text);
-    }
-
-    public function testTrailingComma()
-    {
-        $listener = new DummyListener;
-
-        $parser = new Parser;
-        $parser->addListener($listener);
-        $parser->parseFile(__DIR__ . '/resources/trailing-comma.bib');
-
-        $this->assertCount(4, $listener->calls);
-
-        list($text, $context) = $listener->calls[0];
-        $this->assertSame(Parser::TYPE, $context['state']);
-        $this->assertSame('trailingComma', $text);
-
-        list($text, $context) = $listener->calls[1];
-        $this->assertSame(Parser::KEY, $context['state']);
-        $this->assertSame('foo', $text);
-
-        list($text, $context) = $listener->calls[2];
-        $this->assertSame(Parser::RAW_VALUE, $context['state']);
-        $this->assertSame('bar', $text);
-
-        list($text, $context) = $listener->calls[3];
-        $this->assertSame(Parser::ORIGINAL_ENTRY, $context['state']);
-        $original = trim(file_get_contents(__DIR__ . '/resources/trailing-comma.bib'));
-        $this->assertSame($original, $text);
-    }
-
-    public function testTagNameWithUnderscore()
-    {
-        $listener = new DummyListener;
-
-        $parser = new Parser;
-        $parser->addListener($listener);
-        $parser->parseFile(__DIR__ . '/resources/tag-name-with-underscore.bib');
-
-        $this->assertCount(4, $listener->calls);
-
-        list($text, $context) = $listener->calls[0];
-        $this->assertSame(Parser::TYPE, $context['state']);
-        $this->assertSame('tagNameWithUnderscore', $text);
-
-        list($text, $context) = $listener->calls[1];
-        $this->assertSame(Parser::KEY, $context['state']);
-        $this->assertSame('foo_bar', $text);
-
-        list($text, $context) = $listener->calls[2];
-        $this->assertSame(Parser::RAW_VALUE, $context['state']);
-        $this->assertSame('fubar', $text);
-
-        list($text, $context) = $listener->calls[3];
-        $this->assertSame(Parser::ORIGINAL_ENTRY, $context['state']);
-        $original = trim(file_get_contents(__DIR__ . '/resources/tag-name-with-underscore.bib'));
-        $this->assertSame($original, $text);
-    }
-
-    public function testMultipleEntries()
-    {
-        $listener = new DummyListener;
-
-        $parser = new Parser;
-        $parser->addListener($listener);
-        $parser->parseFile(__DIR__ . '/resources/multiples-entries.bib');
-
-        $this->assertCount(8, $listener->calls);
-
-        list($text, $context) = $listener->calls[0];
-        $this->assertSame(Parser::TYPE, $context['state']);
-        $this->assertSame('entryFooWithSpaces', $text);
-
-        list($text, $context) = $listener->calls[1];
-        $this->assertSame(Parser::KEY, $context['state']);
-        $this->assertSame('foo', $text);
-
-        list($text, $context) = $listener->calls[2];
-        $this->assertSame(Parser::RAW_VALUE, $context['state']);
-        $this->assertSame('oof', $text);
-
-        list($text, $context) = $listener->calls[3];
-        $this->assertSame(Parser::ORIGINAL_ENTRY, $context['state']);
-        $this->assertSame('@entryFooWithSpaces { foo = oof }', $text);
-
-        list($text, $context) = $listener->calls[4];
-        $this->assertSame(Parser::TYPE, $context['state']);
-        $this->assertSame('entryBarWithoutSpaces', $text);
-
-        list($text, $context) = $listener->calls[5];
-        $this->assertSame(Parser::KEY, $context['state']);
-        $this->assertSame('bar', $text);
-
-        list($text, $context) = $listener->calls[6];
-        $this->assertSame(Parser::RAW_VALUE, $context['state']);
-        $this->assertSame('rab', $text);
-
-        list($text, $context) = $listener->calls[7];
-        $this->assertSame(Parser::ORIGINAL_ENTRY, $context['state']);
-        $this->assertSame('@entryBarWithoutSpaces{bar=rab}', $text);
-    }
-
-    /**
-     * @dataProvider validFileProvider
-     */
-    public function testStringParserAndFileParserMustWorksIdentically($file)
-    {
-        $listenerFile = new DummyListener;
-        $parserFile = new Parser;
-        $parserFile->addListener($listenerFile);
-        $parserFile->parseFile($file);
-
-        $listenerString = new DummyListener;
-        $parserString = new Parser;
-        $parserString->addListener($listenerString);
-        $parserString->parseString(file_get_contents($file));
-
-        $this->assertSame($listenerFile->calls, $listenerString->calls);
-    }
-
-    public function validFileProvider()
-    {
-        $dir = __DIR__ . '/resources';
-
-        return [
-            [$dir . '/abbreviation.bib'],
-            [$dir . '/basic.bib'],
-            [$dir . '/citation-key.bib'],
-            [$dir . '/multiples-entries.bib'],
-            [$dir . '/no-value.bib'],
-            [$dir . '/tag-name-uppercased.bib'],
-            [$dir . '/tag-name-with-underscore.bib'],
-            [$dir . '/trailing-comma.bib'],
-            [$dir . '/type-overriding.bib'],
-            [$dir . '/values-basic.bib'],
-            [$dir . '/values-escaped.bib'],
-            [$dir . '/values-multiple.bib'],
-            [$dir . '/values-nested-braces.bib'],
-            [$dir . '/values-slashes.bib'],
-        ];
-    }
-
-    /**
-     * @dataProvider invalidFileProvider
-     */
-    public function testInvalidInputMustCauseException($file, $message)
-    {
-        $parser = new Parser;
-
-        $this->expectException(ParseException::class);
-        $this->expectExceptionMessage($message);
-        $parser->parseFile($file);
-    }
-
-    public function invalidFileProvider()
-    {
-        $dir = __DIR__ . '/resources/invalid';
-
-        return [
-            [$dir . '/brace-missing.bib', "'\\0' at line 3 column 1"],
-            [$dir . '/multiple-braced-values.bib', "'{' at line 2 column 33"],
-            [$dir . '/multiple-quoted-values.bib', "'\"' at line 2 column 33"],
-            [$dir . '/multiple-raw-values.bib', "'b' at line 2 column 31"],
-            [$dir . '/space-after-at-sign.bib', "' ' at line 1 column 2"],
-            [$dir . '/splitted-key.bib', "'k' at line 2 column 14"],
-            [$dir . '/splitted-type.bib', "'T' at line 1 column 11"],
-            [$dir . '/double-concat.bib', "'#' at line 2 column 20"],
-        ];
     }
 }
