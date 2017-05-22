@@ -1,28 +1,39 @@
-## Changes in renanbr/bibtex-parser
+# Changes in BibTex Parser
 
-### [0.3.0](https://github.com/renanbr/bibtex-parser/releases/tag/0.3.0) - 06/01/2017
+## [0.4.0] - 2017-05-23
 
-#### Fixed
+### Fixed
 
-- None.
+- Issue [#6](https://github.com/renanbr/bibtex-parser/issues/6): `%` character into delimited value causes `ParseException`.
 
-#### Added
+### Changed
 
-- Ability to process tag value through `Listener::setTagValueProcessor()`.
+- Issue [#7](https://github.com/renanbr/bibtex-parser/issues/7): Comments are treated according to the BibTeX's specification.
 
-### [0.2.0](https://github.com/renanbr/bibtex-parser/releases/tag/0.2.0) - 17/12/2016
+## [0.3.0] - 2017-01-06
 
-#### Fixed
+### Added
 
-- Trailing comma support;
-- Allow underscore in tag name.
+- Issue [#5](https://github.com/renanbr/bibtex-parser/issues/5): Ability to process tag value through `Listener::setTagValueProcessor()`.
 
-#### Added
+## [0.2.0] - 2016-12-17
 
-- Original BibTeX entries are sent to the listeners with the status `Parser::ORIGINAL_ENTRY` just after each entry reading is done;
+### Fixed
+
+- PR [#1](https://github.com/renanbr/bibtex-parser/commit/2ac8aec67d4f6aceb443cb03b855f8c2b2f456e3): Trailing comma causes `ParseException`;
+- Issue [#4](https://github.com/renanbr/bibtex-parser/issues/4): `_` character into tag name causes `ParseException`.
+
+### Added
+
+- Issue [#2](https://github.com/renanbr/bibtex-parser/issues/2): Original BibTeX entries are sent to the listeners with the status `Parser::ORIGINAL_ENTRY` just after each entry reading is done;
 - `Listener::export()` produces entries with an additional key called `_original`, which contains the original BibTex entry;
 - Ability to change the tag name case through `Listener::setTagNameCase()`.
 
-### [0.1.0](https://github.com/renanbr/bibtex-parser/releases/tag/0.1.0) - 29/11/2016
+## [0.1.0] - 2016-11-29
 
 - First release.
+
+[0.1.0]: https://github.com/renanbr/bibtex-parser/releases/tag/0.1.0
+[0.2.0]: https://github.com/renanbr/bibtex-parser/releases/tag/0.2.0
+[0.3.0]: https://github.com/renanbr/bibtex-parser/releases/tag/0.3.0
+[0.4.0]: https://github.com/renanbr/bibtex-parser/releases/tag/0.4.0
