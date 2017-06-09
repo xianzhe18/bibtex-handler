@@ -54,6 +54,18 @@ Below we have the `example.bib` source file used in the sample above.
 }
 ```
 
+### Author names parsing
+BibTex recognizes four parts of an author's name: First Von Last Jr.
+If you would like to parse the author names included in your entries, you can use the `RenanBr\BibTexParser\AuthorProcessor`
+class. Before exporting the contents, add this processor:
+
+```php
+$listener->setTagValueProcessor(new AuthorProcessor());
+$entries = $listener->export();
+```
+
+The resulting `$entries[0]['author']` will then be an array with each author name separated in the four parts above.
+
 ## API
 
 ### RenanBr\BibTexParser\Parser
