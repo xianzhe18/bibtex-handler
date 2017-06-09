@@ -60,7 +60,7 @@ If you would like to parse the author names included in your entries, you can us
 class. Before exporting the contents, add this processor:
 
 ```php
-$listener->setTagValueProcessor(new AuthorProcessor());
+$listener->setTagValueProcessor(new RenanBr\BibTexParser\AuthorProcessor());
 $entries = $listener->export();
 ```
 
