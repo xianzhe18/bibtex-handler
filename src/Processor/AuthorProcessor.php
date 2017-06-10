@@ -29,19 +29,18 @@ class AuthorProcessor
     public function __invoke(&$value, $tag)
     {
         if (strtolower($tag) == "author") {
-            $value = $this->_extractAuthors($value);
+            $value = $this->extractAuthors($value);
         }
     }
 
     /**
      * Extracting the authors
      *
-     * @access private
      * @param string $entry The entry with the authors
      * @return array the extracted authors
      * @author Elmar Pitschke <elmar.pitschke@gmx.de>
      */
-    public function _extractAuthors($entry)
+    private function extractAuthors($entry)
     {
         // Sanitizes the entry to remove unwanted whitespace
         $entry = trim(preg_replace('/\s+/', ' ', $entry));
@@ -73,14 +72,14 @@ class AuthorProcessor
                             $last .= ' '.$tmparray[$j];
                         } elseif ($invon) {
                             try {
-                                $case = $this->_determineCase($tmparray[$j]);
+                                $case = $this->determineCase($tmparray[$j]);
 
                                 if ((0 == $case) || (-1 == $case)) { //Change from von to last
                                     //You only change when there is no more lower case there
                                     $islast = true;
                                     for ($k=($j+1); $k<($size-1); $k++) {
                                         try {
-                                            $futurecase = $this->_determineCase($tmparray[$k]);
+                                            $futurecase = $this->determineCase($tmparray[$k]);
                                             if (0 == $futurecase) {
                                                 $islast = false;
                                             }
@@ -106,7 +105,7 @@ class AuthorProcessor
                             }
                         } else {
                             try {
-                                $case = $this->_determineCase($tmparray[$j]);
+                                $case = $this->determineCase($tmparray[$j]);
                                 if (0 == $case) { //Change from first to von
                                     $invon = true;
                                     $von   .= ' '.$tmparray[$j];
@@ -136,11 +135,11 @@ class AuthorProcessor
                         if ($inlast) {
                             $last .= ' '.$vonlastarray[$j];
                         } else {
-                            if (0 != ($this->_determineCase($vonlastarray[$j]))) { //Change from von to last
+                            if (0 != ($this->determineCase($vonlastarray[$j]))) { //Change from von to last
                                 $islast = true;
                                 for ($k=($j+1); $k<($size-1); $k++) {
                                     try {
-                                        $case = $this->_determineCase($vonlastarray[$k]);
+                                        $case = $this->determineCase($vonlastarray[$k]);
                                         if (0 == $case) {
                                             $islast = false;
                                         }
@@ -183,13 +182,12 @@ class AuthorProcessor
      * - Lower Case (return value 0)
      * - Caseless   (return value -1)
      *
-     * @access private
      * @param string $word
      * @return int The Case
      * @throws ParseException
      * @author Elmar Pitschke <elmar.pitschke@gmx.de>
      */
-    public function _determineCase($word)
+    private function determineCase($word)
     {
         $ret         = -1;
         $trimmedword = trim($word);
