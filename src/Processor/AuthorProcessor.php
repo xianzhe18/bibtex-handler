@@ -26,7 +26,7 @@ class AuthorProcessor
      * @param string $&value The current tag value, will be modified in-place
      * @param $tag The current tag. This function will only process "author" tags
      */
-    public function __invoke(string &$value, string $tag)
+    public function __invoke(&$value, $tag)
     {
         if (strtolower($tag) == "author") {
             $value = $this->_extractAuthors($value);
