@@ -11,6 +11,8 @@
 
 namespace RenanBr\BibTexParser\Processor;
 
+use RenanBr\BibTexParser\ParseException;
+
 /**
  * This class includes source code adapted from the Structures_BibTex package,
  * (c) Elmar Pitschke <elmar.pitschke@gmx.de>, included here under PHP license:
