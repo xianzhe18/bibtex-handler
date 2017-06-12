@@ -28,8 +28,8 @@ class Listener implements ListenerInterface
     /** @var int|null */
     private $tagNameCase = null;
 
-    /** @var callable|null */
-    private $tagValueProcessor = null;
+    /** @var array */
+    private $tagValueProcessors = [];
 
     /** @var bool */
     private $processed = false;
@@ -64,10 +64,48 @@ class Listener implements ListenerInterface
      *                                 It uses array_walk() internally.
      *                                 The suggested signature for the argument is:
      *                                 function (string &$value, string $tag);
+     *
+     * @deprecated
      */
     public function setTagValueProcessor(callable $processor = null)
     {
-        $this->tagValueProcessor = $processor;
+        if (is_null($processor)) {
+            $this->tagValueProcessors = [];
+
+            return;
+        } // else
+        $this->tagValueProcessors = [$processor];
+    }
+
+    /**
+     * @param  $processor Function or array of functions to be applied to every member
+     *                    of an BibTeX entry. Uses array_walk() internally.
+     *                    The suggested signature for each function argument is:
+     *                        function (string &$value, string $tag);
+     *                    Note that functions will be applied in the same order
+     *                    in which they were added.
+     * @throws \InvalidArgumentException
+     */
+    public function addTagValueProcessor($processor)
+    {
+        if (is_array($processor)) {
+            // check if each value is callable
+        foreach ($processor as $testing) {
+            if (! is_callable($testing)) {
+                throw new \InvalidArgumentException('The argument for addTagValueProcessor should be either callable or an array of callables.');
+            }
+        }
+            $this->tagValueProcessors = array_merge($this->tagValueProcessors, $processor);
+
+            return;
+        }
+        if (is_callable($processor)) {
+            $this->tagValueProcessors[] = $processor;
+
+            return;
+        }
+        // if control reaches this point, raise exception
+        throw new \InvalidArgumentException('The argument for addTagValueProcessor should be either callable or an array of callables.');
     }
 
     public function bibTexUnitFound($text, array $context)
@@ -145,9 +183,11 @@ class Listener implements ListenerInterface
 
     private function processTagValue(array &$entry)
     {
-        if (null === $this->tagValueProcessor) {
+        if (empty($this->tagValueProcessors)) {
             return;
         }
-        array_walk($entry, $this->tagValueProcessor);
+        foreach ($this->tagValueProcessors as $processor) {
+            array_walk($entry, $processor);
+        }
     }
 }
