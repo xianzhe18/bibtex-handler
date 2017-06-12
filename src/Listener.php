@@ -65,10 +65,12 @@ class Listener implements ListenerInterface
      *                                 The suggested signature for the argument is:
      *                                 function (string &$value, string $tag);
      *
-     * @deprecated
+     * @deprecated The method setTagValueProcessor is deprecated since 0.5.0 and will
+     *             be removed in version 1.0.0. Use addTagValueProcessor instead.
      */
     public function setTagValueProcessor(callable $processor = null)
     {
+        @trigger_error('Use do_something_else() instead', E_USER_DEPRECATED);
         if (is_null($processor)) {
             $this->tagValueProcessors = [];
 
@@ -88,6 +90,14 @@ class Listener implements ListenerInterface
      */
     public function addTagValueProcessor($processor)
     {
+        // if $processor is a callable array, it will be processed here
+    // (see http://php.net/manual/en/language.types.callable.php#example-75)
+        if (is_callable($processor)) {
+            $this->tagValueProcessors[] = $processor;
+
+            return;
+        }
+    // if control reaches here: it might be a non-callable array
         if (is_array($processor)) {
             // check if each value is callable
         foreach ($processor as $testing) {
@@ -96,11 +106,6 @@ class Listener implements ListenerInterface
             }
         }
             $this->tagValueProcessors = array_merge($this->tagValueProcessors, $processor);
-
-            return;
-        }
-        if (is_callable($processor)) {
-            $this->tagValueProcessors[] = $processor;
 
             return;
         }

@@ -132,4 +132,20 @@ class TagValueProcessorTest extends TestCase
         $this->assertSame('basic', $entry['type']);
         $this->assertSame('bar', $entry['foo']);
     }
+
+    public function testAddTagValueProcessorWithCallableArray()
+    {
+        $listener = new Listener();
+        $my_callable_array = ['RenanBr\BibTexParser\Test\DummyProcessor', 'myCallbackMethod'];
+        $listener->addTagValueProcessor($my_callable_array);
+
+        $parser = new Parser();
+        $parser->addListener($listener);
+        $parser->parseFile(__DIR__ . '/../resources/valid/basic.bib');
+
+        $entries = $listener->export();
+        $entry = $entries[0];
+        $this->assertSame('dummy-callback-basic', $entry['type']);
+        $this->assertSame('dummy-callback-bar', $entry['foo']);
+    }
 }

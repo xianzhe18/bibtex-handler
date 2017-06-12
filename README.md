@@ -131,15 +131,6 @@ class RenanBr\BibTexParser\Listener implements RenanBr\BibTexParser\ListenerInte
     public function setTagNameCase(int|null $case): void;
 
     /**
-     * @param callable|null $processor Function to be applied to every member of an BibTeX entry.
-     *                                 It uses array_walk() internally.
-     *                                 The suggested signature for the argument is:
-     *                                 function (string &$value, string $tag);
-     * @deprecated
-     */
-    public function addTagValueProcessor(callable|null $processor): void;
-
-    /**
      * @param  $processor Function or array of functions to be applied to every member
      *                    of an BibTeX entry. Uses array_walk() internally.
      *                    The suggested signature for each function argument is:
