@@ -113,7 +113,7 @@ Its features are:
 - It [concatenates](http://www.bibtex.org/Format/) tag values;
 - It handles [abbreviations](http://www.bibtex.org/Format/);
 - If the first tag has no value, the tag name is interpreted as value of `citation-key` tag instead.
-- It allows to inject tag value processor through `setTagValueProcessor()`.
+- It allows to inject tag value processor through `addTagValueProcessor()`.
   Once BibTeX contain LaTeX, this method may be useful to translate them into HTML, for example.
 - It handles tag name case through `setTagNameCase()`
 
@@ -131,12 +131,15 @@ class RenanBr\BibTexParser\Listener implements RenanBr\BibTexParser\ListenerInte
     public function setTagNameCase(int|null $case): void;
 
     /**
-     * @param callable|null $processor Function to be applied to every member of an BibTeX entry.
-     *                                 It uses array_walk() internally.
-     *                                 The suggested signature for the argument is:
-     *                                 function (string &$value, string $tag);
+     * @param  $processor Function or array of functions to be applied to every member
+     *                    of an BibTeX entry. Uses array_walk() internally.
+     *                    The suggested signature for each function argument is:
+     *                        function (string &$value, string $tag);
+     *                    Note that functions will be applied in the same order
+     *                    in which they were added.
+     * @throws \InvalidArgumentException
      */
-    public function setTagValueProcessor(callable|null $processor): void;
+    public function addTagValueProcessor($processor): void;
 
     /* Inherited and implemented methods */
 
@@ -151,7 +154,7 @@ If you would like to parse the author names included in your entries, you can us
 class. Before exporting the contents, add this processor:
 
 ```php
-$listener->setTagValueProcessor(new RenanBr\BibTexParser\Processor\AuthorProcessor());
+$listener->addTagValueProcessor(new RenanBr\BibTexParser\Processor\AuthorProcessor());
 $entries = $listener->export();
 ```
 
