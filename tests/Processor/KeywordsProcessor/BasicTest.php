@@ -16,7 +16,7 @@ use RenanBr\BibTexParser\Processor\KeywordsProcessor;
 
 class BasicTest extends TestCase
 {
-    public function testWithCommaAsSeparator()
+    public function testCommaAsSeparator()
     {
         $keywords = 'foo, bar';
         $processor = new KeywordsProcessor();
@@ -27,7 +27,7 @@ class BasicTest extends TestCase
         $this->assertSame('bar', $keywords[1]);
     }
 
-    public function testWithSemicolonAsSeparator()
+    public function testSemicolonAsSeparator()
     {
         $keywords = 'foo; bar';
         $processor = new KeywordsProcessor();
