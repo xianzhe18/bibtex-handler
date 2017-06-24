@@ -22,5 +22,8 @@
     },
     "config": {
         "sort-packages": true
+    },
+    "require-dev": {
+        "ryakad/pandoc-php": "^1.0"
     }
 }
