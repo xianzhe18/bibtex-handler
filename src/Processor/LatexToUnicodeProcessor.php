@@ -15,14 +15,19 @@ use Pandoc\Pandoc;
 
 class LatexToUnicodeProcessor
 {
+    /** @var Pandoc */
+    private $pandoc;
+
     /**
      * @param string|array $&value The current tag value, will be modified in-place
      */
     public function __invoke(&$value)
     {
-        $pandoc = new Pandoc();
-        $decoder = function (&$text) use ($pandoc) {
-            $text = $pandoc->runWith($text, [
+        if (!$this->pandoc) {
+            $this->pandoc = new Pandoc();
+        }
+        $decoder = function (&$text) {
+            $text = $this->pandoc->runWith($text, [
                 'from' => 'latex',
                 'to' => 'plain',
             ]);
