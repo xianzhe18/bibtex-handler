@@ -1,34 +1,28 @@
-# BibTex Parser
+# BibTeX Parser
 
-_BibTex Parser_ is a PHP library that provides an API to read [.bib](http://mirrors.ctan.org/biblio/bibtex/base/btxdoc.pdf) files programmatically.
+This is a [BibTeX](http://mirrors.ctan.org/biblio/bibtex/base/btxdoc.pdf) parser written in PHP.
 
 [![Build Status](https://travis-ci.org/renanbr/bibtex-parser.svg?branch=master)](https://travis-ci.org/renanbr/bibtex-parser)
 
 ## Install
 
-~~~bash
+```bash
 composer require renanbr/bibtex-parser
-~~~
+```
 
 See the [changelog](CHANGELOG.md).
 
 ## Usage
 
-1. Create an instance of `RenanBr\BibTexParser\ListenerInterface`
-    - `RenanBr\BibTexParser\Listener`, described further in this document, implements this interface and provides many options
-2. Create an instance of `RenanBr\BibTexParser\Parser`
-3. Attach the Listener to the Parser
-4. Parse a _file_ calling `parseFile($file)`...
-    - ... or a _string_ calling `parseString($string)`
-5. Get data from the Listener (it depends on the interface implementation)
-    - `RenanBr\BibTexParser\Listener` provides the `export()` method
-
 ```php
-$listener = new RenanBr\BibTexParser\Listener;
-$parser = new RenanBr\BibTexParser\Parser;
-$parser->addListener($listener);
-$parser->parseFile('/path/to/example.bib');
-$entries = $listener->export();
+use RenanBr\BibTexParser\Parser;
+use RenanBr\BibTexParser\Listener;
+
+$parser = new Parser();                     // Create a Parser instance
+$listener = new Listener();                 // Create a Listener instance
+$parser->addListener($listener);            // Attach the Listener to the Parser
+$parser->parseFile('/path/to/example.bib'); // Parse a file, or string $parser->parseString()
+$entries = $listener->export();             // Get data from the Listener
 
 $entries[0]['type'];         // article
 $entries[0]['citation-key']; // Ovadia2011
@@ -54,37 +48,124 @@ Below we have the `example.bib` source file used in the sample above.
 }
 ```
 
-## API
+### Configuring the Listener
 
-### RenanBr\BibTexParser\Parser
+The `RenanBr\BibTexParser\Listener` class provides, by default, these features:
+
+- `export()` returns all entries found;
+- [`citation-key` auto detection](http://www.bibtex.org/Format/);
+- [Tag value concatenation](http://www.bibtex.org/Format/);
+- [Abbreviation handling](http://www.bibtex.org/Format/);
+- The original text of each entry is exposed in the `_original` key.
+
+Besides that you can configure it in two ways:
+
+- Tag name case; and
+- Tag value processors.
+
+If you need more than this, considering implementing your own listener (more info at the end of this document).
+
+#### Tag name case
+
+You can change the character case of tags' names through `setTagNameCase()` before exporting the contents.
 
 ```php
-class RenanBr\BibTexParser\Parser
-{
-    /**
-     * @throws RenanBr\BibTexParser\ParseException If $file given is not a valid BibTeX.
-     * @throws ErrorException If $file given is not readable.
-     */
-    public function parseFile(string $file): void;
-
-    /**
-     * @throws RenanBr\BibTexParser\ParseException If $string given is not a valid BibTeX.
-     */
-    public function parseString(string $string): void;
-
-    public function addListener(RenanBr\BibTexParser\ListenerInterface $listener): void;
-}
+$listener->setTagNameCase(CASE_UPPER); // or CASE_LOWER
+$entries = $listener->export();
+$entries[0]['TYPE'];
 ```
 
-### RenanBr\BibTexParser\ListenerInterface
+#### Tag value processors
+
+You can change tags' values by adding one or more processors through `addTagValueProcessor()` before exporting the contents.
+This project is shipped with some useful processors out of the box.
+
+##### Author
+
+BibTex recognizes four parts of an author's name: First Von Last Jr.
+If you would like to parse the author names included in your entries, you can use the `RenanBr\BibTexParser\AuthorProcessor` class.
+Before exporting the contents, add this processor:
+
+```php
+use RenanBr\BibTexParser\Processor\AuthorProcessor;
+
+$listener->addTagValueProcessor(new AuthorProcessor());
+$entries = $listener->export();
+```
+
+The resulting `$entries[0]['author']` will then be an array with each author name separated in the four parts above.
+
+##### Keywords
+
+The `keywords` tag contains a list of expressions represented as text, you might want to read them as an array instead.
+You can achieve it adding `RenanBr\BibTexParser\KeywordsProcessor` before exporting the contents:
+
+```php
+use RenanBr\BibTexParser\Processor\KeywordsProcessor;
+
+$listener->addTagValueProcessor(new KeywordsProcessor());
+$entries = $listener->export();
+```
+
+The resulting `$entries[0]['keywords']` will then be an array.
+
+##### LaTeX to Unicode
+
+BibTeX files store LaTeX contents.
+You might want to read them as unicode instead.
+The `RenanBr\BibTexParser\LatexToUnicodeProcessor` class solves this problem.
+Before adding the processor to the listener you must:
+
+- [install Pandoc](http://pandoc.org/installing.html) in your system; and
+- add [ryakad/pandoc-php](https://github.com/ryakad/pandoc-php) as a dependency of your project.
+
+```php
+use RenanBr\BibTexParser\Processor\LatexToUnicodeProcessor;
+
+$listener->addTagValueProcessor(new LatexToUnicodeProcessor());
+$entries = $listener->export();
+```
+
+Notes:
+
+- Order matters, add this processor as the last;
+- This processor throw a `Pandoc\PandocException`.
+
+##### Custom
+
+The `addTagValueProcessor()` method expects a `callable` as argument.
+In the example shown below, we append the text `with laser` to the `title` tags for all entries.
+
+```php
+$listener->addTagValueProcessor(function (&$value, $tag) {
+    if ($tag == 'title') {
+        $value .= ' with laser';
+    }
+});
+```
+
+## Advanced usage
+
+This library has two main parts:
+
+- Parser, represented by the `RenanBr\BibTexParser\Parser` class; and
+- Listener, represented by the `Renan\BibTexParser\ListenerInterface` interface.
+
+The parser class is able to detect BibTeX units, such as `type`, `key`, `value`, etc.
+As the parser finds an unite, listeners are triggered.
+
+You can code your own listener!
+All you have to do is handle unites.
 
 ```php
 interface RenanBr\BibTexParser\ListenerInterface
 {
     /**
-     * @param string $text The original content of the unit found.
-     *                     Escape character will not be sent.
-     * @param array $context Contains details of the unit found.
+     * Called when an unit is found.
+     *
+     * @param string $text    The original content of the unit found.
+     *                        Escaped characters will not be sent.
+     * @param array  $context Contains details of the unit found.
      */
     public function bibTexUnitFound(string $text, array $context): void;
 }
@@ -100,62 +181,6 @@ The `$context` variable explained:
   - `Parser::QUOTED_VALUE`
   - `Parser::ORIGINAL_ENTRY`
 - `offset` contains the text beginning position.
-  It may be useful, for example, to [seek](https://php.net/fseek) a file;
+  It may be useful, for example, to [seek on a file pointer](https://php.net/fseek);
 - `length` contains the original text length.
   It may differ from string length sent to the listener because may there are escaped characters.
-
-#### RenanBr\BibTexParser\Listener
-
-As you may noticed, this library provides `RenanBr\BibTexParser\Listener` as a `RenanBr\BibTexParser\ListenerInterface` implementation.
-Its features are:
-- `export()` returns all entries found;
-- It exposes the original entry text in the `_original` key of each entry;
-- It [concatenates](http://www.bibtex.org/Format/) tag values;
-- It handles [abbreviations](http://www.bibtex.org/Format/);
-- If the first tag has no value, the tag name is interpreted as value of `citation-key` tag instead.
-- It allows to inject tag value processor through `addTagValueProcessor()`.
-  Once BibTeX contain LaTeX, this method may be useful to translate them into HTML, for example.
-- It handles tag name case through `setTagNameCase()`
-
-```php
-class RenanBr\BibTexParser\Listener implements RenanBr\BibTexParser\ListenerInterface
-{
-    /**
-     * @return array All entries found during a parsing process.
-     */
-    public function export(): array;
-
-    /**
-     * @param int|null $case CASE_LOWER, CASE_UPPER or null (no traitement)
-     */
-    public function setTagNameCase(int|null $case): void;
-
-    /**
-     * @param  $processor Function or array of functions to be applied to every member
-     *                    of an BibTeX entry. Uses array_walk() internally.
-     *                    The suggested signature for each function argument is:
-     *                        function (string &$value, string $tag);
-     *                    Note that functions will be applied in the same order
-     *                    in which they were added.
-     * @throws \InvalidArgumentException
-     */
-    public function addTagValueProcessor($processor): void;
-
-    /* Inherited and implemented methods */
-
-    public function bibTexUnitFound(string $text, array $context): void;
-}
-```
-
-### Tag Value Processors
-#### RenanBr\BibTexParser\Processor\AuthorProcessor
-BibTex recognizes four parts of an author's name: First Von Last Jr.
-If you would like to parse the author names included in your entries, you can use the `RenanBr\BibTexParser\AuthorProcessor`
-class. Before exporting the contents, add this processor:
-
-```php
-$listener->addTagValueProcessor(new RenanBr\BibTexParser\Processor\AuthorProcessor());
-$entries = $listener->export();
-```
-
-The resulting `$entries[0]['author']` will then be an array with each author name separated in the four parts above.
