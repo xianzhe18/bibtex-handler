@@ -22,5 +22,11 @@
     },
     "config": {
         "sort-packages": true
+    },
+    "require-dev": {
+        "ryakad/pandoc-php": "^1.0"
+    },
+    "suggest": {
+        "ryakad/pandoc-php": "Needed to support LaTeX decoder in class RenanBr\\BibTexParser\\Processor\\LatexToUnicodeProcessor"
     }
 }
