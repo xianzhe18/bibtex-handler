@@ -6,6 +6,8 @@
 
 - Issue [#17]: Ability to add multiple processors to the `Listener` through `addTagValueProcessor()`;
 - Issue [#15]: Author name processor, `RenanBr\BibTexParser\Processor\AuthorProcessor`;
+- PR [#22]: Keywords processor, `RenanBr\BibTexParser\Processor\KeywordsProcessor`;
+- Issue [#19]: LaTeX to Unicode processor, `RenanBr\BibTexParser\Processor\LatexToUnicodeProcessor`.
 
 [0.5.0]: https://github.com/renanbr/bibtex-parser/releases/tag/0.5.0
 
@@ -15,6 +17,8 @@
 
 [#15]: https://github.com/renanbr/bibtex-parser/issues/15
 [#17]: https://github.com/renanbr/bibtex-parser/issues/17
+[#22]: https://github.com/renanbr/bibtex-parser/pull/22
+[#19]: https://github.com/renanbr/bibtex-parser/issues/19
 
 ## [0.4.0] - 2017-05-23
 
