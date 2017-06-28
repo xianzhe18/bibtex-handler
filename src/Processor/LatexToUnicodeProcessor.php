@@ -19,7 +19,7 @@ class LatexToUnicodeProcessor
     private $pandoc;
 
     /**
-     * @param string|array $&value The current tag value, will be modified in-place
+     * @param string|array &$value The current tag value, will be modified in-place
      */
     public function __invoke(&$value)
     {

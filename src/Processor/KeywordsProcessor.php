@@ -14,7 +14,7 @@ namespace RenanBr\BibTexParser\Processor;
 class KeywordsProcessor
 {
     /**
-     * @param string $&value The current tag value, will be modified in-place
+     * @param string &$value The current tag value, will be modified in-place
      * @param string $tag    The current tag name, this method will only process "keywords" tags
      */
     public function __invoke(&$value, $tag)
