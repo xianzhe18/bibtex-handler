@@ -82,7 +82,7 @@ This project is shipped with some useful processors out of the box.
 
 ##### Author
 
-BibTex recognizes four parts of an author's name: First Von Last Jr.
+BibTeX recognizes four parts of an author's name: First Von Last Jr.
 If you would like to parse the author names included in your entries, you can use the `RenanBr\BibTexParser\AuthorProcessor` class.
 Before exporting the contents, add this processor:
 
@@ -129,7 +129,7 @@ $entries = $listener->export();
 Notes:
 
 - Order matters, add this processor as the last;
-- This processor throw a `Pandoc\PandocException`.
+- This processor may throw a `Pandoc\PandocException`.
 
 ##### Custom
 
