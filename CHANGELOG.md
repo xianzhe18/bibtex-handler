@@ -1,11 +1,11 @@
 # Changes in BibTex Parser
 
-## [0.5.0] - _not yet released_
+## [0.5.0] - 2017-06-29
 
 ### Added
 
-- Issue [#17]: Ability to add multiple processors to the `Listener` through `addTagValueProcessor()`;
-- Issue [#15]: Author name processor, `RenanBr\BibTexParser\Processor\AuthorProcessor`;
+- Issue [#17]: Ability to add multiple processors to the `Listener` through `addTagValueProcessor()` ([@andrechalom]);
+- Issue [#15]: Author name processor, `RenanBr\BibTexParser\Processor\AuthorProcessor` ([@andrechalom]);
 - PR [#22]: Keywords processor, `RenanBr\BibTexParser\Processor\KeywordsProcessor`;
 - Issue [#19]: LaTeX to Unicode processor, `RenanBr\BibTexParser\Processor\LatexToUnicodeProcessor`.
 
@@ -13,7 +13,7 @@
 
 ### Changed
 
-- Issue [#17]: Deprecate `Listener::setTagValueProcessor()`.
+- Issue [#17]: Deprecate `Listener::setTagValueProcessor()` ([@andrechalom]).
 
 [#15]: https://github.com/renanbr/bibtex-parser/issues/15
 [#17]: https://github.com/renanbr/bibtex-parser/issues/17
@@ -50,7 +50,7 @@
 
 ### Fixed
 
-- PR [#1]: Trailing comma causes `ParseException`;
+- PR [#1]: Trailing comma causes `ParseException` ([@raphael-st]);
 - Issue [#4]: `_` character into tag name causes `ParseException`.
 
 [#1]: https://github.com/renanbr/bibtex-parser/commit/2ac8aec67d4f6aceb443cb03b855f8c2b2f456e3
@@ -72,3 +72,6 @@
 - First release.
 
 [0.1.0]: https://github.com/renanbr/bibtex-parser/releases/tag/0.1.0
+
+[@andrechalom]: https://github.com/andrechalom
+[@raphael-st]: https://github.com/raphael-st
