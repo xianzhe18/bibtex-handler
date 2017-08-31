@@ -56,6 +56,7 @@ The `RenanBr\BibTexParser\Listener` class provides, by default, these features:
 - [`citation-key` auto detection](http://www.bibtex.org/Format/);
 - [Tag value concatenation](http://www.bibtex.org/Format/);
 - [Abbreviation handling](http://www.bibtex.org/Format/);
+- The type of publication is exposed in the `type` key;
 - The original text of each entry is exposed in the `_original` key.
 
 Besides that you can configure it in two ways:
@@ -83,7 +84,7 @@ This project is shipped with some useful processors out of the box.
 ##### Author
 
 BibTeX recognizes four parts of an author's name: First Von Last Jr.
-If you would like to parse the author names included in your entries, you can use the `RenanBr\BibTexParser\AuthorProcessor` class.
+If you would like to parse the author names included in your entries, you can use the `RenanBr\BibTexParser\Processor\AuthorProcessor` class.
 Before exporting the contents, add this processor:
 
 ```php
@@ -98,7 +99,7 @@ The resulting `$entries[0]['author']` will then be an array with each author nam
 ##### Keywords
 
 The `keywords` tag contains a list of expressions represented as text, you might want to read them as an array instead.
-You can achieve it adding `RenanBr\BibTexParser\KeywordsProcessor` before exporting the contents:
+You can achieve it adding `RenanBr\BibTexParser\Processor\KeywordsProcessor` before exporting the contents:
 
 ```php
 use RenanBr\BibTexParser\Processor\KeywordsProcessor;
@@ -113,7 +114,7 @@ The resulting `$entries[0]['keywords']` will then be an array.
 
 BibTeX files store LaTeX contents.
 You might want to read them as unicode instead.
-The `RenanBr\BibTexParser\LatexToUnicodeProcessor` class solves this problem.
+The `RenanBr\BibTexParser\Processor\LatexToUnicodeProcessor` class solves this problem.
 Before adding the processor to the listener you must:
 
 - [install Pandoc](http://pandoc.org/installing.html) in your system; and
@@ -151,7 +152,7 @@ This library has two main parts:
 - Parser, represented by the `RenanBr\BibTexParser\Parser` class; and
 - Listener, represented by the `Renan\BibTexParser\ListenerInterface` interface.
 
-The parser class is able to detect BibTeX units, such as `type`, `key`, `value`, etc.
+The parser class is able to detect BibTeX units, such as "type", "tag name", "tag value".
 As the parser finds an unite, listeners are triggered.
 
 You can code your own listener!
@@ -175,10 +176,10 @@ The `$context` variable explained:
 - The `state` key contains the current parser's state.
   It may assume:
   - `Parser::TYPE`
-  - `Parser::KEY`
-  - `Parser::RAW_VALUE`
-  - `Parser::BRACED_VALUE`
-  - `Parser::QUOTED_VALUE`
+  - `Parser::KEY` (tag name)
+  - `Parser::RAW_VALUE` (tag value)
+  - `Parser::BRACED_VALUE` (tag value)
+  - `Parser::QUOTED_VALUE` (tag value)
   - `Parser::ORIGINAL_ENTRY`
 - `offset` contains the text beginning position.
   It may be useful, for example, to [seek on a file pointer](https://php.net/fseek);
