@@ -18,6 +18,7 @@ class AuthorProcessor extends NamesProcessor
 {
     public function __construct()
     {
+        @trigger_error('RenanBr\BibTexParser\Processor\AuthorProcessor is deprecated since version 0.6 and will be removed in 1.0. Use RenanBr\BibTexParser\Processor\NamesProcessor instead.', \E_USER_DEPRECATED);
         $this->setTagCoverage(['author']);
     }
 }
