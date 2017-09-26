@@ -81,20 +81,20 @@ $entries[0]['TYPE'];
 You can change tags' values by adding one or more processors through `addTagValueProcessor()` before exporting the contents.
 This project is shipped with some useful processors out of the box.
 
-##### Author
+##### Authors and Editors
 
 BibTeX recognizes four parts of an author's name: First Von Last Jr.
-If you would like to parse the author names included in your entries, you can use the `RenanBr\BibTexParser\Processor\AuthorProcessor` class.
+If you would like to parse the author and editor names included in your entries, you can use the `RenanBr\BibTexParser\Processor\NamesProcessor` class.
 Before exporting the contents, add this processor:
 
 ```php
-use RenanBr\BibTexParser\Processor\AuthorProcessor;
+use RenanBr\BibTexParser\Processor\NamesProcessor;
 
-$listener->addTagValueProcessor(new AuthorProcessor());
+$listener->addTagValueProcessor(new NamesProcessor());
 $entries = $listener->export();
 ```
 
-The resulting `$entries[0]['author']` will then be an array with each author name separated in the four parts above.
+The resulting `$entries[0]['author']` and `$entries[0]['editor']` will then be arrays with each name separated in the four parts above.
 
 ##### Keywords
 
