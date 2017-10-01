@@ -11,15 +11,20 @@
 
 namespace RenanBr\BibTexParser\Processor;
 
-class KeywordsProcessor
+class KeywordsProcessor extends AbstractProcessor
 {
+    public function __construct()
+    {
+        $this->setTagCoverage(['keywords']);
+    }
+
     /**
-     * @param string $&value The current tag value, will be modified in-place
-     * @param string $tag    The current tag name, this method will only process "keywords" tags
+     * @param string &$value The current tag value, will be modified in-place
+     * @param string $tag    The current tag name, by default this method will only process "keywords" tags
      */
     public function __invoke(&$value, $tag)
     {
-        if (strtolower($tag) != 'keywords') {
+        if (!$this->isTagCovered($tag)) {
             return;
         }
 

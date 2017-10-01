@@ -13,16 +13,21 @@ namespace RenanBr\BibTexParser\Processor;
 
 use Pandoc\Pandoc;
 
-class LatexToUnicodeProcessor
+class LatexToUnicodeProcessor extends AbstractProcessor
 {
     /** @var Pandoc */
     private $pandoc;
 
     /**
-     * @param string|array $&value The current tag value, will be modified in-place
+     * @param string|array &$value The current tag value, will be modified in-place
+     * @param string       $tag    The current tag name, by default this method will process all tags
      */
-    public function __invoke(&$value)
+    public function __invoke(&$value, $tag)
     {
+        if (!$this->isTagCovered($tag)) {
+            return;
+        }
+
         if (!$this->pandoc) {
             $this->pandoc = new Pandoc();
         }
