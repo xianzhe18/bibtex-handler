@@ -1,5 +1,22 @@
 # Changes in BibTex Parser
 
+## [0.6.0] - 2017-10-05
+
+### Added
+
+- Issues [#25] and [#26]: Ability to change covered tags  through `setTagCoverage()` for all processors;
+- Names processor, `RenanBr\BibTexParser\Processor\NamesProcessor`;
+- Issue [#29]: Support for PHP 7.2
+
+### Changed
+
+- Deprecate `RenanBr\BibTexParser\Processor\AuthorProcessor`.
+
+[0.6.0]: https://github.com/renanbr/bibtex-parser/releases/tag/0.6.0
+[#25]: https://github.com/renanbr/bibtex-parser/issues/25
+[#26]: https://github.com/renanbr/bibtex-parser/issues/26
+[#29]: https://github.com/renanbr/bibtex-parser/issues/29
+
 ## [0.5.0] - 2017-06-29
 
 ### Added
