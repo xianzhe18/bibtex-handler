@@ -60,25 +60,6 @@ class Listener implements ListenerInterface
     }
 
     /**
-     * @param callable|null $processor Function to be applied to every member of an BibTeX entry.
-     *                                 It uses array_walk() internally.
-     *                                 The suggested signature for the argument is:
-     *                                 function (string &$value, string $tag);
-     *
-     * @deprecated since 0.5.0, to be removed removed in 1.0. Use addTagValueProcessor instead.
-     */
-    public function setTagValueProcessor(callable $processor = null)
-    {
-        @trigger_error('setTagValueProcessor() is deprecated since version 0.5 and will be removed in 1.0. Use addTagValueProcessor() instead.', \E_USER_DEPRECATED);
-        if (is_null($processor)) {
-            $this->tagValueProcessors = [];
-
-            return;
-        }
-        $this->tagValueProcessors = [$processor];
-    }
-
-    /**
      * @param  $processor Function or array of functions to be applied to every member
      *                    of an BibTeX entry. Uses array_walk() internally.
      *                    The suggested signature for each function argument is:
