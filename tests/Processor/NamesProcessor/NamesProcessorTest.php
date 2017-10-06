@@ -9,17 +9,17 @@
  * file that was distributed with this source code.
  */
 
-namespace RenanBr\BibTexParser\Test\Processor\AuthorProcessor;
+namespace RenanBr\BibTexParser\Test\Processor\NamesProcessor;
 
 use PHPUnit\Framework\TestCase;
-use RenanBr\BibTexParser\Processor\AuthorProcessor;
+use RenanBr\BibTexParser\Processor\NamesProcessor;
 
 class BasicTest extends TestCase
 {
     public function testSimple()
     {
         $authors = file_get_contents(__DIR__ . '/../../resources/authors/simple.txt');
-        $processor = new AuthorProcessor;
+        $processor = new NamesProcessor;
         $processor($authors, "author");
 
         $this->assertCount(1, $authors);
@@ -33,7 +33,7 @@ class BasicTest extends TestCase
     public function testMany()
     {
         $authors = file_get_contents(__DIR__ . '/../../resources/authors/many.txt');
-        $processor = new AuthorProcessor;
+        $processor = new NamesProcessor;
         $processor($authors, "author");
         $this->assertCount(3, $authors);
         $this->assertSame('John', $authors[0]['first']);
@@ -53,7 +53,7 @@ class BasicTest extends TestCase
     public function testLast()
     {
         $authors = file_get_contents(__DIR__ . '/../../resources/authors/last.txt');
-        $processor = new AuthorProcessor;
+        $processor = new NamesProcessor;
         $processor($authors, "author");
         $this->assertCount(1, $authors);
         $this->assertSame('', $authors[0]['first']);
@@ -65,10 +65,10 @@ class BasicTest extends TestCase
     public function testOrder()
     {
         $authors = file_get_contents(__DIR__ . '/../../resources/authors/order.txt');
-        $processor = new AuthorProcessor;
+        $processor = new NamesProcessor;
         $processor($authors, "author");
-    // Tests complex ordering of author names
-    $this->assertCount(4, $authors);
+        // Tests complex ordering of author names
+        $this->assertCount(4, $authors);
         $this->assertSame('Joe', $authors[0]['first']);
         $this->assertSame('Doe', $authors[0]['last']);
         $this->assertSame('', $authors[0]['von']);
@@ -91,10 +91,10 @@ class BasicTest extends TestCase
     {
         // Tests von parts and junior parts
         $authors = file_get_contents(__DIR__ . '/../../resources/authors/von1.txt');
-        $processor = new AuthorProcessor;
+        $processor = new NamesProcessor;
         $processor($authors, "author");
-    // von part
-    $this->assertCount(2, $authors);
+        // von part
+        $this->assertCount(2, $authors);
         $this->assertSame('Ludwig', $authors[0]['first']);
         $this->assertSame('Beethoven', $authors[0]['last']);
         $this->assertSame('von', $authors[0]['von']);
@@ -103,9 +103,9 @@ class BasicTest extends TestCase
         $this->assertSame('Waals', $authors[1]['last']);
         $this->assertSame('van der', $authors[1]['von']);
         $this->assertSame('', $authors[1]['jr']);
-    // junior part
+        // junior part
         $authors = file_get_contents(__DIR__ . '/../../resources/authors/von2.txt');
-        $processor = new AuthorProcessor;
+        $processor = new NamesProcessor;
         $processor($authors, "author");
         $this->assertCount(2, $authors);
         $this->assertSame('Martin Luther', $authors[0]['first']);
@@ -116,9 +116,9 @@ class BasicTest extends TestCase
         $this->assertSame('{Steele Jr.}', $authors[1]['last']);
         $this->assertSame('', $authors[1]['von']);
         $this->assertSame('', $authors[1]['jr']);
-    // both
+        // both
         $authors = file_get_contents(__DIR__ . '/../../resources/authors/von3.txt');
-        $processor = new AuthorProcessor;
+        $processor = new NamesProcessor;
         $processor($authors, "author");
         $this->assertCount(1, $authors);
         $this->assertSame('First', $authors[0]['first']);
