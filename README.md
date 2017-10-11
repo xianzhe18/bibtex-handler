@@ -2,12 +2,12 @@
 
 This is a [BibTeX](http://mirrors.ctan.org/biblio/bibtex/base/btxdoc.pdf) parser written in PHP.
 
-[![Build Status](https://travis-ci.org/renanbr/bibtex-parser.svg?branch=master)](https://travis-ci.org/renanbr/bibtex-parser)
+[![Build Status](https://travis-ci.org/renanbr/bibtex-parser.svg?branch=1.x)](https://travis-ci.org/renanbr/bibtex-parser)
 
 ## Install
 
 ```bash
-composer require renanbr/bibtex-parser
+composer require renanbr/bibtex-parser ^1
 ```
 
 See the [changelog](CHANGELOG.md).
