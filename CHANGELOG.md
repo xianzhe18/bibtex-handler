@@ -1,5 +1,13 @@
 # Changes in BibTex Parser
 
+## [1.0.0] - 2017-10-11
+
+### Removed
+
+- Removed deprecated methods and classes
+
+[1.0.0]: https://github.com/renanbr/bibtex-parser/releases/tag/1.0.0
+
 ## [0.6.0] - 2017-10-05
 
 ### Added
