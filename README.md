@@ -7,10 +7,10 @@ This is a [BibTeX](http://mirrors.ctan.org/biblio/bibtex/base/btxdoc.pdf) parser
 ## Install
 
 ```bash
-composer require renanbr/bibtex-parser
+composer require renanbr/bibtex-parser ^2@dev
 ```
 
-See the [changelog](CHANGELOG.md).
+[Read documentation for version 1](https://github.com/renanbr/bibtex-parser/blob/1.x/README.md)
 
 ## Usage
 
