@@ -1,7 +1,7 @@
 {
     "name": "renanbr/bibtex-parser",
     "description": "BibTex Parser provides an API to read .bib files programmatically",
-    "keywords": ["bib", "bibtex", "latex", "parser"],
+    "keywords": ["bib", "bibtex", "latex", "parser", "bibliography", "citation", "cite"],
     "type": "library",
     "license": "MIT",
     "authors": [
@@ -16,17 +16,23 @@
     "autoload-dev": {
         "psr-4": { "RenanBr\\BibTexParser\\Test\\": "tests/" }
     },
-    "scripts": {
-        "cs-check": "php-cs-fixer fix --dry-run -vvv --ansi",
-        "cs-fix": "php-cs-fixer fix --ansi"
+    "require": {
+        "php": "^7.1"
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^2.7",
+        "phpunit/phpunit": "^6.4",
+        "ryakad/pandoc-php": "^1.0"
     },
     "config": {
         "sort-packages": true
     },
-    "require-dev": {
-        "ryakad/pandoc-php": "^1.0"
-    },
     "suggest": {
         "ryakad/pandoc-php": "Needed to support LaTeX decoder in class RenanBr\\BibTexParser\\Processor\\LatexToUnicodeProcessor"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "2.x-dev"
+        }
     }
 }
