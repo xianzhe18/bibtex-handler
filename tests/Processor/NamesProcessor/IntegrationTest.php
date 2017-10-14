@@ -9,25 +9,25 @@
  * file that was distributed with this source code.
  */
 
-namespace RenanBr\BibTexParser\Test\Processor\AuthorProcessor;
+namespace RenanBr\BibTexParser\Test\Processor\NamesProcessor;
 
 use PHPUnit\Framework\TestCase;
 use RenanBr\BibTexParser\Parser;
 use RenanBr\BibTexParser\Listener;
-use RenanBr\BibTexParser\Processor\AuthorProcessor;
+use RenanBr\BibTexParser\Processor\NamesProcessor;
 
 class IntegrationTest extends TestCase
 {
     public function testUsage()
     {
         $listener = new Listener;
-        $listener->setTagValueProcessor(new AuthorProcessor());
+        $listener->addTagValueProcessor(new NamesProcessor());
 
         $parser = new Parser();
         $parser->addListener($listener);
         $parser->parseFile(__DIR__ . '/../../resources/valid/authors-simple.bib');
         $entries = $listener->export();
-    // Some sanity checks to make sure AuthorProcessor didn't screw the rest of the entry
+        // Some sanity checks to make sure NamesProcessor didn't screw the rest of the entry
         $this->assertCount(1, $entries);
         $this->assertCount(4, $entries[0]);
         $this->assertSame('authorssimple', $entries[0]['type']);

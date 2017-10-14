@@ -17,24 +17,6 @@ use RenanBr\BibTexParser\Parser;
 
 class TagValueProcessorTest extends TestCase
 {
-    public function testSetTagValueProcessor()
-    {
-        // tests for the deprecated setTagValueProcessor
-        $listener = new Listener();
-        $listener->setTagValueProcessor(function (&$text, $tag) {
-            $text = "processed-$tag-$text";
-        });
-
-        $parser = new Parser();
-        $parser->addListener($listener);
-        $parser->parseFile(__DIR__ . '/../resources/valid/basic.bib');
-
-        $entries = $listener->export();
-        $entry = $entries[0];
-        $this->assertSame('processed-type-basic', $entry['type']);
-        $this->assertSame('processed-foo-bar', $entry['foo']);
-    }
-
     public function testAddTagValueProcessor()
     {
         $listener = new Listener();
@@ -113,24 +95,6 @@ class TagValueProcessorTest extends TestCase
         $listener = new Listener();
         $this->expectException(\InvalidArgumentException::class);
         $listener->addTagValueProcessor(["foo", "bar"]);
-    }
-
-    public function testAddTagValueProcessorThenSetTagValueProcessor()
-    {
-        $listener = new Listener();
-        $listener->addTagValueProcessor(function (&$text, $tag) {
-            $text = "processed-$tag-$text";
-        });
-        $listener->setTagValueProcessor(null);
-
-        $parser = new Parser();
-        $parser->addListener($listener);
-        $parser->parseFile(__DIR__ . '/../resources/valid/basic.bib');
-
-        $entries = $listener->export();
-        $entry = $entries[0];
-        $this->assertSame('basic', $entry['type']);
-        $this->assertSame('bar', $entry['foo']);
     }
 
     public function testAddTagValueProcessorWithCallableArray()
