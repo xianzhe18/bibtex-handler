@@ -128,7 +128,7 @@ class Listener implements ListenerInterface
                 }
                 break;
 
-            case Parser::ORIGINAL_ENTRY:
+            case Parser::ENTRY:
                 end($this->entries);
                 $position = key($this->entries);
                 $this->entries[$position]['_original'] = $text;

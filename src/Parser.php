@@ -13,17 +13,18 @@ namespace RenanBr\BibTexParser;
 
 class Parser
 {
-    const NONE = 'none';
-    const COMMENT = 'comment';
-    const TYPE = 'type';
-    const POST_TYPE = 'post_type';
-    const TAG_NAME = 'tag_name';
-    const POST_TAG_NAME = 'post_tag_name';
-    const TAG_CONTENT = 'value';
-    const RAW_TAG_CONTENT = 'raw_tag_content';
-    const BRACED_TAG_CONTENT = 'braced_tag_content';
-    const QUOTED_TAG_CONTENT = 'quoted_tag_content';
-    const ORIGINAL_ENTRY = 'original_entry';
+    public const TYPE = 'type';
+    public const TAG_NAME = 'tag_name';
+    public const RAW_TAG_CONTENT = 'raw_tag_content';
+    public const BRACED_TAG_CONTENT = 'braced_tag_content';
+    public const QUOTED_TAG_CONTENT = 'quoted_tag_content';
+    public const ENTRY = 'entry';
+
+    private const NONE = 'none';
+    private const COMMENT = 'comment';
+    private const POST_TYPE = 'post_type';
+    private const POST_TAG_NAME = 'post_tag_name';
+    private const PRE_TAG_CONTENT = 'pre_tag_content';
 
     /** @var string */
     private $state;
@@ -160,8 +161,8 @@ class Parser
             case self::POST_TAG_NAME:
                 $this->readPostTagName($char);
                 break;
-            case self::TAG_CONTENT:
-                $this->readTagContent($char);
+            case self::PRE_TAG_CONTENT:
+                $this->readPreTagContent($char);
                 break;
             case self::RAW_TAG_CONTENT:
                 $this->readRawTagContent($char);
@@ -237,7 +238,7 @@ class Parser
     private function readPostTagName($char)
     {
         if ('=' == $char) {
-            $this->state = self::TAG_CONTENT;
+            $this->state = self::PRE_TAG_CONTENT;
         } elseif ('}' == $char) {
             $this->state = self::NONE;
         } elseif (',' == $char) {
@@ -247,7 +248,7 @@ class Parser
         }
     }
 
-    private function readTagContent($char)
+    private function readPreTagContent($char)
     {
         if (preg_match('/^[a-zA-Z0-9]$/', $char)) {
             // when $mayConcatenateTagContent is true it means there is another
@@ -297,8 +298,8 @@ class Parser
             // once $char isn't a valid character
             // it must be interpreted as TAG_CONTENT
             $this->mayConcatenateTagContent = true;
-            $this->state = self::TAG_CONTENT;
-            $this->readTagContent($char);
+            $this->state = self::PRE_TAG_CONTENT;
+            $this->readPreTagContent($char);
         }
     }
 
@@ -317,7 +318,7 @@ class Parser
             if (0 == $this->braceLevel) {
                 $this->triggerListenersWithCurrentBuffer();
                 $this->mayConcatenateTagContent = true;
-                $this->state = self::TAG_CONTENT;
+                $this->state = self::PRE_TAG_CONTENT;
             } else {
                 $this->braceLevel--;
                 $this->appendToBuffer($char);
