@@ -6,10 +6,11 @@ addons:
             - pandoc
 
 php:
-    - 5.6.23
-    - 7.0
     - 7.1
-    - nightly
+    - 7.2
 
 before_script:
     - composer install
+
+script:
+    - ./vendor/bin/phpunit
