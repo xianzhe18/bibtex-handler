@@ -65,9 +65,9 @@ class InvalidFilesTest extends TestCase
                 $dir . '/space-after-at-sign.bib',
                 "' ' at line 1 column 2",
             ],
-            'splitted key' => [
-                $dir . '/splitted-key.bib',
-                "'k' at line 2 column 14",
+            'splitted tag name' => [
+                $dir . '/splitted-tag-name.bib',
+                "'t' at line 2 column 14",
             ],
             'splitted type' => [
                 $dir . '/splitted-type.bib',

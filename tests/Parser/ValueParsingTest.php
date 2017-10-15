@@ -35,15 +35,15 @@ class ValueParsingTest extends TestCase
         $this->assertSame('valuesBasic', $text);
 
         list($text, $context) = $listener->calls[1];
-        $this->assertSame(Parser::KEY, $context['state']);
+        $this->assertSame(Parser::TAG_NAME, $context['state']);
         $this->assertSame('kNull', $text);
 
         list($text, $context) = $listener->calls[2];
-        $this->assertSame(Parser::KEY, $context['state']);
+        $this->assertSame(Parser::TAG_NAME, $context['state']);
         $this->assertSame('kStillNull', $text);
 
         list($text, $context) = $listener->calls[3];
-        $this->assertSame(Parser::KEY, $context['state']);
+        $this->assertSame(Parser::TAG_NAME, $context['state']);
         $this->assertSame('kRaw', $text);
 
         list($text, $context) = $listener->calls[4];
@@ -51,7 +51,7 @@ class ValueParsingTest extends TestCase
         $this->assertSame('raw', $text);
 
         list($text, $context) = $listener->calls[5];
-        $this->assertSame(Parser::KEY, $context['state']);
+        $this->assertSame(Parser::TAG_NAME, $context['state']);
         $this->assertSame('kBraced', $text);
 
         list($text, $context) = $listener->calls[6];
@@ -59,7 +59,7 @@ class ValueParsingTest extends TestCase
         $this->assertSame(' braced value ', $text);
 
         list($text, $context) = $listener->calls[7];
-        $this->assertSame(Parser::KEY, $context['state']);
+        $this->assertSame(Parser::TAG_NAME, $context['state']);
         $this->assertSame('kBracedEmpty', $text);
 
         list($text, $context) = $listener->calls[8];
@@ -67,7 +67,7 @@ class ValueParsingTest extends TestCase
         $this->assertSame('', $text);
 
         list($text, $context) = $listener->calls[9];
-        $this->assertSame(Parser::KEY, $context['state']);
+        $this->assertSame(Parser::TAG_NAME, $context['state']);
         $this->assertSame('kQuoted', $text);
 
         list($text, $context) = $listener->calls[10];
@@ -75,7 +75,7 @@ class ValueParsingTest extends TestCase
         $this->assertSame(' quoted value ', $text);
 
         list($text, $context) = $listener->calls[11];
-        $this->assertSame(Parser::KEY, $context['state']);
+        $this->assertSame(Parser::TAG_NAME, $context['state']);
         $this->assertSame('kQuotedEmpty', $text);
 
         list($text, $context) = $listener->calls[12];
@@ -109,7 +109,7 @@ class ValueParsingTest extends TestCase
         $this->assertSame(13, $context['length']);
 
         list($text, $context) = $listener->calls[1];
-        $this->assertSame(Parser::KEY, $context['state']);
+        $this->assertSame(Parser::TAG_NAME, $context['state']);
         $this->assertSame('braced', $text);
         $this->assertSame(21, $context['offset']);
         $this->assertSame(6, $context['length']);
@@ -123,7 +123,7 @@ class ValueParsingTest extends TestCase
         $this->assertSame(21, $context['length']);
 
         list($text, $context) = $listener->calls[3];
-        $this->assertSame(Parser::KEY, $context['state']);
+        $this->assertSame(Parser::TAG_NAME, $context['state']);
         $this->assertSame('quoted', $text);
         $this->assertSame(59, $context['offset']);
         $this->assertSame(6, $context['length']);
@@ -159,7 +159,7 @@ class ValueParsingTest extends TestCase
         $this->assertSame('multipleValues', $text);
 
         list($text, $context) = $listener->calls[1];
-        $this->assertSame(Parser::KEY, $context['state']);
+        $this->assertSame(Parser::TAG_NAME, $context['state']);
         $this->assertSame('raw', $text);
 
         list($text, $context) = $listener->calls[2];
@@ -171,7 +171,7 @@ class ValueParsingTest extends TestCase
         $this->assertSame('rawB', $text);
 
         list($text, $context) = $listener->calls[4];
-        $this->assertSame(Parser::KEY, $context['state']);
+        $this->assertSame(Parser::TAG_NAME, $context['state']);
         $this->assertSame('quoted', $text);
 
         list($text, $context) = $listener->calls[5];
@@ -183,7 +183,7 @@ class ValueParsingTest extends TestCase
         $this->assertSame('quoted b', $text);
 
         list($text, $context) = $listener->calls[7];
-        $this->assertSame(Parser::KEY, $context['state']);
+        $this->assertSame(Parser::TAG_NAME, $context['state']);
         $this->assertSame('braced', $text);
 
         list($text, $context) = $listener->calls[8];
@@ -195,7 +195,7 @@ class ValueParsingTest extends TestCase
         $this->assertSame('braced b', $text);
 
         list($text, $context) = $listener->calls[10];
-        $this->assertSame(Parser::KEY, $context['state']);
+        $this->assertSame(Parser::TAG_NAME, $context['state']);
         $this->assertSame('misc', $text);
 
         list($text, $context) = $listener->calls[11];
@@ -211,7 +211,7 @@ class ValueParsingTest extends TestCase
         $this->assertSame('raw', $text);
 
         list($text, $context) = $listener->calls[14];
-        $this->assertSame(Parser::KEY, $context['state']);
+        $this->assertSame(Parser::TAG_NAME, $context['state']);
         $this->assertSame('noSpace', $text);
 
         list($text, $context) = $listener->calls[15];
@@ -247,7 +247,7 @@ class ValueParsingTest extends TestCase
         $this->assertSame('valuesSlashes', $text);
 
         list($text, $context) = $listener->calls[1];
-        $this->assertSame(Parser::KEY, $context['state']);
+        $this->assertSame(Parser::TAG_NAME, $context['state']);
         $this->assertSame('braced', $text);
 
         list($text, $context) = $listener->calls[2];
@@ -255,7 +255,7 @@ class ValueParsingTest extends TestCase
         $this->assertSame('\\}\\"\\%\\', $text);
 
         list($text, $context) = $listener->calls[3];
-        $this->assertSame(Parser::KEY, $context['state']);
+        $this->assertSame(Parser::TAG_NAME, $context['state']);
         $this->assertSame('quoted', $text);
 
         list($text, $context) = $listener->calls[4];
@@ -283,7 +283,7 @@ class ValueParsingTest extends TestCase
         $this->assertSame('valuesBraces', $text);
 
         list($text, $context) = $listener->calls[1];
-        $this->assertSame(Parser::KEY, $context['state']);
+        $this->assertSame(Parser::TAG_NAME, $context['state']);
         $this->assertSame('link', $text);
 
         list($text, $context) = $listener->calls[2];
@@ -291,7 +291,7 @@ class ValueParsingTest extends TestCase
         $this->assertSame('\url{https://github.com}', $text);
 
         list($text, $context) = $listener->calls[3];
-        $this->assertSame(Parser::KEY, $context['state']);
+        $this->assertSame(Parser::TAG_NAME, $context['state']);
         $this->assertSame('twoLevels', $text);
 
         list($text, $context) = $listener->calls[4];
@@ -299,7 +299,7 @@ class ValueParsingTest extends TestCase
         $this->assertSame('a{b{c}d}e', $text);
 
         list($text, $context) = $listener->calls[5];
-        $this->assertSame(Parser::KEY, $context['state']);
+        $this->assertSame(Parser::TAG_NAME, $context['state']);
         $this->assertSame('escapedBrace', $text);
 
         list($text, $context) = $listener->calls[6];

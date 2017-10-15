@@ -32,7 +32,7 @@ class TrailingCommaTest extends TestCase
         $this->assertSame('trailingComma', $text);
 
         list($text, $context) = $listener->calls[1];
-        $this->assertSame(Parser::KEY, $context['state']);
+        $this->assertSame(Parser::TAG_NAME, $context['state']);
         $this->assertSame('foo', $text);
 
         list($text, $context) = $listener->calls[2];

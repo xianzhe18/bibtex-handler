@@ -15,9 +15,9 @@ use PHPUnit\Framework\TestCase;
 use RenanBr\BibTexParser\Parser;
 use RenanBr\BibTexParser\Test\DummyListener;
 
-class KeyParsingTest extends TestCase
+class TagNameParsingTest extends TestCase
 {
-    public function testKeyWithoutValue()
+    public function testTagNameWithoutValue()
     {
         $listener = new DummyListener();
 
@@ -32,11 +32,11 @@ class KeyParsingTest extends TestCase
         $this->assertSame('noValue', $text);
 
         list($text, $context) = $listener->calls[1];
-        $this->assertSame(Parser::KEY, $context['state']);
+        $this->assertSame(Parser::TAG_NAME, $context['state']);
         $this->assertSame('foo', $text);
 
         list($text, $context) = $listener->calls[2];
-        $this->assertSame(Parser::KEY, $context['state']);
+        $this->assertSame(Parser::TAG_NAME, $context['state']);
         $this->assertSame('bar', $text);
 
         list($text, $context) = $listener->calls[3];

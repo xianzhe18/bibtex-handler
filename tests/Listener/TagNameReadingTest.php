@@ -15,9 +15,9 @@ use PHPUnit\Framework\TestCase;
 use RenanBr\BibTexParser\Listener;
 use RenanBr\BibTexParser\Parser;
 
-class KeyReadingTest extends TestCase
+class TagNameReadingTest extends TestCase
 {
-    public function testWhenFirstKeyIsNullItMustBeInterpretedAsTypeValueInstead()
+    public function testWhenFirstTagNameIsNullItMustBeInterpretedAsTypeValueInstead()
     {
         $listener = new Listener();
 
@@ -34,7 +34,7 @@ class KeyReadingTest extends TestCase
         $this->assertSame('bar', $entry['foo']);
     }
 
-    public function testMultipleNullKeys()
+    public function testMultipleNullTagNames()
     {
         $listener = new Listener();
 

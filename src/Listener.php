@@ -17,13 +17,13 @@ class Listener implements ListenerInterface
     private $entries = [];
 
     /**
-     * Current key name.
+     * Current tag name.
      *
      * Indicates where to save values.
      *
      * @var string
      */
-    private $currentKey;
+    private $currentTagName;
 
     /** @var int|null */
     private $tagNameCase = null;
@@ -41,7 +41,7 @@ class Listener implements ListenerInterface
     {
         if (!$this->processed) {
             foreach ($this->entries as &$entry) {
-                $this->processCitationKey($entry);
+                $this->processCitationTagName($entry);
                 $this->processTagNameCase($entry);
                 $this->processTagValue($entry);
             }
@@ -106,12 +106,12 @@ class Listener implements ListenerInterface
                 $this->entries[] = ['type' => $text];
                 break;
 
-            case PARSER::KEY:
-                // save key into last entry
+            case PARSER::TAG_NAME:
+                // save tag name into last entry
                 end($this->entries);
                 $position = key($this->entries);
-                $this->currentKey = $text;
-                $this->entries[$position][$this->currentKey] = null;
+                $this->currentTagName = $text;
+                $this->entries[$position][$this->currentTagName] = null;
                 break;
 
             case PARSER::RAW_VALUE:
@@ -121,10 +121,10 @@ class Listener implements ListenerInterface
             case PARSER::BRACED_VALUE:
             case PARSER::QUOTED_VALUE:
                 if (null !== $text) {
-                    // append value into current key of last entry
+                    // append value into current tag name of last entry
                     end($this->entries);
                     $position = key($this->entries);
-                    $this->entries[$position][$this->currentKey] .= $text;
+                    $this->entries[$position][$this->currentTagName] .= $text;
                 }
                 break;
 
@@ -148,19 +148,19 @@ class Listener implements ListenerInterface
         return $value;
     }
 
-    private function processCitationKey(array &$entry)
+    private function processCitationTagName(array &$entry)
     {
-        // the first key is always the "type"
-        // the second key MAY be actually a "citation-key" value, but only if its value is null
+        // the first tag name is always the "type"
+        // the second tag name MAY be actually a "citation-key" value, but only if its value is null
         if (count($entry) > 1) {
             $second = array_slice($entry, 1, 1, true);
-            $key = key($second);
+            $tagName = key($second);
             $value = current($second);
             if (null === $value) {
-                // once the second key value is empty, it flips the key name
+                // once the second tag name value is empty, it flips the tag name name
                 // as value of "citation-key"
-                $entry['citation-key'] = $key;
-                unset($entry[$key]);
+                $entry['citation-key'] = $tagName;
+                unset($entry[$tagName]);
             }
         }
     }

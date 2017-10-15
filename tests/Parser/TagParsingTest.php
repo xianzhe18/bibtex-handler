@@ -32,7 +32,7 @@ class TagParsingTest extends TestCase
         $this->assertSame('tagNameWithUnderscore', $text);
 
         list($text, $context) = $listener->calls[1];
-        $this->assertSame(Parser::KEY, $context['state']);
+        $this->assertSame(Parser::TAG_NAME, $context['state']);
         $this->assertSame('foo_bar', $text);
 
         list($text, $context) = $listener->calls[2];

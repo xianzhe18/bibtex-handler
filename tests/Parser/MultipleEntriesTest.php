@@ -32,7 +32,7 @@ class MultipleEntriesTest extends TestCase
         $this->assertSame('entryFooWithSpaces', $text);
 
         list($text, $context) = $listener->calls[1];
-        $this->assertSame(Parser::KEY, $context['state']);
+        $this->assertSame(Parser::TAG_NAME, $context['state']);
         $this->assertSame('foo', $text);
 
         list($text, $context) = $listener->calls[2];
@@ -48,7 +48,7 @@ class MultipleEntriesTest extends TestCase
         $this->assertSame('entryBarWithoutSpaces', $text);
 
         list($text, $context) = $listener->calls[5];
-        $this->assertSame(Parser::KEY, $context['state']);
+        $this->assertSame(Parser::TAG_NAME, $context['state']);
         $this->assertSame('bar', $text);
 
         list($text, $context) = $listener->calls[6];

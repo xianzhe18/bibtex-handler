@@ -17,8 +17,8 @@ class Parser
     const COMMENT = 'comment';
     const TYPE = 'type';
     const POST_TYPE = 'post_type';
-    const KEY = 'key';
-    const POST_KEY = 'post_key';
+    const TAG_NAME = 'tag_name';
+    const POST_TAG_NAME = 'post_tag_name';
     const VALUE = 'value';
     const RAW_VALUE = 'raw_value';
     const BRACED_VALUE = 'braced_value';
@@ -154,11 +154,11 @@ class Parser
             case self::POST_TYPE:
                 $this->readPostType($char);
                 break;
-            case self::KEY:
-                $this->readKey($char);
+            case self::TAG_NAME:
+                $this->readTagName($char);
                 break;
-            case self::POST_KEY:
-                $this->readPostKey($char);
+            case self::POST_TAG_NAME:
+                $this->readPostTagName($char);
                 break;
             case self::VALUE:
                 $this->readValue($char);
@@ -209,13 +209,13 @@ class Parser
     private function readPostType($char)
     {
         if ('{' == $char) {
-            $this->state = self::KEY;
+            $this->state = self::TAG_NAME;
         } elseif (!$this->isWhitespace($char)) {
             $this->throwException($char);
         }
     }
 
-    private function readKey($char)
+    private function readTagName($char)
     {
         if (preg_match('/^[a-zA-Z0-9_\+:\-]$/', $char)) {
             $this->appendToBuffer($char);
@@ -229,19 +229,19 @@ class Parser
 
             // once $char isn't a valid character
             // it must be interpreted as POST_TYPE
-            $this->state = self::POST_KEY;
-            $this->readPostKey($char);
+            $this->state = self::POST_TAG_NAME;
+            $this->readPostTagName($char);
         }
     }
 
-    private function readPostKey($char)
+    private function readPostTagName($char)
     {
         if ('=' == $char) {
             $this->state = self::VALUE;
         } elseif ('}' == $char) {
             $this->state = self::NONE;
         } elseif (',' == $char) {
-            $this->state = self::KEY;
+            $this->state = self::TAG_NAME;
         } elseif (!$this->isWhitespace($char)) {
             $this->throwException($char);
         }
@@ -279,7 +279,7 @@ class Parser
             }
             $this->mayConcatenateValue = false;
             if (',' == $char) {
-                $this->state = self::KEY;
+                $this->state = self::TAG_NAME;
             } elseif ('}' == $char) {
                 $this->state = self::NONE;
             }
