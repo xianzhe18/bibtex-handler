@@ -40,7 +40,7 @@ class TagNameParsingTest extends TestCase
         $this->assertSame('bar', $text);
 
         list($text, $context) = $listener->calls[3];
-        $this->assertSame(Parser::ORIGINAL_ENTRY, $context['state']);
+        $this->assertSame(Parser::ENTRY, $context['state']);
         $original = trim(file_get_contents(__DIR__ . '/../resources/valid/no-tag-content.bib'));
         $this->assertSame($original, $text);
     }

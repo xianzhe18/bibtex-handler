@@ -83,7 +83,7 @@ class TagContentParsingTest extends TestCase
         $this->assertSame('', $text);
 
         list($text, $context) = $listener->calls[13];
-        $this->assertSame(Parser::ORIGINAL_ENTRY, $context['state']);
+        $this->assertSame(Parser::ENTRY, $context['state']);
         $original = trim(file_get_contents(__DIR__ . '/../resources/valid/tag-contents-basic.bib'));
         $this->assertSame($original, $text);
     }
@@ -137,7 +137,7 @@ class TagContentParsingTest extends TestCase
         $this->assertSame(21, $context['length']);
 
         list($text, $context) = $listener->calls[5];
-        $this->assertSame(Parser::ORIGINAL_ENTRY, $context['state']);
+        $this->assertSame(Parser::ENTRY, $context['state']);
         $original = trim(file_get_contents(__DIR__ . '/../resources/valid/tag-contents-escaped.bib'));
         $this->assertSame($original, $text);
         $this->assertSame(0, $context['offset']);
@@ -227,7 +227,7 @@ class TagContentParsingTest extends TestCase
         $this->assertSame('braced', $text);
 
         list($text, $context) = $listener->calls[18];
-        $this->assertSame(Parser::ORIGINAL_ENTRY, $context['state']);
+        $this->assertSame(Parser::ENTRY, $context['state']);
         $original = trim(file_get_contents(__DIR__ . '/../resources/valid/tag-contents-multiple.bib'));
         $this->assertSame($original, $text);
     }
@@ -263,7 +263,7 @@ class TagContentParsingTest extends TestCase
         $this->assertSame('\\}\\"\\%\\', $text);
 
         list($text, $context) = $listener->calls[5];
-        $this->assertSame(Parser::ORIGINAL_ENTRY, $context['state']);
+        $this->assertSame(Parser::ENTRY, $context['state']);
         $original = trim(file_get_contents(__DIR__ . '/../resources/valid/tag-contents-slashes.bib'));
         $this->assertSame($original, $text);
     }
@@ -307,7 +307,7 @@ class TagContentParsingTest extends TestCase
         $this->assertSame('before{}}after', $text);
 
         list($text, $context) = $listener->calls[7];
-        $this->assertSame(Parser::ORIGINAL_ENTRY, $context['state']);
+        $this->assertSame(Parser::ENTRY, $context['state']);
         $original = trim(file_get_contents(__DIR__ . '/../resources/valid/tag-contents-nested-braces.bib'));
         $this->assertSame($original, $text);
     }

@@ -46,7 +46,7 @@ class BasicTest extends TestCase
         $this->assertSame(3, $context['length']);
 
         list($text, $context) = $listener->calls[3];
-        $this->assertSame(Parser::ORIGINAL_ENTRY, $context['state']);
+        $this->assertSame(Parser::ENTRY, $context['state']);
         $original = trim(file_get_contents(__DIR__ . '/../resources/valid/basic.bib'));
         $this->assertSame($original, $text);
         $this->assertSame(0, $context['offset']);

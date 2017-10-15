@@ -40,7 +40,7 @@ class TagParsingTest extends TestCase
         $this->assertSame('fubar', $text);
 
         list($text, $context) = $listener->calls[3];
-        $this->assertSame(Parser::ORIGINAL_ENTRY, $context['state']);
+        $this->assertSame(Parser::ENTRY, $context['state']);
         $original = trim(file_get_contents(__DIR__ . '/../resources/valid/tag-name-with-underscore.bib'));
         $this->assertSame($original, $text);
     }

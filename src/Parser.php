@@ -348,7 +348,7 @@ class Parser
         } elseif (!empty($this->originalEntry)) {
             // send original value to the listeners
             $context = [
-                'state' => self::ORIGINAL_ENTRY,
+                'state' => self::ENTRY,
                 'offset' => $this->originalEntryOffset,
                 'length' => $this->offset - $this->originalEntryOffset,
             ];

@@ -57,7 +57,7 @@ class CommentTest extends TestCase
         $this->assertSame(3, $context['length']);
 
         list($text, $context) = $listener->calls[3];
-        $this->assertSame(Parser::ORIGINAL_ENTRY, $context['state']);
+        $this->assertSame(Parser::ENTRY, $context['state']);
         $this->assertSame('@comment{foo = bar}', $text);
         $this->assertSame(18, $context['offset']);
         $this->assertSame(19, $context['length']);
