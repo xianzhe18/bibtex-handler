@@ -17,19 +17,19 @@ use RenanBr\BibTexParser\Test\DummyListener;
 
 class TagNameParsingTest extends TestCase
 {
-    public function testTagNameWithoutValue()
+    public function testTagNameWithoutTagContent()
     {
         $listener = new DummyListener();
 
         $parser = new Parser();
         $parser->addListener($listener);
-        $parser->parseFile(__DIR__ . '/../resources/valid/no-value.bib');
+        $parser->parseFile(__DIR__ . '/../resources/valid/no-tag-content.bib');
 
         $this->assertCount(4, $listener->calls);
 
         list($text, $context) = $listener->calls[0];
         $this->assertSame(Parser::TYPE, $context['state']);
-        $this->assertSame('noValue', $text);
+        $this->assertSame('noTagContent', $text);
 
         list($text, $context) = $listener->calls[1];
         $this->assertSame(Parser::TAG_NAME, $context['state']);
@@ -41,7 +41,7 @@ class TagNameParsingTest extends TestCase
 
         list($text, $context) = $listener->calls[3];
         $this->assertSame(Parser::ORIGINAL_ENTRY, $context['state']);
-        $original = trim(file_get_contents(__DIR__ . '/../resources/valid/no-value.bib'));
+        $original = trim(file_get_contents(__DIR__ . '/../resources/valid/no-tag-content.bib'));
         $this->assertSame($original, $text);
     }
 }

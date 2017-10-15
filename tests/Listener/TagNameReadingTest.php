@@ -17,7 +17,7 @@ use RenanBr\BibTexParser\Parser;
 
 class TagNameReadingTest extends TestCase
 {
-    public function testWhenFirstTagNameIsNullItMustBeInterpretedAsTypeValueInstead()
+    public function testWhenFirstTagNameIsNullItMustBeInterpretedAsTypeTagContentInstead()
     {
         $listener = new Listener();
 
@@ -40,13 +40,13 @@ class TagNameReadingTest extends TestCase
 
         $parser = new Parser();
         $parser->addListener($listener);
-        $parser->parseFile(__DIR__ . '/../resources/valid/no-value.bib');
+        $parser->parseFile(__DIR__ . '/../resources/valid/no-tag-content.bib');
 
         $entries = $listener->export();
         $this->assertCount(1, $entries);
 
         $entry = $entries[0];
-        $this->assertSame('noValue', $entry['type']);
+        $this->assertSame('noTagContent', $entry['type']);
         $this->assertSame('foo', $entry['citation-key']);
         $this->assertNull($entry['bar']);
     }

@@ -34,13 +34,13 @@ class NamesProcessor extends AbstractProcessor
      * @param string $&value The current tag value, will be modified in-place
      * @param string $tag    The current tag. This function will only process "author" tags
      */
-    public function __invoke(&$value, $tag)
+    public function __invoke(&$tagContent, $tag)
     {
         if (!$this->isTagCovered($tag)) {
             return;
         }
 
-        $value = $this->extractAuthors($value);
+        $tagContent = $this->extractAuthors($tagContent);
     }
 
     /**

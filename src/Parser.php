@@ -19,10 +19,10 @@ class Parser
     const POST_TYPE = 'post_type';
     const TAG_NAME = 'tag_name';
     const POST_TAG_NAME = 'post_tag_name';
-    const VALUE = 'value';
-    const RAW_VALUE = 'raw_value';
-    const BRACED_VALUE = 'braced_value';
-    const QUOTED_VALUE = 'quoted_value';
+    const TAG_CONTENT = 'value';
+    const RAW_TAG_CONTENT = 'raw_tag_content';
+    const BRACED_TAG_CONTENT = 'braced_tag_content';
+    const QUOTED_TAG_CONTENT = 'quoted_tag_content';
     const ORIGINAL_ENTRY = 'original_entry';
 
     /** @var string */
@@ -47,13 +47,13 @@ class Parser
     private $offset;
 
     /** @var bool */
-    private $isValueEscaped;
+    private $isTagContentEscaped;
 
     /** @var bool */
-    private $mayConcatenateValue;
+    private $mayConcatenateTagContent;
 
     /** @var string */
-    private $valueDelimiter;
+    private $tagContentDelimiter;
 
     /** @var int */
     private $braceLevel = 0;
@@ -131,8 +131,8 @@ class Parser
         $this->line = 1;
         $this->column = 1;
         $this->offset = 0;
-        $this->mayConcatenateValue = false;
-        $this->isValueEscaped = false;
+        $this->mayConcatenateTagContent = false;
+        $this->isTagContentEscaped = false;
         $this->valueDelimiter = null;
         $this->braceLevel = 0;
     }
@@ -160,15 +160,15 @@ class Parser
             case self::POST_TAG_NAME:
                 $this->readPostTagName($char);
                 break;
-            case self::VALUE:
-                $this->readValue($char);
+            case self::TAG_CONTENT:
+                $this->readTagContent($char);
                 break;
-            case self::RAW_VALUE:
-                $this->readRawValue($char);
+            case self::RAW_TAG_CONTENT:
+                $this->readRawTagContent($char);
                 break;
-            case self::QUOTED_VALUE:
-            case self::BRACED_VALUE:
-                $this->readDelimitedValue($char);
+            case self::QUOTED_TAG_CONTENT:
+            case self::BRACED_TAG_CONTENT:
+                $this->readDelimitedTagContent($char);
                 break;
         }
 
@@ -237,7 +237,7 @@ class Parser
     private function readPostTagName($char)
     {
         if ('=' == $char) {
-            $this->state = self::VALUE;
+            $this->state = self::TAG_CONTENT;
         } elseif ('}' == $char) {
             $this->state = self::NONE;
         } elseif (',' == $char) {
@@ -247,37 +247,37 @@ class Parser
         }
     }
 
-    private function readValue($char)
+    private function readTagContent($char)
     {
         if (preg_match('/^[a-zA-Z0-9]$/', $char)) {
-            // when $mayConcatenateValue is true it means there is another
+            // when $mayConcatenateTagContent is true it means there is another
             // value defined before it, so a concatenator char is expected (or
             // a comment as well)
-            if ($this->mayConcatenateValue) {
+            if ($this->mayConcatenateTagContent) {
                 $this->throwException($char);
             }
-            $this->state = self::RAW_VALUE;
-            $this->readRawValue($char);
+            $this->state = self::RAW_TAG_CONTENT;
+            $this->readRawTagContent($char);
         } elseif ('"' == $char) {
             // this verification is here for the same reason of the first case
-            if ($this->mayConcatenateValue) {
+            if ($this->mayConcatenateTagContent) {
                 $this->throwException($char);
             }
             $this->valueDelimiter = '"';
-            $this->state = self::QUOTED_VALUE;
+            $this->state = self::QUOTED_TAG_CONTENT;
         } elseif ('{' == $char) {
             // this verification is here for the same reason of the first case
-            if ($this->mayConcatenateValue) {
+            if ($this->mayConcatenateTagContent) {
                 $this->throwException($char);
             }
             $this->valueDelimiter = '}';
-            $this->state = self::BRACED_VALUE;
+            $this->state = self::BRACED_TAG_CONTENT;
         } elseif ('#' == $char || ',' == $char || '}' == $char) {
-            if (!$this->mayConcatenateValue) {
+            if (!$this->mayConcatenateTagContent) {
                 // it expects some value
                 $this->throwException($char);
             }
-            $this->mayConcatenateValue = false;
+            $this->mayConcatenateTagContent = false;
             if (',' == $char) {
                 $this->state = self::TAG_NAME;
             } elseif ('}' == $char) {
@@ -286,7 +286,7 @@ class Parser
         }
     }
 
-    private function readRawValue($char)
+    private function readRawTagContent($char)
     {
         if (preg_match('/^[a-zA-Z0-9]$/', $char)) {
             $this->appendToBuffer($char);
@@ -295,17 +295,17 @@ class Parser
             $this->triggerListenersWithCurrentBuffer();
 
             // once $char isn't a valid character
-            // it must be interpreted as VALUE
-            $this->mayConcatenateValue = true;
-            $this->state = self::VALUE;
-            $this->readValue($char);
+            // it must be interpreted as TAG_CONTENT
+            $this->mayConcatenateTagContent = true;
+            $this->state = self::TAG_CONTENT;
+            $this->readTagContent($char);
         }
     }
 
-    private function readDelimitedValue($char)
+    private function readDelimitedTagContent($char)
     {
-        if ($this->isValueEscaped) {
-            $this->isValueEscaped = false;
+        if ($this->isTagContentEscaped) {
+            $this->isTagContentEscaped = false;
             if ($this->valueDelimiter != $char && '\\' != $char && '%' != $char) {
                 $this->appendToBuffer('\\');
             }
@@ -316,14 +316,14 @@ class Parser
         } elseif ($this->valueDelimiter == $char) {
             if (0 == $this->braceLevel) {
                 $this->triggerListenersWithCurrentBuffer();
-                $this->mayConcatenateValue = true;
-                $this->state = self::VALUE;
+                $this->mayConcatenateTagContent = true;
+                $this->state = self::TAG_CONTENT;
             } else {
                 $this->braceLevel--;
                 $this->appendToBuffer($char);
             }
         } elseif ('\\' == $char) {
-            $this->isValueEscaped = true;
+            $this->isTagContentEscaped = true;
         } else {
             $this->appendToBuffer($char);
         }

@@ -36,7 +36,7 @@ class TagParsingTest extends TestCase
         $this->assertSame('foo_bar', $text);
 
         list($text, $context) = $listener->calls[2];
-        $this->assertSame(Parser::RAW_VALUE, $context['state']);
+        $this->assertSame(Parser::RAW_TAG_CONTENT, $context['state']);
         $this->assertSame('fubar', $text);
 
         list($text, $context) = $listener->calls[3];

@@ -15,7 +15,7 @@ use PHPUnit\Framework\TestCase;
 use RenanBr\BibTexParser\Listener;
 use RenanBr\BibTexParser\Parser;
 
-class ValueReadingTest extends TestCase
+class TagContentReadingTest extends TestCase
 {
     public function testMultipleNature()
     {
@@ -23,7 +23,7 @@ class ValueReadingTest extends TestCase
 
         $parser = new Parser();
         $parser->addListener($listener);
-        $parser->parseFile(__DIR__ . '/../resources/valid/values-basic.bib');
+        $parser->parseFile(__DIR__ . '/../resources/valid/tag-contents-basic.bib');
 
         $entries = $listener->export();
         $this->assertCount(1, $entries);
@@ -45,13 +45,13 @@ class ValueReadingTest extends TestCase
 
         $parser = new Parser();
         $parser->addListener($listener);
-        $parser->parseFile(__DIR__ . '/../resources/valid/values-multiple.bib');
+        $parser->parseFile(__DIR__ . '/../resources/valid/tag-contents-multiple.bib');
 
         $entries = $listener->export();
         $this->assertCount(1, $entries);
 
         $entry = $entries[0];
-        $this->assertSame('multipleValues', $entry['type']);
+        $this->assertSame('multipleTagContents', $entry['type']);
         $this->assertSame('rawArawB', $entry['raw']);
         $this->assertSame('quoted aquoted b', $entry['quoted']);
         $this->assertSame('braced abraced b', $entry['braced']);

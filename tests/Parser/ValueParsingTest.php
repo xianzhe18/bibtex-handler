@@ -15,7 +15,7 @@ use PHPUnit\Framework\TestCase;
 use RenanBr\BibTexParser\Parser;
 use RenanBr\BibTexParser\Test\DummyListener;
 
-class ValueParsingTest extends TestCase
+class TagContentParsingTest extends TestCase
 {
     /**
      * Tests if parser is able to handle raw, null, braced and quoted values ate the same time.
@@ -26,7 +26,7 @@ class ValueParsingTest extends TestCase
 
         $parser = new Parser();
         $parser->addListener($listener);
-        $parser->parseFile(__DIR__ . '/../resources/valid/values-basic.bib');
+        $parser->parseFile(__DIR__ . '/../resources/valid/tag-contents-basic.bib');
 
         $this->assertCount(14, $listener->calls);
 
@@ -47,7 +47,7 @@ class ValueParsingTest extends TestCase
         $this->assertSame('kRaw', $text);
 
         list($text, $context) = $listener->calls[4];
-        $this->assertSame(Parser::RAW_VALUE, $context['state']);
+        $this->assertSame(Parser::RAW_TAG_CONTENT, $context['state']);
         $this->assertSame('raw', $text);
 
         list($text, $context) = $listener->calls[5];
@@ -55,7 +55,7 @@ class ValueParsingTest extends TestCase
         $this->assertSame('kBraced', $text);
 
         list($text, $context) = $listener->calls[6];
-        $this->assertSame(Parser::BRACED_VALUE, $context['state']);
+        $this->assertSame(Parser::BRACED_TAG_CONTENT, $context['state']);
         $this->assertSame(' braced value ', $text);
 
         list($text, $context) = $listener->calls[7];
@@ -63,7 +63,7 @@ class ValueParsingTest extends TestCase
         $this->assertSame('kBracedEmpty', $text);
 
         list($text, $context) = $listener->calls[8];
-        $this->assertSame(Parser::BRACED_VALUE, $context['state']);
+        $this->assertSame(Parser::BRACED_TAG_CONTENT, $context['state']);
         $this->assertSame('', $text);
 
         list($text, $context) = $listener->calls[9];
@@ -71,7 +71,7 @@ class ValueParsingTest extends TestCase
         $this->assertSame('kQuoted', $text);
 
         list($text, $context) = $listener->calls[10];
-        $this->assertSame(Parser::QUOTED_VALUE, $context['state']);
+        $this->assertSame(Parser::QUOTED_TAG_CONTENT, $context['state']);
         $this->assertSame(' quoted value ', $text);
 
         list($text, $context) = $listener->calls[11];
@@ -79,22 +79,22 @@ class ValueParsingTest extends TestCase
         $this->assertSame('kQuotedEmpty', $text);
 
         list($text, $context) = $listener->calls[12];
-        $this->assertSame(Parser::QUOTED_VALUE, $context['state']);
+        $this->assertSame(Parser::QUOTED_TAG_CONTENT, $context['state']);
         $this->assertSame('', $text);
 
         list($text, $context) = $listener->calls[13];
         $this->assertSame(Parser::ORIGINAL_ENTRY, $context['state']);
-        $original = trim(file_get_contents(__DIR__ . '/../resources/valid/values-basic.bib'));
+        $original = trim(file_get_contents(__DIR__ . '/../resources/valid/tag-contents-basic.bib'));
         $this->assertSame($original, $text);
     }
 
-    public function testValueScaping()
+    public function testTagContentScaping()
     {
         $listener = new DummyListener();
 
         $parser = new Parser();
         $parser->addListener($listener);
-        $parser->parseFile(__DIR__ . '/../resources/valid/values-escaped.bib');
+        $parser->parseFile(__DIR__ . '/../resources/valid/tag-contents-escaped.bib');
 
         $this->assertCount(6, $listener->calls);
 
@@ -115,7 +115,7 @@ class ValueParsingTest extends TestCase
         $this->assertSame(6, $context['length']);
 
         list($text, $context) = $listener->calls[2];
-        $this->assertSame(Parser::BRACED_VALUE, $context['state']);
+        $this->assertSame(Parser::BRACED_TAG_CONTENT, $context['state']);
         // here we have two scaped characters ("}" and "%"), then the length
         // returned in the context (21) is bigger than the $text value (18)
         $this->assertSame('the } " \\ % braced', $text);
@@ -129,7 +129,7 @@ class ValueParsingTest extends TestCase
         $this->assertSame(6, $context['length']);
 
         list($text, $context) = $listener->calls[4];
-        $this->assertSame(Parser::QUOTED_VALUE, $context['state']);
+        $this->assertSame(Parser::QUOTED_TAG_CONTENT, $context['state']);
         // here we have two scaped characters ("}" and "%"), then the length
         // returned in the context (21) is bigger than the $text value (18)
         $this->assertSame('the } " \\ % quoted', $text);
@@ -138,36 +138,36 @@ class ValueParsingTest extends TestCase
 
         list($text, $context) = $listener->calls[5];
         $this->assertSame(Parser::ORIGINAL_ENTRY, $context['state']);
-        $original = trim(file_get_contents(__DIR__ . '/../resources/valid/values-escaped.bib'));
+        $original = trim(file_get_contents(__DIR__ . '/../resources/valid/tag-contents-escaped.bib'));
         $this->assertSame($original, $text);
         $this->assertSame(0, $context['offset']);
         $this->assertSame(93, $context['length']);
     }
 
-    public function testMultipleValues()
+    public function testMultipleTagContents()
     {
         $listener = new DummyListener();
 
         $parser = new Parser();
         $parser->addListener($listener);
-        $parser->parseFile(__DIR__ . '/../resources/valid/values-multiple.bib');
+        $parser->parseFile(__DIR__ . '/../resources/valid/tag-contents-multiple.bib');
 
         $this->assertCount(19, $listener->calls);
 
         list($text, $context) = $listener->calls[0];
         $this->assertSame(Parser::TYPE, $context['state']);
-        $this->assertSame('multipleValues', $text);
+        $this->assertSame('multipleTagContents', $text);
 
         list($text, $context) = $listener->calls[1];
         $this->assertSame(Parser::TAG_NAME, $context['state']);
         $this->assertSame('raw', $text);
 
         list($text, $context) = $listener->calls[2];
-        $this->assertSame(Parser::RAW_VALUE, $context['state']);
+        $this->assertSame(Parser::RAW_TAG_CONTENT, $context['state']);
         $this->assertSame('rawA', $text);
 
         list($text, $context) = $listener->calls[3];
-        $this->assertSame(Parser::RAW_VALUE, $context['state']);
+        $this->assertSame(Parser::RAW_TAG_CONTENT, $context['state']);
         $this->assertSame('rawB', $text);
 
         list($text, $context) = $listener->calls[4];
@@ -175,11 +175,11 @@ class ValueParsingTest extends TestCase
         $this->assertSame('quoted', $text);
 
         list($text, $context) = $listener->calls[5];
-        $this->assertSame(Parser::QUOTED_VALUE, $context['state']);
+        $this->assertSame(Parser::QUOTED_TAG_CONTENT, $context['state']);
         $this->assertSame('quoted a', $text);
 
         list($text, $context) = $listener->calls[6];
-        $this->assertSame(Parser::QUOTED_VALUE, $context['state']);
+        $this->assertSame(Parser::QUOTED_TAG_CONTENT, $context['state']);
         $this->assertSame('quoted b', $text);
 
         list($text, $context) = $listener->calls[7];
@@ -187,11 +187,11 @@ class ValueParsingTest extends TestCase
         $this->assertSame('braced', $text);
 
         list($text, $context) = $listener->calls[8];
-        $this->assertSame(Parser::BRACED_VALUE, $context['state']);
+        $this->assertSame(Parser::BRACED_TAG_CONTENT, $context['state']);
         $this->assertSame('braced a', $text);
 
         list($text, $context) = $listener->calls[9];
-        $this->assertSame(Parser::BRACED_VALUE, $context['state']);
+        $this->assertSame(Parser::BRACED_TAG_CONTENT, $context['state']);
         $this->assertSame('braced b', $text);
 
         list($text, $context) = $listener->calls[10];
@@ -199,15 +199,15 @@ class ValueParsingTest extends TestCase
         $this->assertSame('misc', $text);
 
         list($text, $context) = $listener->calls[11];
-        $this->assertSame(Parser::QUOTED_VALUE, $context['state']);
+        $this->assertSame(Parser::QUOTED_TAG_CONTENT, $context['state']);
         $this->assertSame('quoted', $text);
 
         list($text, $context) = $listener->calls[12];
-        $this->assertSame(Parser::BRACED_VALUE, $context['state']);
+        $this->assertSame(Parser::BRACED_TAG_CONTENT, $context['state']);
         $this->assertSame('braced', $text);
 
         list($text, $context) = $listener->calls[13];
-        $this->assertSame(Parser::RAW_VALUE, $context['state']);
+        $this->assertSame(Parser::RAW_TAG_CONTENT, $context['state']);
         $this->assertSame('raw', $text);
 
         list($text, $context) = $listener->calls[14];
@@ -215,30 +215,30 @@ class ValueParsingTest extends TestCase
         $this->assertSame('noSpace', $text);
 
         list($text, $context) = $listener->calls[15];
-        $this->assertSame(Parser::RAW_VALUE, $context['state']);
+        $this->assertSame(Parser::RAW_TAG_CONTENT, $context['state']);
         $this->assertSame('raw', $text);
 
         list($text, $context) = $listener->calls[16];
-        $this->assertSame(Parser::QUOTED_VALUE, $context['state']);
+        $this->assertSame(Parser::QUOTED_TAG_CONTENT, $context['state']);
         $this->assertSame('quoted', $text);
 
         list($text, $context) = $listener->calls[17];
-        $this->assertSame(Parser::BRACED_VALUE, $context['state']);
+        $this->assertSame(Parser::BRACED_TAG_CONTENT, $context['state']);
         $this->assertSame('braced', $text);
 
         list($text, $context) = $listener->calls[18];
         $this->assertSame(Parser::ORIGINAL_ENTRY, $context['state']);
-        $original = trim(file_get_contents(__DIR__ . '/../resources/valid/values-multiple.bib'));
+        $original = trim(file_get_contents(__DIR__ . '/../resources/valid/tag-contents-multiple.bib'));
         $this->assertSame($original, $text);
     }
 
-    public function testValueSlashes()
+    public function testTagContentSlashes()
     {
         $listener = new DummyListener();
 
         $parser = new Parser();
         $parser->addListener($listener);
-        $parser->parseFile(__DIR__ . '/../resources/valid/values-slashes.bib');
+        $parser->parseFile(__DIR__ . '/../resources/valid/tag-contents-slashes.bib');
 
         $this->assertCount(6, $listener->calls);
 
@@ -251,7 +251,7 @@ class ValueParsingTest extends TestCase
         $this->assertSame('braced', $text);
 
         list($text, $context) = $listener->calls[2];
-        $this->assertSame(Parser::BRACED_VALUE, $context['state']);
+        $this->assertSame(Parser::BRACED_TAG_CONTENT, $context['state']);
         $this->assertSame('\\}\\"\\%\\', $text);
 
         list($text, $context) = $listener->calls[3];
@@ -259,22 +259,22 @@ class ValueParsingTest extends TestCase
         $this->assertSame('quoted', $text);
 
         list($text, $context) = $listener->calls[4];
-        $this->assertSame(Parser::QUOTED_VALUE, $context['state']);
+        $this->assertSame(Parser::QUOTED_TAG_CONTENT, $context['state']);
         $this->assertSame('\\}\\"\\%\\', $text);
 
         list($text, $context) = $listener->calls[5];
         $this->assertSame(Parser::ORIGINAL_ENTRY, $context['state']);
-        $original = trim(file_get_contents(__DIR__ . '/../resources/valid/values-slashes.bib'));
+        $original = trim(file_get_contents(__DIR__ . '/../resources/valid/tag-contents-slashes.bib'));
         $this->assertSame($original, $text);
     }
 
-    public function testValueNestedBraces()
+    public function testTagContentNestedBraces()
     {
         $listener = new DummyListener();
 
         $parser = new Parser();
         $parser->addListener($listener);
-        $parser->parseFile(__DIR__ . '/../resources/valid/values-nested-braces.bib');
+        $parser->parseFile(__DIR__ . '/../resources/valid/tag-contents-nested-braces.bib');
 
         $this->assertCount(8, $listener->calls);
 
@@ -287,7 +287,7 @@ class ValueParsingTest extends TestCase
         $this->assertSame('link', $text);
 
         list($text, $context) = $listener->calls[2];
-        $this->assertSame(Parser::BRACED_VALUE, $context['state']);
+        $this->assertSame(Parser::BRACED_TAG_CONTENT, $context['state']);
         $this->assertSame('\url{https://github.com}', $text);
 
         list($text, $context) = $listener->calls[3];
@@ -295,7 +295,7 @@ class ValueParsingTest extends TestCase
         $this->assertSame('twoLevels', $text);
 
         list($text, $context) = $listener->calls[4];
-        $this->assertSame(Parser::BRACED_VALUE, $context['state']);
+        $this->assertSame(Parser::BRACED_TAG_CONTENT, $context['state']);
         $this->assertSame('a{b{c}d}e', $text);
 
         list($text, $context) = $listener->calls[5];
@@ -303,12 +303,12 @@ class ValueParsingTest extends TestCase
         $this->assertSame('escapedBrace', $text);
 
         list($text, $context) = $listener->calls[6];
-        $this->assertSame(Parser::BRACED_VALUE, $context['state']);
+        $this->assertSame(Parser::BRACED_TAG_CONTENT, $context['state']);
         $this->assertSame('before{}}after', $text);
 
         list($text, $context) = $listener->calls[7];
         $this->assertSame(Parser::ORIGINAL_ENTRY, $context['state']);
-        $original = trim(file_get_contents(__DIR__ . '/../resources/valid/values-nested-braces.bib'));
+        $original = trim(file_get_contents(__DIR__ . '/../resources/valid/tag-contents-nested-braces.bib'));
         $this->assertSame($original, $text);
     }
 }

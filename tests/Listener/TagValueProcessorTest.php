@@ -15,12 +15,12 @@ use PHPUnit\Framework\TestCase;
 use RenanBr\BibTexParser\Listener;
 use RenanBr\BibTexParser\Parser;
 
-class TagValueProcessorTest extends TestCase
+class TagContentProcessorTest extends TestCase
 {
-    public function testAddTagValueProcessor()
+    public function testAddTagContentProcessor()
     {
         $listener = new Listener();
-        $listener->addTagValueProcessor(function (&$text, $tag) {
+        $listener->addTagContentProcessor(function (&$text, $tag) {
             $text = "processed-$tag-$text";
         });
 
@@ -34,7 +34,7 @@ class TagValueProcessorTest extends TestCase
         $this->assertSame('processed-foo-bar', $entry['foo']);
     }
 
-    public function testAddTagValueProcessorOrder()
+    public function testAddTagContentProcessorOrder()
     {
         $listener = new Listener();
         $addA = function (&$text, $tag) {
@@ -44,8 +44,8 @@ class TagValueProcessorTest extends TestCase
             $text .= "B";
         };
 
-        $listener->addTagValueProcessor($addA);
-        $listener->addTagValueProcessor($addB);
+        $listener->addTagContentProcessor($addA);
+        $listener->addTagContentProcessor($addB);
 
         $parser = new Parser();
         $parser->addListener($listener);
@@ -57,7 +57,7 @@ class TagValueProcessorTest extends TestCase
         $this->assertSame('barAB', $entry['foo']);
     }
 
-    public function testAddTagValueProcessorArrays()
+    public function testAddTagContentProcessorArrays()
     {
         $listener = new Listener();
         $addA = function (&$text, $tag) {
@@ -70,8 +70,8 @@ class TagValueProcessorTest extends TestCase
             $text .= "C";
         };
 
-        $listener->addTagValueProcessor([$addA, $addB]);
-        $listener->addTagValueProcessor([$addC]);
+        $listener->addTagContentProcessor([$addA, $addB]);
+        $listener->addTagContentProcessor([$addC]);
 
         $parser = new Parser();
         $parser->addListener($listener);
@@ -83,25 +83,25 @@ class TagValueProcessorTest extends TestCase
         $this->assertSame('barABC', $entry['foo']);
     }
 
-    public function testInvalidAddTagValueProcessor()
+    public function testInvalidAddTagContentProcessor()
     {
         $listener = new Listener();
         $this->expectException(\InvalidArgumentException::class);
-        $listener->addTagValueProcessor("foo");
+        $listener->addTagContentProcessor("foo");
     }
 
-    public function testInvalidAddTagValueProcessorInArray()
+    public function testInvalidAddTagContentProcessorInArray()
     {
         $listener = new Listener();
         $this->expectException(\InvalidArgumentException::class);
-        $listener->addTagValueProcessor(["foo", "bar"]);
+        $listener->addTagContentProcessor(["foo", "bar"]);
     }
 
-    public function testAddTagValueProcessorWithCallableArray()
+    public function testAddTagContentProcessorWithCallableArray()
     {
         $listener = new Listener();
         $my_callable_array = ['RenanBr\BibTexParser\Test\DummyProcessor', 'myCallbackMethod'];
-        $listener->addTagValueProcessor($my_callable_array);
+        $listener->addTagContentProcessor($my_callable_array);
 
         $parser = new Parser();
         $parser->addListener($listener);

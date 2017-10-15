@@ -21,7 +21,7 @@ class IntegrationTest extends TestCase
     public function testUsage()
     {
         $listener = new Listener();
-        $listener->addTagValueProcessor(new KeywordsProcessor());
+        $listener->addTagContentProcessor(new KeywordsProcessor());
 
         $parser = new Parser();
         $parser->addListener($listener);

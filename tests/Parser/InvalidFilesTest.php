@@ -50,15 +50,15 @@ class InvalidFilesTest extends TestCase
                 "'\\0' at line 3 column 1",
             ],
             'multiple braced values' => [
-                $dir . '/multiple-braced-values.bib',
+                $dir . '/multiple-braced-tag-contents.bib',
                 "'{' at line 2 column 33",
             ],
             'multiple quoted values' => [
-                $dir . '/multiple-quoted-values.bib',
+                $dir . '/multiple-quoted-tag-contents.bib',
                 "'\"' at line 2 column 33",
             ],
             'multiple raw values' => [
-                $dir . '/multiple-raw-values.bib',
+                $dir . '/multiple-raw-tag-contents.bib',
                 "'b' at line 2 column 31",
             ],
             'space after @' => [

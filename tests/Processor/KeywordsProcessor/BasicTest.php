@@ -39,7 +39,7 @@ class BasicTest extends TestCase
     }
 
     /** @see https://github.com/retorquere/zotero-better-bibtex/issues/361 */
-    public function testCommaAsValue()
+    public function testCommaAsTagContent()
     {
         $keywords = '1,2-diol, propargyl alcohol, reaction of, triphosgene';
         $processor = new KeywordsProcessor();

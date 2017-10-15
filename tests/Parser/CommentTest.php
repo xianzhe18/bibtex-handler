@@ -51,7 +51,7 @@ class CommentTest extends TestCase
         $this->assertSame(3, $context['length']);
 
         list($text, $context) = $listener->calls[2];
-        $this->assertSame(Parser::RAW_VALUE, $context['state']);
+        $this->assertSame(Parser::RAW_TAG_CONTENT, $context['state']);
         $this->assertSame('bar', $text);
         $this->assertSame(33, $context['offset']);
         $this->assertSame(3, $context['length']);

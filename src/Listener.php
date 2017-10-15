@@ -29,7 +29,7 @@ class Listener implements ListenerInterface
     private $tagNameCase = null;
 
     /** @var array */
-    private $tagValueProcessors = [];
+    private $tagContentProcessors = [];
 
     /** @var bool */
     private $processed = false;
@@ -43,7 +43,7 @@ class Listener implements ListenerInterface
             foreach ($this->entries as &$entry) {
                 $this->processCitationTagName($entry);
                 $this->processTagNameCase($entry);
-                $this->processTagValue($entry);
+                $this->processTagContent($entry);
             }
             $this->processed = true;
         }
@@ -63,17 +63,17 @@ class Listener implements ListenerInterface
      * @param  $processor Function or array of functions to be applied to every member
      *                    of an BibTeX entry. Uses array_walk() internally.
      *                    The suggested signature for each function argument is:
-     *                        function (string &$value, string $tag);
+     *                        function (string &$tagContent, string $tag);
      *                    Note that functions will be applied in the same order
      *                    in which they were added.
      * @throws \InvalidArgumentException
      */
-    public function addTagValueProcessor($processor)
+    public function addTagContentProcessor($processor)
     {
         // if $processor is a callable array, it will be processed here
         // (see http://php.net/manual/en/language.types.callable.php#example-75)
         if (is_callable($processor)) {
-            $this->tagValueProcessors[] = $processor;
+            $this->tagContentProcessors[] = $processor;
 
             return;
         }
@@ -84,18 +84,18 @@ class Listener implements ListenerInterface
             foreach ($processor as $testing) {
                 if (!is_callable($testing)) {
                     throw new \InvalidArgumentException(
-                        'The argument for addTagValueProcessor should be either callable or an array of callables.'
+                        'The argument for addTagContentProcessor should be either callable or an array of callables.'
                     );
                 }
             }
-            $this->tagValueProcessors = array_merge($this->tagValueProcessors, $processor);
+            $this->tagContentProcessors = array_merge($this->tagContentProcessors, $processor);
 
             return;
         }
 
         // if control reaches this point, raise exception
         throw new \InvalidArgumentException(
-            'The argument for addTagValueProcessor should be either callable or an array of callables.'
+            'The argument for addTagContentProcessor should be either callable or an array of callables.'
         );
     }
 
@@ -114,12 +114,12 @@ class Listener implements ListenerInterface
                 $this->entries[$position][$this->currentTagName] = null;
                 break;
 
-            case PARSER::RAW_VALUE:
-                $text = $this->processRawValue($text);
+            case PARSER::RAW_TAG_CONTENT:
+                $text = $this->processRawTagContent($text);
                 // break;
 
-            case PARSER::BRACED_VALUE:
-            case PARSER::QUOTED_VALUE:
+            case PARSER::BRACED_TAG_CONTENT:
+            case PARSER::QUOTED_TAG_CONTENT:
                 if (null !== $text) {
                     // append value into current tag name of last entry
                     end($this->entries);
@@ -136,16 +136,16 @@ class Listener implements ListenerInterface
         }
     }
 
-    private function processRawValue($value)
+    private function processRawTagContent($tagContent)
     {
         // find for an abbreviation
         foreach ($this->entries as $entry) {
-            if ('string' == $entry['type'] && array_key_exists($value, $entry)) {
-                return $entry[$value];
+            if ('string' == $entry['type'] && array_key_exists($tagContent, $entry)) {
+                return $entry[$tagContent];
             }
         }
 
-        return $value;
+        return $tagContent;
     }
 
     private function processCitationTagName(array &$entry)
@@ -155,8 +155,8 @@ class Listener implements ListenerInterface
         if (count($entry) > 1) {
             $second = array_slice($entry, 1, 1, true);
             $tagName = key($second);
-            $value = current($second);
-            if (null === $value) {
+            $tagContent = current($second);
+            if (null === $tagContent) {
                 // once the second tag name value is empty, it flips the tag name name
                 // as value of "citation-key"
                 $entry['citation-key'] = $tagName;
@@ -173,12 +173,12 @@ class Listener implements ListenerInterface
         $entry = array_change_key_case($entry, $this->tagNameCase);
     }
 
-    private function processTagValue(array &$entry)
+    private function processTagContent(array &$entry)
     {
-        if (empty($this->tagValueProcessors)) {
+        if (empty($this->tagContentProcessors)) {
             return;
         }
-        foreach ($this->tagValueProcessors as $processor) {
+        foreach ($this->tagContentProcessors as $processor) {
             array_walk($entry, $processor);
         }
     }
