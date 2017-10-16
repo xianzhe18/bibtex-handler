@@ -11,6 +11,8 @@
 
 namespace RenanBr\BibTexParser;
 
+use RenanBr\BibTexParser\Exception\ParserException;
+
 class Parser
 {
     public const TYPE = 'type';
@@ -68,9 +70,9 @@ class Parser
     }
 
     /**
-     * @param  string                              $file
-     * @throws RenanBr\BibTexParser\ParseException If $file given is not a valid BibTeX.
-     * @throws ErrorException                      If $file given is not readable.
+     * @param  string          $file
+     * @throws ParserException If $file given is not a valid BibTeX.
+     * @throws \ErrorException If $file given is not readable.
      */
     public function parseFile($file)
     {
@@ -88,8 +90,8 @@ class Parser
     }
 
     /**
-     * @param  string                              $string
-     * @throws RenanBr\BibTexParser\ParseException If $string given is not a valid BibTeX.
+     * @param  string          $string
+     * @throws ParserException If $string given is not a valid BibTeX.
      */
     public function parseString($string)
     {
@@ -119,7 +121,7 @@ class Parser
         // it's called when parsing has been done
         // so it checks whether the status is ok or not
         if (self::NONE != $this->state && self::COMMENT != $this->state) {
-            $this->throwException("\0");
+            throw ParserException::unexpectedCharacter("\0", $this->line, $this->column);
         }
     }
 
@@ -212,7 +214,7 @@ class Parser
         if ('{' == $char) {
             $this->state = self::TAG_NAME;
         } elseif (!$this->isWhitespace($char)) {
-            $this->throwException($char);
+            throw ParserException::unexpectedCharacter($char, $this->line, $this->column);
         }
     }
 
@@ -244,7 +246,7 @@ class Parser
         } elseif (',' == $char) {
             $this->state = self::TAG_NAME;
         } elseif (!$this->isWhitespace($char)) {
-            $this->throwException($char);
+            throw ParserException::unexpectedCharacter($char, $this->line, $this->column);
         }
     }
 
@@ -255,28 +257,28 @@ class Parser
             // value defined before it, so a concatenator char is expected (or
             // a comment as well)
             if ($this->mayConcatenateTagContent) {
-                $this->throwException($char);
+                throw ParserException::unexpectedCharacter($char, $this->line, $this->column);
             }
             $this->state = self::RAW_TAG_CONTENT;
             $this->readRawTagContent($char);
         } elseif ('"' == $char) {
             // this verification is here for the same reason of the first case
             if ($this->mayConcatenateTagContent) {
-                $this->throwException($char);
+                throw ParserException::unexpectedCharacter($char, $this->line, $this->column);
             }
             $this->valueDelimiter = '"';
             $this->state = self::QUOTED_TAG_CONTENT;
         } elseif ('{' == $char) {
             // this verification is here for the same reason of the first case
             if ($this->mayConcatenateTagContent) {
-                $this->throwException($char);
+                throw ParserException::unexpectedCharacter($char, $this->line, $this->column);
             }
             $this->valueDelimiter = '}';
             $this->state = self::BRACED_TAG_CONTENT;
         } elseif ('#' == $char || ',' == $char || '}' == $char) {
             if (!$this->mayConcatenateTagContent) {
                 // it expects some value
-                $this->throwException($char);
+                throw ParserException::unexpectedCharacter($char, $this->line, $this->column);
             }
             $this->mayConcatenateTagContent = false;
             if (',' == $char) {
@@ -361,21 +363,8 @@ class Parser
     private function throwExceptionIfBufferIsEmpty($char)
     {
         if (empty($this->buffer)) {
-            $this->throwException($char);
+            throw ParserException::unexpectedCharacter($char, $this->line, $this->column);
         }
-    }
-
-    private function throwException($char)
-    {
-        // avoid var_export() weird treatment for \0
-        $char = "\0" == $char ? "'\\0'" : var_export($char, true);
-
-        throw new ParseException(sprintf(
-            "Unexpected character %s at line %d column %d",
-            $char,
-            $this->line,
-            $this->column
-        ));
     }
 
     private function appendToBuffer($char)

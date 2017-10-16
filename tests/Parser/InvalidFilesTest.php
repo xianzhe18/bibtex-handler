@@ -13,7 +13,7 @@ namespace RenanBr\BibTexParser\Test\Parser;
 
 use PHPUnit\Framework\TestCase;
 use RenanBr\BibTexParser\Parser;
-use RenanBr\BibTexParser\ParseException;
+use RenanBr\BibTexParser\Exception\ParserException;
 
 class InvalidFilesTest extends TestCase
 {
@@ -35,7 +35,7 @@ class InvalidFilesTest extends TestCase
     {
         $parser = new Parser();
 
-        $this->expectException(ParseException::class);
+        $this->expectException(ParserException::class);
         $this->expectExceptionMessage($message);
         $parser->parseFile($file);
     }

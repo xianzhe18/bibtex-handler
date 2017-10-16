@@ -11,7 +11,7 @@
 
 namespace RenanBr\BibTexParser\Processor;
 
-use RenanBr\BibTexParser\ParseException;
+use RenanBr\BibTexParser\ProcessorException;
 
 /**
  * This class includes source code adapted from the Structures_BibTex package,
@@ -93,7 +93,7 @@ class NamesProcessor extends AbstractProcessor
                                             if (0 == $futurecase) {
                                                 $islast = false;
                                             }
-                                        } catch (ParseException $sbe) {
+                                        } catch (ProcessorException $sbe) {
                                             // Ignore
                                         }
                                     }
@@ -110,7 +110,7 @@ class NamesProcessor extends AbstractProcessor
                                 } else {
                                     $von .= ' '.$tmparray[$j];
                                 }
-                            } catch (ParseException $sbe) {
+                            } catch (ProcessorException $sbe) {
                                 // Ignore
                             }
                         } else {
@@ -122,7 +122,7 @@ class NamesProcessor extends AbstractProcessor
                                 } else {
                                     $first .= ' '.$tmparray[$j];
                                 }
-                            } catch (ParseException $sbe) {
+                            } catch (ProcessorException $sbe) {
                                 // Ignore
                             }
                         }
@@ -153,7 +153,7 @@ class NamesProcessor extends AbstractProcessor
                                         if (0 == $case) {
                                             $islast = false;
                                         }
-                                    } catch (ParseException $sbe) {
+                                    } catch (ProcessorException $sbe) {
                                         // Ignore
                                     }
                                 }
@@ -193,7 +193,7 @@ class NamesProcessor extends AbstractProcessor
      * - Caseless   (return value -1)
      *
      * @param  string         $word
-     * @throws ParseException
+     * @throws ProcessorException
      * @return int            The Case
      * @author Elmar Pitschke <elmar.pitschke@gmx.de>
      */
@@ -227,7 +227,7 @@ class NamesProcessor extends AbstractProcessor
                 }
             }
         } else {
-            throw new ParseException('Could not determine case on word: '.(string) $word);
+            throw new ProcessorException('Could not determine case on word: '.(string) $word);
         }
 
         return $ret;

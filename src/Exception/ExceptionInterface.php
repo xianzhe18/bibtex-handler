@@ -9,8 +9,11 @@
  * file that was distributed with this source code.
  */
 
-namespace RenanBr\BibTexParser;
+namespace RenanBr\BibTexParser\Exception;
 
-class ParseException extends \RuntimeException
+/**
+ * Interface for package exceptions.
+ */
+interface ExceptionInterface
 {
 }
