@@ -15,7 +15,7 @@ use PHPUnit\Framework\TestCase;
 use RenanBr\BibTexParser\Listener;
 use RenanBr\BibTexParser\Parser;
 
-class TagContentReadingTest extends TestCase
+class ValueReadingTest extends TestCase
 {
     public function testMultipleNature()
     {
@@ -30,7 +30,7 @@ class TagContentReadingTest extends TestCase
 
         $entry = $entries[0];
         $this->assertSame('valuesBasic', $entry['type']);
-        $this->assertSame('kNull', $entry['citation-key']);
+        $this->assertNull($entry['kNull']);
         $this->assertNull($entry['kStillNull']);
         $this->assertSame('raw', $entry['kRaw']);
         $this->assertSame(' braced value ', $entry['kBraced']);
@@ -39,7 +39,7 @@ class TagContentReadingTest extends TestCase
         $this->assertSame('', $entry['kQuotedEmpty']);
     }
 
-    public function testConcatenation()
+    public function testValueConcatenation()
     {
         $listener = new Listener();
 

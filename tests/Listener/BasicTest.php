@@ -17,7 +17,7 @@ use RenanBr\BibTexParser\Parser;
 
 class BasicTest extends TestCase
 {
-    public function testBasic()
+    public function testBasicReading()
     {
         $listener = new Listener();
 
