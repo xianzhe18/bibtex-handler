@@ -25,9 +25,6 @@ class Listener implements ListenerInterface
      */
     private $currentTagName;
 
-    /** @var int|null */
-    private $tagNameCase = null;
-
     /** @var array */
     private $tagContentProcessors = [];
 
@@ -41,22 +38,12 @@ class Listener implements ListenerInterface
     {
         if (!$this->processed) {
             foreach ($this->entries as &$entry) {
-                $this->processCitationTagName($entry);
-                $this->processTagNameCase($entry);
                 $this->processTagContent($entry);
             }
             $this->processed = true;
         }
 
         return $this->entries;
-    }
-
-    /**
-     * @param int|null $case CASE_LOWER, CASE_UPPER or null (no traitement)
-     */
-    public function setTagNameCase($case)
-    {
-        $this->tagNameCase = $case;
     }
 
     /**
@@ -146,31 +133,6 @@ class Listener implements ListenerInterface
         }
 
         return $tagContent;
-    }
-
-    private function processCitationTagName(array &$entry)
-    {
-        // the first tag name is always the "type"
-        // the second tag name MAY be actually a "citation-key" value, but only if its value is null
-        if (count($entry) > 1) {
-            $second = array_slice($entry, 1, 1, true);
-            $tagName = key($second);
-            $tagContent = current($second);
-            if (null === $tagContent) {
-                // once the second tag name value is empty, it flips the tag name name
-                // as value of "citation-key"
-                $entry['citation-key'] = $tagName;
-                unset($entry[$tagName]);
-            }
-        }
-    }
-
-    private function processTagNameCase(array &$entry)
-    {
-        if (null === $this->tagNameCase) {
-            return;
-        }
-        $entry = array_change_key_case($entry, $this->tagNameCase);
     }
 
     private function processTagContent(array &$entry)
