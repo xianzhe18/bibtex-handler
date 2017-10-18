@@ -20,5 +20,5 @@ interface ListenerInterface
      *                        Escape character will not be sent.
      * @param array  $context Contains details of the unit found.
      */
-    public function bibTexUnitFound($text, array $context);
+    public function bibTexUnitFound(string $text, array $context): void;
 }
