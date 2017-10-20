@@ -11,23 +11,25 @@
 
 namespace RenanBr\BibTexParser\Processor;
 
-class KeywordsProcessor extends AbstractProcessor
+/**
+ * Splits tags contents as array.
+ */
+class KeywordsProcessor
 {
+    use TagCoverageTrait;
+
     public function __construct()
     {
         $this->setTagCoverage(['keywords']);
     }
 
-    /**
-     * @param string &$tagContent The current tag value, will be modified in-place
-     * @param string $tag    The current tag name, by default this method will only process "keywords" tags
-     */
-    public function __invoke(&$tagContent, $tag)
+    public function __invoke(array $entry): array
     {
-        if (!$this->isTagCovered($tag)) {
-            return;
+        $covered = $this->getCoveredTags(array_keys($entry));
+        foreach ($covered as $tag) {
+            $entry[$tag] = preg_split('/, |; /', $entry[$tag]);
         }
 
-        $tagContent = preg_split('/, |; /', $tagContent);
+        return $entry;
     }
 }
