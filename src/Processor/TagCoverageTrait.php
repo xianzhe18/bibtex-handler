@@ -34,33 +34,25 @@ trait TagCoverageTrait
     /**
      * Calculates which tags are covered.
      *
-     * It return always a list of tags names, with some specificities:
-     *   - When running under "whitelist" strategy, it uses the sended names to
-     *     setTagCoverage() as keys, and the actual name as contents, because
-     *     the search performed internally is case-insensitive. It means the
-     *     array return may contain NULL as value.
-     *   - When running under "blacklist" strategy, it returns a single list of
-     *     actual tags' names, with numeric keys.
+     * The search performed internally is case-insensitive.
      */
-    protected function getCoveredTags(array $entryTags): array
+    protected function getCoveredTags(array $tags): array
     {
-        // Creates a map between coverage tag and its actual respective tag,
-        // because tags are case-insensitive
-        $matchedTags = [];
-        $list = $this->tagCoverageList ?? [];
-        foreach ($list as $original) {
-            $matchedTags[$original] = $this->tagSearch($original, $entryTags);
+        // Finds for actual tag names
+        $matched = [];
+        foreach ($this->tagCoverageList as $original) {
+            $actual = $this->tagSearch($original, $tags);
+            if (null !== $actual) {
+                $matched[] = $actual;
+            }
         }
 
-        // When running under a "whitelist" strategy it returns an map where the
-        // key is the original configured tag name, and the content is the actual
-        // tag name found
-        $strategy = $this->tagCoverageStrategy ?? null;
-        if ('whitelist' === $strategy) {
-            return $matchedTags;
+        // Whitelist
+        if ('whitelist' === $this->tagCoverageStrategy) {
+            return $matched;
         }
 
-        // Returns an simple tag names list when running under "blacklist" strategy
-        return array_values(array_diff($entryTags, $matchedTags));
+        // Blacklist
+        return array_values(array_diff($tags, $matched));
     }
 }

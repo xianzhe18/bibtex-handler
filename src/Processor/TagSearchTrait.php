@@ -14,7 +14,7 @@ namespace RenanBr\BibTexParser\Processor;
 trait TagSearchTrait
 {
     /**
-     * Search for the actual name of a tag.
+     * Searchs for the actual name of a tag.
      *
      * The search performed is case-insensitive.
      */

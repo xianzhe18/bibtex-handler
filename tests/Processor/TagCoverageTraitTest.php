@@ -17,16 +17,21 @@ use RenanBr\BibTexParser\Processor\TagCoverageTrait;
 
 class TagCoverageTraitTest extends TestCase
 {
+    public function testZeroConfigurationMustCoverAllTags()
+    {
+        $trait = $this->getMockForTrait(TagCoverageTrait::class);
+        $coverage = $this->invokeGetCoveredTags($trait, ['bbb', 'ccc']);
+
+        $this->assertSame(['bbb', 'ccc'], $coverage);
+    }
+
     public function testWhitelistStrategy()
     {
         $trait = $this->getMockForTrait(TagCoverageTrait::class);
         $trait->setTagCoverage(['aaa', 'bbb'], 'whitelist');
         $coverage = $this->invokeGetCoveredTags($trait, ['bbb', 'ccc']);
 
-        $this->assertSame([
-            'aaa' => null,  // not found
-            'bbb' => 'bbb', // found
-        ], $coverage);
+        $this->assertSame(['bbb'], $coverage);
     }
 
     public function testDefaultStrategyMustActAsWhitelist()
@@ -35,10 +40,7 @@ class TagCoverageTraitTest extends TestCase
         $trait->setTagCoverage(['aaa', 'bbb']);
         $coverage = $this->invokeGetCoveredTags($trait, ['bbb', 'ccc']);
 
-        $this->assertSame([
-            'aaa' => null,  // not found
-            'bbb' => 'bbb', // found
-        ], $coverage);
+        $this->assertSame(['bbb'], $coverage);
     }
 
     public function testBlacklist()
@@ -47,9 +49,7 @@ class TagCoverageTraitTest extends TestCase
         $trait->setTagCoverage(['aaa', 'bbb'], 'blacklist');
         $coverage = $this->invokeGetCoveredTags($trait, ['bbb', 'ccc']);
 
-        $this->assertSame([
-            'ccc', // found
-        ], $coverage);
+        $this->assertSame(['ccc'], $coverage);
     }
 
     public function testCaseInsensitiveMatch()
@@ -58,10 +58,7 @@ class TagCoverageTraitTest extends TestCase
         $trait->setTagCoverage(['aaa', 'bbb']);
         $coverage = $this->invokeGetCoveredTags($trait, ['BBB', 'ccc']);
 
-        $this->assertSame([
-            'aaa' => null,  // not found
-            'bbb' => 'BBB', // found
-        ], $coverage);
+        $this->assertSame(['BBB'], $coverage);
     }
 
     private function invokeGetCoveredTags($trait, $tags)
