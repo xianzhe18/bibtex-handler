@@ -13,37 +13,48 @@ namespace RenanBr\BibTexParser\Processor;
 
 use Pandoc\Pandoc;
 
-class LatexToUnicodeProcessor extends AbstractProcessor
+/**
+ * Translates LaTeX texts to unicode.
+ */
+class LatexToUnicodeProcessor
 {
+    use TagCoverageTrait;
+
     /** @var Pandoc */
     private $pandoc;
 
-    /**
-     * @param string|array &$tagContent The current tag value, will be modified in-place
-     * @param string       $tag    The current tag name, by default this method will process all tags
-     */
-    public function __invoke(&$tagContent, $tag)
+    public function __invoke(array $entry): array
     {
-        if (!$this->isTagCovered($tag)) {
-            return;
+        $covered = $this->getCoveredTags(array_keys($entry));
+        foreach ($covered as $tag) {
+            // Translate string
+            if (is_string($entry[$tag])) {
+                $entry[$tag] = $this->decode($entry[$tag]);
+                continue;
+            }
+
+            // Translate array
+            if (is_array($entry[$tag])) {
+                array_walk_recursive($entry[$tag], function (&$text) {
+                    if (is_string($text)) {
+                        $text = $this->decode($text);
+                    }
+                });
+            }
         }
 
+        return $entry;
+    }
+
+    private function decode(string $text): string
+    {
         if (!$this->pandoc) {
             $this->pandoc = new Pandoc();
         }
-        $decoder = function (&$text) {
-            $text = $this->pandoc->runWith($text, [
-                'from' => 'latex',
-                'to' => 'plain',
-            ]);
-        };
 
-        if (is_array($tagContent)) {
-            array_walk($tagContent, $decoder);
-
-            return;
-        }
-
-        $decoder($tagContent);
+        return $this->pandoc->runWith($text, [
+            'from' => 'latex',
+            'to' => 'plain',
+        ]);
     }
 }
