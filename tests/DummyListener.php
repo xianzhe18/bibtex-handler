@@ -17,7 +17,7 @@ class DummyListener implements ListenerInterface
 {
     public $calls = [];
 
-    public function bibTexUnitFound($text, array $context)
+    public function bibTexUnitFound(string $text, array $context): void
     {
         $this->calls[] = [
             $text,
