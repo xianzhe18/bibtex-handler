@@ -16,13 +16,16 @@ namespace RenanBr\BibTexParser\Processor;
  */
 class CitationKeyProcessor
 {
+    use TagSearchTrait;
+
     /** @var string */
     private const TAG_NAME = 'citation-key';
 
     public function __invoke(array $entry): array
     {
         // Does nothing if tag already exists
-        if (array_key_exists(self::TAG_NAME, $entry)) {
+        $tagName = $this->tagSearch(self::TAG_NAME, array_keys($entry));
+        if (null !== $tagName) {
             return $entry;
         }
 
