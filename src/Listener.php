@@ -58,9 +58,9 @@ class Listener implements ListenerInterface
         $this->processors[] = $processor;
     }
 
-    public function bibTexUnitFound(string $text, array $context): void
+    public function bibTexUnitFound(string $text, string $type, array $context): void
     {
-        switch ($context['state']) {
+        switch ($type) {
             case Parser::TYPE:
                 // Starts a new entry
                 $this->entries[] = ['type' => $text];

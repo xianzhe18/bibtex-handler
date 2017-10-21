@@ -18,7 +18,9 @@ interface ListenerInterface
      *
      * @param string $text    The original content of the unit found.
      *                        Escape character will not be sent.
+     * @param string $type    The type of unit found.
+     *                        It can assume one of Parser's constant value.
      * @param array  $context Contains details of the unit found.
      */
-    public function bibTexUnitFound(string $text, array $context): void;
+    public function bibTexUnitFound(string $text, string $type, array $context): void;
 }

@@ -38,26 +38,26 @@ class CommentTest extends TestCase
 
         $this->assertCount(4, $listener->calls);
 
-        list($text, $context) = $listener->calls[0];
-        $this->assertSame(Parser::TYPE, $context['state']);
+        list($text, $type, $context) = $listener->calls[0];
+        $this->assertSame(Parser::TYPE, $type);
         $this->assertSame('comment', $text);
         $this->assertSame(19, $context['offset']);
         $this->assertSame(7, $context['length']);
 
-        list($text, $context) = $listener->calls[1];
-        $this->assertSame(Parser::TAG_NAME, $context['state']);
+        list($text, $type, $context) = $listener->calls[1];
+        $this->assertSame(Parser::TAG_NAME, $type);
         $this->assertSame('foo', $text);
         $this->assertSame(27, $context['offset']);
         $this->assertSame(3, $context['length']);
 
-        list($text, $context) = $listener->calls[2];
-        $this->assertSame(Parser::RAW_TAG_CONTENT, $context['state']);
+        list($text, $type, $context) = $listener->calls[2];
+        $this->assertSame(Parser::RAW_TAG_CONTENT, $type);
         $this->assertSame('bar', $text);
         $this->assertSame(33, $context['offset']);
         $this->assertSame(3, $context['length']);
 
-        list($text, $context) = $listener->calls[3];
-        $this->assertSame(Parser::ENTRY, $context['state']);
+        list($text, $type, $context) = $listener->calls[3];
+        $this->assertSame(Parser::ENTRY, $type);
         $this->assertSame('@comment{foo = bar}', $text);
         $this->assertSame(18, $context['offset']);
         $this->assertSame(19, $context['length']);

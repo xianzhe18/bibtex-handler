@@ -17,10 +17,11 @@ class DummyListener implements ListenerInterface
 {
     public $calls = [];
 
-    public function bibTexUnitFound(string $text, array $context): void
+    public function bibTexUnitFound(string $text, string $type, array $context): void
     {
         $this->calls[] = [
             $text,
+            $type,
             $context,
         ];
     }

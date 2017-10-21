@@ -350,11 +350,10 @@ class Parser
         } elseif (!empty($this->originalEntry)) {
             // send original value to the listeners
             $context = [
-                'state' => self::ENTRY,
                 'offset' => $this->originalEntryOffset,
                 'length' => $this->offset - $this->originalEntryOffset,
             ];
-            $this->triggerListeners($this->originalEntry, $context);
+            $this->triggerListeners($this->originalEntry, self::ENTRY, $context);
             $this->originalEntryOffset = null;
             $this->originalEntry = '';
         }
@@ -378,19 +377,18 @@ class Parser
     private function triggerListenersWithCurrentBuffer()
     {
         $context = [
-            'state' => $this->state,
             'offset' => $this->bufferOffset,
             'length' => $this->offset - $this->bufferOffset,
         ];
-        $this->triggerListeners($this->buffer, $context);
+        $this->triggerListeners($this->buffer, $this->state, $context);
         $this->bufferOffset = null;
         $this->buffer = '';
     }
 
-    private function triggerListeners($text, array $context)
+    private function triggerListeners(string $text, string $type, array $context)
     {
         foreach ($this->listeners as $listener) {
-            $listener->bibTexUnitFound($text, $context);
+            $listener->bibTexUnitFound($text, $type, $context);
         }
     }
 
