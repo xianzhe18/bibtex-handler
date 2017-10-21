@@ -21,17 +21,17 @@ class IntegrationTest extends TestCase
     public function testUsage()
     {
         $listener = new Listener;
-        $listener->addTagContentProcessor(new NamesProcessor());
+        $listener->addProcessor(new NamesProcessor());
 
         $parser = new Parser();
         $parser->addListener($listener);
         $parser->parseFile(__DIR__ . '/../../resources/valid/authors-simple.bib');
         $entries = $listener->export();
-        // Some sanity checks to make sure NamesProcessor didn't screw the rest of the entry
-        $this->assertCount(1, $entries);
-        $this->assertCount(4, $entries[0]);
+
+        // Some sanity checks to make sure it didn't screw the rest of the entry
+        $this->assertCount(3, $entries[0]);
         $this->assertSame('authorssimple', $entries[0]['type']);
-        $this->assertSame('simple1', $entries[0]['citation-key']);
+        $this->assertInternalType('string', $entries[0]['_original']);
 
         $this->assertCount(1, $entries[0]['author']);
         $this->assertSame('John', $entries[0]['author'][0]['first']);

@@ -11,9 +11,11 @@
 
 namespace RenanBr\BibTexParser\Processor;
 
-use RenanBr\BibTexParser\ProcessorException;
+use RenanBr\BibTexParser\Exception\ProcessorException;
 
 /**
+ * Splits names in four parts: First Von Last Jr.
+ *
  * This class includes source code adapted from the Structures_BibTex package,
  * (c) Elmar Pitschke <elmar.pitschke@gmx.de>, included here under PHP license:
  * http://www.php.net/license/3_0.txt
@@ -21,26 +23,23 @@ use RenanBr\BibTexParser\ProcessorException;
  * @author Andre Chalom <andrechalom@gmail.com>
  * @link https://github.com/pear/Structures_BibTex
  */
-class NamesProcessor extends AbstractProcessor
+class NamesProcessor
 {
+    use TagCoverageTrait;
+
     public function __construct()
     {
         $this->setTagCoverage(['author', 'editor']);
     }
 
-    /**
-     * Entry point for this class
-     *
-     * @param string $&value The current tag value, will be modified in-place
-     * @param string $tag    The current tag. This function will only process "author" tags
-     */
-    public function __invoke(&$tagContent, $tag)
+    public function __invoke(array $entry): array
     {
-        if (!$this->isTagCovered($tag)) {
-            return;
+        $covered = $this->getCoveredTags(array_keys($entry));
+        foreach ($covered as $tag) {
+            $entry[$tag] = $this->extractAuthors($entry[$tag]);
         }
 
-        $tagContent = $this->extractAuthors($tagContent);
+        return $entry;
     }
 
     /**
