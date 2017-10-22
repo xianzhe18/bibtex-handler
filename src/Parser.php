@@ -64,7 +64,7 @@ class Parser
     /** @var ListenerInterface[] */
     private $listeners = [];
 
-    public function addListener(ListenerInterface $listener)
+    public function addListener(ListenerInterface $listener): void
     {
         $this->listeners[] = $listener;
     }
@@ -74,7 +74,7 @@ class Parser
      * @throws ParserException If $file given is not a valid BibTeX.
      * @throws \ErrorException If $file given is not readable.
      */
-    public function parseFile($file)
+    public function parseFile(string $file): void
     {
         $handle = fopen($file, 'r');
         try {
@@ -93,14 +93,14 @@ class Parser
      * @param  string          $string
      * @throws ParserException If $string given is not a valid BibTeX.
      */
-    public function parseString($string)
+    public function parseString(string $string): void
     {
         $this->reset();
         $this->parse($string);
         $this->checkFinalStatus();
     }
 
-    private function parse($text)
+    private function parse(string $text): void
     {
         $length = strlen($text);
         for ($position = 0; $position < $length; $position++) {
@@ -116,7 +116,7 @@ class Parser
         }
     }
 
-    private function checkFinalStatus()
+    private function checkFinalStatus(): void
     {
         // it's called when parsing has been done
         // so it checks whether the status is ok or not
@@ -125,7 +125,7 @@ class Parser
         }
     }
 
-    private function reset()
+    private function reset(): void
     {
         $this->state = self::NONE;
         $this->buffer = '';
@@ -140,7 +140,7 @@ class Parser
         $this->braceLevel = 0;
     }
 
-    private function read($char)
+    private function read(string $char): void
     {
         $previousState = $this->state;
 
@@ -178,7 +178,7 @@ class Parser
         $this->readOriginalEntry($char, $previousState);
     }
 
-    private function readNone($char)
+    private function readNone(string $char): void
     {
         if ('@' == $char) {
             $this->state = self::TYPE;
@@ -187,14 +187,14 @@ class Parser
         }
     }
 
-    private function readComment($char)
+    private function readComment(string $char): void
     {
         if ($this->isWhitespace($char)) {
             $this->state = self::NONE;
         }
     }
 
-    private function readType($char)
+    private function readType(string $char): void
     {
         if (preg_match('/^[a-zA-Z]$/', $char)) {
             $this->appendToBuffer($char);
@@ -209,7 +209,7 @@ class Parser
         }
     }
 
-    private function readPostType($char)
+    private function readPostType(string $char): void
     {
         if ('{' == $char) {
             $this->state = self::TAG_NAME;
@@ -218,7 +218,7 @@ class Parser
         }
     }
 
-    private function readTagName($char)
+    private function readTagName(string $char): void
     {
         if (preg_match('/^[a-zA-Z0-9_\+:\-]$/', $char)) {
             $this->appendToBuffer($char);
@@ -237,7 +237,7 @@ class Parser
         }
     }
 
-    private function readPostTagName($char)
+    private function readPostTagName(string $char): void
     {
         if ('=' == $char) {
             $this->state = self::PRE_TAG_CONTENT;
@@ -250,7 +250,7 @@ class Parser
         }
     }
 
-    private function readPreTagContent($char)
+    private function readPreTagContent(string $char): void
     {
         if (preg_match('/^[a-zA-Z0-9]$/', $char)) {
             // when $mayConcatenateTagContent is true it means there is another
@@ -289,7 +289,7 @@ class Parser
         }
     }
 
-    private function readRawTagContent($char)
+    private function readRawTagContent(string $char): void
     {
         if (preg_match('/^[a-zA-Z0-9]$/', $char)) {
             $this->appendToBuffer($char);
@@ -305,7 +305,7 @@ class Parser
         }
     }
 
-    private function readDelimitedTagContent($char)
+    private function readDelimitedTagContent(string $char): void
     {
         if ($this->isTagContentEscaped) {
             $this->isTagContentEscaped = false;
@@ -332,7 +332,7 @@ class Parser
         }
     }
 
-    private function readOriginalEntry($char, $previousState)
+    private function readOriginalEntry(string $char, string $previousState): void
     {
         // check whether we are reading an entry character or not
         // $isEntryChar is TRUE when previous or current state indicates it
@@ -359,14 +359,14 @@ class Parser
         }
     }
 
-    private function throwExceptionIfBufferIsEmpty($char)
+    private function throwExceptionIfBufferIsEmpty(string $char): void
     {
         if (empty($this->buffer)) {
             throw ParserException::unexpectedCharacter($char, $this->line, $this->column);
         }
     }
 
-    private function appendToBuffer($char)
+    private function appendToBuffer(string $char): void
     {
         if (empty($this->buffer)) {
             $this->bufferOffset = $this->offset;
@@ -374,7 +374,7 @@ class Parser
         $this->buffer .= $char;
     }
 
-    private function triggerListenersWithCurrentBuffer()
+    private function triggerListenersWithCurrentBuffer(): void
     {
         $context = [
             'offset' => $this->bufferOffset,
@@ -385,14 +385,14 @@ class Parser
         $this->buffer = '';
     }
 
-    private function triggerListeners(string $text, string $type, array $context)
+    private function triggerListeners(string $text, string $type, array $context): void
     {
         foreach ($this->listeners as $listener) {
             $listener->bibTexUnitFound($text, $type, $context);
         }
     }
 
-    private function isWhitespace($char)
+    private function isWhitespace(string $char): bool
     {
         return ' ' == $char || "\t" == $char || "\n" == $char || "\r" == $char;
     }

@@ -49,7 +49,7 @@ class NamesProcessor
      * @return array  the extracted authors
      * @author Elmar Pitschke <elmar.pitschke@gmx.de>
      */
-    private function extractAuthors($entry)
+    private function extractAuthors(string $entry): array
     {
         // Sanitizes the entry to remove unwanted whitespace
         $entry = trim(preg_replace('/\s+/', ' ', $entry));

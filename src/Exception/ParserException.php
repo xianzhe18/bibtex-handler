@@ -15,7 +15,7 @@ use Exception;
 
 class ParserException extends Exception implements ExceptionInterface
 {
-    public static function unexpectedCharacter(string $character, int $line, int $column): ParserException
+    public static function unexpectedCharacter(string $character, int $line, int $column): self
     {
         // Avoid var_export() weird treatment for \0
         $character = "\0" == $character ? "'\\0'" : var_export($character, true);
