@@ -15,6 +15,9 @@ use PHPUnit\Framework\TestCase;
 use RenanBr\BibTexParser\Listener;
 use RenanBr\BibTexParser\Parser;
 
+/**
+ * @covers \RenanBr\BibTexParser\Listener
+ */
 class BasicTest extends TestCase
 {
     public function testBasicReading()

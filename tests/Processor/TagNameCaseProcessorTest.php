@@ -16,6 +16,9 @@ use RenanBr\BibTexParser\Listener;
 use RenanBr\BibTexParser\Parser;
 use RenanBr\BibTexParser\Processor\TagNameCaseProcessor;
 
+/**
+ * @covers \RenanBr\BibTexParser\Processor\TagNameCaseProcessor
+ */
 class TagNameCaseProcessorTest extends TestCase
 {
     public function testLower()

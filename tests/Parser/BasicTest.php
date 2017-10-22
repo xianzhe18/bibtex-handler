@@ -15,6 +15,9 @@ use PHPUnit\Framework\TestCase;
 use RenanBr\BibTexParser\Parser;
 use RenanBr\BibTexParser\Test\DummyListener;
 
+/**
+ * @covers \RenanBr\BibTexParser\Parser
+ */
 class BasicTest extends TestCase
 {
     public function testBasic()

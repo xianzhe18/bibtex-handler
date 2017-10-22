@@ -15,6 +15,9 @@ use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 use RenanBr\BibTexParser\Processor\TagSearchTrait;
 
+/**
+ * @covers \RenanBr\BibTexParser\Processor\TagSearchTrait
+ */
 class TagSearchTraitTest extends TestCase
 {
     public function testFound()

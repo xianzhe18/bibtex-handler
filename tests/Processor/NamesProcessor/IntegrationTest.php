@@ -16,6 +16,9 @@ use RenanBr\BibTexParser\Parser;
 use RenanBr\BibTexParser\Listener;
 use RenanBr\BibTexParser\Processor\NamesProcessor;
 
+/**
+ * @covers \RenanBr\BibTexParser\Processor\NamesProcessor
+ */
 class IntegrationTest extends TestCase
 {
     public function testUsage()

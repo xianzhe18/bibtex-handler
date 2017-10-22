@@ -14,6 +14,9 @@ namespace RenanBr\BibTexParser\Test\Processor\NamesProcessor;
 use PHPUnit\Framework\TestCase;
 use RenanBr\BibTexParser\Processor\NamesProcessor;
 
+/**
+ * @covers \RenanBr\BibTexParser\Processor\NamesProcessor
+ */
 class BasicTest extends TestCase
 {
     public function testSimple()

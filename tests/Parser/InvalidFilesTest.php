@@ -15,6 +15,9 @@ use PHPUnit\Framework\TestCase;
 use RenanBr\BibTexParser\Parser;
 use RenanBr\BibTexParser\Exception\ParserException;
 
+/**
+ * @covers \RenanBr\BibTexParser\Parser
+ */
 class InvalidFilesTest extends TestCase
 {
     public function testInexistentFileMustTriggerWarning()

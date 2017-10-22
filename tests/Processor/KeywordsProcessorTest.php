@@ -16,6 +16,9 @@ use RenanBr\BibTexParser\Listener;
 use RenanBr\BibTexParser\Parser;
 use RenanBr\BibTexParser\Processor\KeywordsProcessor;
 
+/**
+ * @covers \RenanBr\BibTexParser\Processor\KeywordsProcessor
+ */
 class KeywordsProcessorTest extends TestCase
 {
     public function testCommaAsSeparator()

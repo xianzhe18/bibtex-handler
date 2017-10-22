@@ -15,6 +15,9 @@ use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 use RenanBr\BibTexParser\Processor\TagCoverageTrait;
 
+/**
+ * @covers \RenanBr\BibTexParser\Processor\TagCoverageTrait
+ */
 class TagCoverageTraitTest extends TestCase
 {
     public function testZeroConfigurationMustCoverAllTags()

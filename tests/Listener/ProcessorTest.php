@@ -15,6 +15,9 @@ use PHPUnit\Framework\TestCase;
 use RenanBr\BibTexParser\Listener;
 use RenanBr\BibTexParser\Parser;
 
+/**
+ * @covers \RenanBr\BibTexParser\Listener
+ */
 class ProcessorTest extends TestCase
 {
     public function testProcessorIsCalled()

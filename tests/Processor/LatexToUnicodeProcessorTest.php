@@ -16,6 +16,9 @@ use RenanBr\BibTexParser\Listener;
 use RenanBr\BibTexParser\Parser;
 use RenanBr\BibTexParser\Processor\LatexToUnicodeProcessor;
 
+/**
+ * @covers \RenanBr\BibTexParser\Processor\LatexToUnicodeProcessor
+ */
 class LatexToUnicodeProcessorTest extends TestCase
 {
     public function testTextAsInput()

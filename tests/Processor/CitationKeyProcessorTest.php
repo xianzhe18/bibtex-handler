@@ -16,6 +16,9 @@ use RenanBr\BibTexParser\Listener;
 use RenanBr\BibTexParser\Parser;
 use RenanBr\BibTexParser\Processor\CitationKeyProcessor;
 
+/**
+ * @covers \RenanBr\BibTexParser\Processor\CitationKeyProcessor
+ */
 class CitationKeyProcessorTest extends TestCase
 {
     public function testCitationKeyDetecting()
