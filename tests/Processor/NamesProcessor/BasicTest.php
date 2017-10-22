@@ -57,8 +57,6 @@ class BasicTest extends TestCase
         $processor = new NamesProcessor();
         $authors = $processor(['author' => $authors])['author'];
 
-        $processor = new NamesProcessor;
-        $processor($authors, "author");
         $this->assertCount(1, $authors);
         $this->assertSame('', $authors[0]['first']);
         $this->assertSame('ICCAN', $authors[0]['last']);
