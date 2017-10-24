@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of the BibTex Parser.
@@ -20,7 +20,7 @@ use RenanBr\BibTexParser\Processor\TagSearchTrait;
  */
 class TagSearchTraitTest extends TestCase
 {
-    public function testFound()
+    public function testFound(): void
     {
         $trait = $this->getMockForTrait(TagSearchTrait::class);
         $found = $this->invokeTagSearch($trait, 'foo', ['foo', 'bar']);
@@ -28,7 +28,7 @@ class TagSearchTraitTest extends TestCase
         $this->assertSame('foo', $found);
     }
 
-    public function testNotFound()
+    public function testNotFound(): void
     {
         $trait = $this->getMockForTrait(TagSearchTrait::class);
         $found = $this->invokeTagSearch($trait, 'missing', ['foo', 'bar']);
@@ -36,7 +36,7 @@ class TagSearchTraitTest extends TestCase
         $this->assertNull($found);
     }
 
-    public function testCaseInsensitiveMatch()
+    public function testCaseInsensitiveMatch(): void
     {
         $trait = $this->getMockForTrait(TagSearchTrait::class);
         $found = $this->invokeTagSearch($trait, 'BAR', ['foo', 'bar']);

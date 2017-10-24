@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of the BibTex Parser.
@@ -56,7 +56,7 @@ class NamesProcessor
 
         $authorarray = [];
         $authorarray = explode(' and ', $entry);
-        for ($i = 0; $i < sizeof($authorarray); $i++) {
+        for ($i = 0; $i < count($authorarray); $i++) {
             $author = trim($authorarray[$i]);
             /*The first version of how an author could be written (First von Last)
             has no commas in it*/
@@ -64,13 +64,13 @@ class NamesProcessor
             $von = '';
             $last = '';
             $jr = '';
-            if (strpos($author, ',') === false) {
+            if (mb_strpos($author, ',') === false) {
                 $tmparray = [];
                 $tmparray = preg_split('/[\s\~]/', $author);
-                $size = sizeof($tmparray);
-                if (1 == $size) { //There is only a last
+                $size = count($tmparray);
+                if (1 === $size) { //There is only a last
                     $last = $tmparray[0];
-                } elseif (2 == $size) { //There is a first and a last
+                } elseif (2 === $size) { //There is a first and a last
                     $first = $tmparray[0];
                     $last = $tmparray[1];
                 } else {
@@ -83,13 +83,13 @@ class NamesProcessor
                             try {
                                 $case = $this->determineCase($tmparray[$j]);
 
-                                if ((0 == $case) || (-1 == $case)) { //Change from von to last
+                                if ((0 === $case) || (-1 === $case)) { //Change from von to last
                                     //You only change when there is no more lower case there
                                     $islast = true;
                                     for ($k = ($j + 1); $k < ($size - 1); $k++) {
                                         try {
                                             $futurecase = $this->determineCase($tmparray[$k]);
-                                            if (0 == $futurecase) {
+                                            if (0 === $futurecase) {
                                                 $islast = false;
                                             }
                                         } catch (ProcessorException $sbe) {
@@ -98,7 +98,7 @@ class NamesProcessor
                                     }
                                     if ($islast) {
                                         $inlast = true;
-                                        if (-1 == $case) { //Caseless belongs to the last
+                                        if (-1 === $case) { //Caseless belongs to the last
                                             $last .= ' '.$tmparray[$j];
                                         } else {
                                             $von .= ' '.$tmparray[$j];
@@ -115,7 +115,7 @@ class NamesProcessor
                         } else {
                             try {
                                 $case = $this->determineCase($tmparray[$j]);
-                                if (0 == $case) { //Change from first to von
+                                if (0 === $case) { //Change from first to von
                                     $invon = true;
                                     $von .= ' '.$tmparray[$j];
                                 } else {
@@ -135,8 +135,8 @@ class NamesProcessor
                 //The first entry must contain von and last
                 $vonlastarray = [];
                 $vonlastarray = explode(' ', $tmparray[0]);
-                $size = sizeof($vonlastarray);
-                if (1 == $size) { //Only one entry->got to be the last
+                $size = count($vonlastarray);
+                if (1 === $size) { //Only one entry->got to be the last
                     $last = $vonlastarray[0];
                 } else {
                     $inlast = false;
@@ -144,12 +144,12 @@ class NamesProcessor
                         if ($inlast) {
                             $last .= ' '.$vonlastarray[$j];
                         } else {
-                            if (0 != ($this->determineCase($vonlastarray[$j]))) { //Change from von to last
+                            if (0 !== ($this->determineCase($vonlastarray[$j]))) { //Change from von to last
                                 $islast = true;
                                 for ($k = ($j + 1); $k < ($size - 1); $k++) {
                                     try {
                                         $case = $this->determineCase($vonlastarray[$k]);
-                                        if (0 == $case) {
+                                        if (0 === $case) {
                                             $islast = false;
                                         }
                                     } catch (ProcessorException $sbe) {
@@ -170,11 +170,11 @@ class NamesProcessor
                     $last .= ' '.$vonlastarray[$size - 1];
                 }
                 //Now we check if it is version three (three entries in the array (two commas)
-                if (3 == sizeof($tmparray)) {
+                if (3 === count($tmparray)) {
                     $jr = $tmparray[1];
                 }
                 //Everything in the last entry is first
-                $first = $tmparray[sizeof($tmparray) - 1];
+                $first = $tmparray[count($tmparray) - 1];
             }
             $authorarray[$i] = ['first' => trim($first), 'von' => trim($von), 'last' => trim($last), 'jr' => trim($jr)];
         }
@@ -202,23 +202,23 @@ class NamesProcessor
         $trimmedword = trim($word);
         /*We need this variable. Without the next of would not work
         (trim changes the variable automatically to a string!)*/
-        if (is_string($word) && (strlen($trimmedword) > 0)) {
+        if (is_string($word) && (mb_strlen($trimmedword) > 0)) {
             $i = 0;
             $found = false;
             $openbrace = 0;
-            while (!$found && ($i <= strlen($word))) {
-                $letter = substr($trimmedword, $i, 1);
+            while (!$found && ($i <= mb_strlen($word))) {
+                $letter = mb_substr($trimmedword, $i, 1);
                 $ord = ord($letter);
-                if ($ord == 123) { //Open brace
+                if ($ord === 123) { //Open brace
                     $openbrace++;
                 }
-                if ($ord == 125) { //Closing brace
+                if ($ord === 125) { //Closing brace
                     $openbrace--;
                 }
-                if (($ord >= 65) && ($ord <= 90) && (0 == $openbrace)) { //The first character is uppercase
+                if (($ord >= 65) && ($ord <= 90) && (0 === $openbrace)) { //The first character is uppercase
                     $ret = 1;
                     $found = true;
-                } elseif (($ord >= 97) && ($ord <= 122) && (0 == $openbrace)) { //The first character is lowercase
+                } elseif (($ord >= 97) && ($ord <= 122) && (0 === $openbrace)) { //The first character is lowercase
                     $ret = 0;
                     $found = true;
                 } else { //Not yet found

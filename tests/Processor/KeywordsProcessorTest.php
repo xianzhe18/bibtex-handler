@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of the BibTex Parser.
@@ -21,7 +21,7 @@ use RenanBr\BibTexParser\Processor\KeywordsProcessor;
  */
 class KeywordsProcessorTest extends TestCase
 {
-    public function testCommaAsSeparator()
+    public function testCommaAsSeparator(): void
     {
         $processor = new KeywordsProcessor();
         $entry = $processor([
@@ -31,7 +31,7 @@ class KeywordsProcessorTest extends TestCase
         $this->assertSame(['foo', 'bar'], $entry['keywords']);
     }
 
-    public function testSemicolonAsSeparator()
+    public function testSemicolonAsSeparator(): void
     {
         $processor = new KeywordsProcessor();
         $entry = $processor([
@@ -42,7 +42,7 @@ class KeywordsProcessorTest extends TestCase
     }
 
     /** @see https://github.com/retorquere/zotero-better-bibtex/issues/361 */
-    public function testCommaAsTagContent()
+    public function testCommaAsTagContent(): void
     {
         $processor = new KeywordsProcessor();
         $entry = $processor([
@@ -57,7 +57,7 @@ class KeywordsProcessorTest extends TestCase
         ], $entry['keywords']);
     }
 
-    public function testThroughListener()
+    public function testThroughListener(): void
     {
         $listener = new Listener();
         $listener->addProcessor(new KeywordsProcessor());

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of the BibTex Parser.
@@ -21,7 +21,7 @@ use RenanBr\BibTexParser\Processor\LatexToUnicodeProcessor;
  */
 class LatexToUnicodeProcessorTest extends TestCase
 {
-    public function testTextAsInput()
+    public function testTextAsInput(): void
     {
         $processor = new LatexToUnicodeProcessor();
         $entry = $processor([
@@ -31,7 +31,7 @@ class LatexToUnicodeProcessorTest extends TestCase
         $this->assertSame('très bien', $entry['text']);
     }
 
-    public function testArrayAsInput()
+    public function testArrayAsInput(): void
     {
         $processor = new LatexToUnicodeProcessor();
         $entry = $processor([
@@ -47,7 +47,7 @@ class LatexToUnicodeProcessorTest extends TestCase
         ], $entry['text']);
     }
 
-    public function testThroughListener()
+    public function testThroughListener(): void
     {
         $listener = new Listener();
         $listener->addProcessor(new LatexToUnicodeProcessor());

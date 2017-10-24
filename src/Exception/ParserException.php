@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of the BibTex Parser.
@@ -18,7 +18,7 @@ class ParserException extends Exception implements ExceptionInterface
     public static function unexpectedCharacter(string $character, int $line, int $column): self
     {
         // Avoid var_export() weird treatment for \0
-        $character = "\0" == $character ? "'\\0'" : var_export($character, true);
+        $character = "\0" === $character ? "'\\0'" : var_export($character, true);
 
         return new self(sprintf(
             "Unexpected character %s at line %d column %d",

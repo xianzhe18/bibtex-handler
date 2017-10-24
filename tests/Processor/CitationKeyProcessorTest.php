@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of the BibTex Parser.
@@ -21,7 +21,7 @@ use RenanBr\BibTexParser\Processor\CitationKeyProcessor;
  */
 class CitationKeyProcessorTest extends TestCase
 {
-    public function testCitationKeyDetecting()
+    public function testCitationKeyDetecting(): void
     {
         $listener = new Listener();
         $listener->addProcessor(new CitationKeyProcessor());
@@ -32,12 +32,12 @@ class CitationKeyProcessorTest extends TestCase
 
         $entries = $listener->export();
 
-        $this->assertFalse(array_key_exists('Someone2016', $entries[0]));
-        $this->assertTrue(array_key_exists('citation-key', $entries[0]));
+        $this->assertArrayNotHasKey('Someone2016', $entries[0]);
+        $this->assertArrayHasKey('citation-key', $entries[0]);
         $this->assertSame('Someone2016', $entries[0]['citation-key']);
     }
 
-    public function testNullFilling()
+    public function testNullFilling(): void
     {
         $listener = new Listener();
         $listener->addProcessor(new CitationKeyProcessor());
@@ -48,7 +48,7 @@ class CitationKeyProcessorTest extends TestCase
 
         $entries = $listener->export();
 
-        $this->assertTrue(array_key_exists('citation-key', $entries[0]));
+        $this->assertArrayHasKey('citation-key', $entries[0]);
         $this->assertNull($entries[0]['citation-key']);
     }
 }

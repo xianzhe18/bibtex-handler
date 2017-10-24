@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of the BibTex Parser.
@@ -35,7 +35,7 @@ class LatexToUnicodeProcessor
 
             // Translate array
             if (is_array($entry[$tag])) {
-                array_walk_recursive($entry[$tag], function (&$text) {
+                array_walk_recursive($entry[$tag], function (&$text): void {
                     if (is_string($text)) {
                         $text = $this->decode($text);
                     }

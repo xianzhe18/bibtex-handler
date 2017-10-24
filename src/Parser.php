@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of the BibTex Parser.
@@ -102,11 +102,11 @@ class Parser
 
     private function parse(string $text): void
     {
-        $length = strlen($text);
+        $length = mb_strlen($text);
         for ($position = 0; $position < $length; $position++) {
-            $char = substr($text, $position, 1);
+            $char = mb_substr($text, $position, 1);
             $this->read($char);
-            if ("\n" == $char) {
+            if ("\n" === $char) {
                 $this->line++;
                 $this->column = 1;
             } else {
@@ -120,7 +120,7 @@ class Parser
     {
         // it's called when parsing has been done
         // so it checks whether the status is ok or not
-        if (self::NONE != $this->state && self::COMMENT != $this->state) {
+        if (self::NONE !== $this->state && self::COMMENT !== $this->state) {
             throw ParserException::unexpectedCharacter("\0", $this->line, $this->column);
         }
     }
@@ -180,7 +180,7 @@ class Parser
 
     private function readNone(string $char): void
     {
-        if ('@' == $char) {
+        if ('@' === $char) {
             $this->state = self::TYPE;
         } elseif (!$this->isWhitespace($char)) {
             $this->state = self::COMMENT;
@@ -211,7 +211,7 @@ class Parser
 
     private function readPostType(string $char): void
     {
-        if ('{' == $char) {
+        if ('{' === $char) {
             $this->state = self::TAG_NAME;
         } elseif (!$this->isWhitespace($char)) {
             throw ParserException::unexpectedCharacter($char, $this->line, $this->column);
@@ -224,7 +224,7 @@ class Parser
             $this->appendToBuffer($char);
         } elseif ($this->isWhitespace($char) && empty($this->buffer)) {
             // skip
-        } elseif ('}' == $char) {
+        } elseif ('}' === $char) {
             $this->state = self::NONE;
         } else {
             $this->throwExceptionIfBufferIsEmpty($char);
@@ -239,11 +239,11 @@ class Parser
 
     private function readPostTagName(string $char): void
     {
-        if ('=' == $char) {
+        if ('=' === $char) {
             $this->state = self::PRE_TAG_CONTENT;
-        } elseif ('}' == $char) {
+        } elseif ('}' === $char) {
             $this->state = self::NONE;
-        } elseif (',' == $char) {
+        } elseif (',' === $char) {
             $this->state = self::TAG_NAME;
         } elseif (!$this->isWhitespace($char)) {
             throw ParserException::unexpectedCharacter($char, $this->line, $this->column);
@@ -261,29 +261,29 @@ class Parser
             }
             $this->state = self::RAW_TAG_CONTENT;
             $this->readRawTagContent($char);
-        } elseif ('"' == $char) {
+        } elseif ('"' === $char) {
             // this verification is here for the same reason of the first case
             if ($this->mayConcatenateTagContent) {
                 throw ParserException::unexpectedCharacter($char, $this->line, $this->column);
             }
             $this->valueDelimiter = '"';
             $this->state = self::QUOTED_TAG_CONTENT;
-        } elseif ('{' == $char) {
+        } elseif ('{' === $char) {
             // this verification is here for the same reason of the first case
             if ($this->mayConcatenateTagContent) {
                 throw ParserException::unexpectedCharacter($char, $this->line, $this->column);
             }
             $this->valueDelimiter = '}';
             $this->state = self::BRACED_TAG_CONTENT;
-        } elseif ('#' == $char || ',' == $char || '}' == $char) {
+        } elseif ('#' === $char || ',' === $char || '}' === $char) {
             if (!$this->mayConcatenateTagContent) {
                 // it expects some value
                 throw ParserException::unexpectedCharacter($char, $this->line, $this->column);
             }
             $this->mayConcatenateTagContent = false;
-            if (',' == $char) {
+            if (',' === $char) {
                 $this->state = self::TAG_NAME;
-            } elseif ('}' == $char) {
+            } elseif ('}' === $char) {
                 $this->state = self::NONE;
             }
         }
@@ -309,15 +309,15 @@ class Parser
     {
         if ($this->isTagContentEscaped) {
             $this->isTagContentEscaped = false;
-            if ($this->valueDelimiter != $char && '\\' != $char && '%' != $char) {
+            if ($this->valueDelimiter !== $char && '\\' !== $char && '%' !== $char) {
                 $this->appendToBuffer('\\');
             }
             $this->appendToBuffer($char);
-        } elseif ('}' == $this->valueDelimiter && '{' == $char) {
+        } elseif ('}' === $this->valueDelimiter && '{' === $char) {
             $this->braceLevel++;
             $this->appendToBuffer($char);
-        } elseif ($this->valueDelimiter == $char) {
-            if (0 == $this->braceLevel) {
+        } elseif ($this->valueDelimiter === $char) {
+            if (0 === $this->braceLevel) {
                 $this->triggerListenersWithCurrentBuffer();
                 $this->mayConcatenateTagContent = true;
                 $this->state = self::PRE_TAG_CONTENT;
@@ -325,7 +325,7 @@ class Parser
                 $this->braceLevel--;
                 $this->appendToBuffer($char);
             }
-        } elseif ('\\' == $char) {
+        } elseif ('\\' === $char) {
             $this->isTagContentEscaped = true;
         } else {
             $this->appendToBuffer($char);
@@ -337,8 +337,8 @@ class Parser
         // check whether we are reading an entry character or not
         // $isEntryChar is TRUE when previous or current state indicates it
         $isEntryChar =
-            ($previousState != self::NONE && $previousState != self::COMMENT) ||
-            ($this->state != self::NONE && $this->state != self::COMMENT)
+            ($previousState !== self::NONE && $previousState !== self::COMMENT) ||
+            ($this->state !== self::NONE && $this->state !== self::COMMENT)
         ;
 
         if ($isEntryChar) {
@@ -394,6 +394,6 @@ class Parser
 
     private function isWhitespace(string $char): bool
     {
-        return ' ' == $char || "\t" == $char || "\n" == $char || "\r" == $char;
+        return ' ' === $char || "\t" === $char || "\n" === $char || "\r" === $char;
     }
 }

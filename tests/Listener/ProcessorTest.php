@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of the BibTex Parser.
@@ -20,7 +20,7 @@ use RenanBr\BibTexParser\Parser;
  */
 class ProcessorTest extends TestCase
 {
-    public function testProcessorIsCalled()
+    public function testProcessorIsCalled(): void
     {
         $listener = new Listener();
         $listener->addProcessor(function ($entry) {
@@ -39,7 +39,7 @@ class ProcessorTest extends TestCase
         $this->assertSame('bar processed', $entry['foo']);
     }
 
-    public function testProcessorsAreCalledInCorrectOrder()
+    public function testProcessorsAreCalledInCorrectOrder(): void
     {
         $listener = new Listener();
         $listener->addProcessor(function ($entry) {

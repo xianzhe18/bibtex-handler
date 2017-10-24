@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of the BibTex Parser.
@@ -77,7 +77,7 @@ class Listener implements ListenerInterface
             case PARSER::RAW_TAG_CONTENT:
                 // Searchs for an abbreviation
                 foreach ($this->entries as $entry) {
-                    if ('string' == $entry['type'] && array_key_exists($text, $entry)) {
+                    if ('string' === $entry['type'] && array_key_exists($text, $entry)) {
                         $text = $entry[$text];
                         break;
                     }

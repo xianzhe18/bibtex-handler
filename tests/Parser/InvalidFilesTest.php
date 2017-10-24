@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of the BibTex Parser.
@@ -12,15 +12,15 @@
 namespace RenanBr\BibTexParser\Test\Parser;
 
 use PHPUnit\Framework\TestCase;
-use RenanBr\BibTexParser\Parser;
 use RenanBr\BibTexParser\Exception\ParserException;
+use RenanBr\BibTexParser\Parser;
 
 /**
  * @covers \RenanBr\BibTexParser\Parser
  */
 class InvalidFilesTest extends TestCase
 {
-    public function testInexistentFileMustTriggerWarning()
+    public function testInexistentFileMustTriggerWarning(): void
     {
         $parser = new Parser();
 
@@ -34,7 +34,7 @@ class InvalidFilesTest extends TestCase
     }
 
     /** @dataProvider invalidFileProvider */
-    public function testInvalidInputMustCauseException($file, $message)
+    public function testInvalidInputMustCauseException($file, $message): void
     {
         $parser = new Parser();
 

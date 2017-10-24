@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of the BibTex Parser.
@@ -21,7 +21,7 @@ use RenanBr\BibTexParser\Processor\TagNameCaseProcessor;
  */
 class TagNameCaseProcessorTest extends TestCase
 {
-    public function testLower()
+    public function testLower(): void
     {
         $listener = new Listener();
         $listener->addProcessor(new TagNameCaseProcessor(\CASE_LOWER));
@@ -32,12 +32,12 @@ class TagNameCaseProcessorTest extends TestCase
 
         $entries = $listener->export();
 
-        $this->assertTrue(array_key_exists('foo', $entries[0]));
-        $this->assertFalse(array_key_exists('FoO', $entries[0]));
+        $this->assertArrayHasKey('foo', $entries[0]);
+        $this->assertArrayNotHasKey('FoO', $entries[0]);
         $this->assertSame('bAr', $entries[0]['foo']);
     }
 
-    public function testUpper()
+    public function testUpper(): void
     {
         $listener = new Listener();
         $listener->addProcessor(new TagNameCaseProcessor(\CASE_UPPER));
@@ -48,8 +48,8 @@ class TagNameCaseProcessorTest extends TestCase
 
         $entries = $listener->export();
 
-        $this->assertTrue(array_key_exists('FOO', $entries[0]));
-        $this->assertFalse(array_key_exists('FoO', $entries[0]));
+        $this->assertArrayHasKey('FOO', $entries[0]);
+        $this->assertArrayNotHasKey('FoO', $entries[0]);
         $this->assertSame('bAr', $entries[0]['FOO']);
     }
 }

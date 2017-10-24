@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of the BibTex Parser.
@@ -18,12 +18,12 @@ use RenanBr\BibTexParser\Test\DummyListener;
 /**
  * @covers \RenanBr\BibTexParser\Parser
  */
-class TagContentParsingTest extends TestCase
+class ValueParsingTest extends TestCase
 {
     /**
      * Tests if parser is able to handle raw, null, braced and quoted values ate the same time.
      */
-    public function testMultipleNature()
+    public function testMultipleNature(): void
     {
         $listener = new DummyListener();
 
@@ -91,7 +91,7 @@ class TagContentParsingTest extends TestCase
         $this->assertSame($original, $text);
     }
 
-    public function testTagContentScaping()
+    public function testTagContentScaping(): void
     {
         $listener = new DummyListener();
 
@@ -147,7 +147,7 @@ class TagContentParsingTest extends TestCase
         $this->assertSame(93, $context['length']);
     }
 
-    public function testMultipleTagContents()
+    public function testMultipleTagContents(): void
     {
         $listener = new DummyListener();
 
@@ -235,7 +235,7 @@ class TagContentParsingTest extends TestCase
         $this->assertSame($original, $text);
     }
 
-    public function testTagContentSlashes()
+    public function testTagContentSlashes(): void
     {
         $listener = new DummyListener();
 
@@ -271,7 +271,7 @@ class TagContentParsingTest extends TestCase
         $this->assertSame($original, $text);
     }
 
-    public function testTagContentNestedBraces()
+    public function testTagContentNestedBraces(): void
     {
         $listener = new DummyListener();
 
