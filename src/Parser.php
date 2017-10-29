@@ -222,6 +222,9 @@ class Parser
         } elseif ($this->isWhitespace($char) && empty($this->buffer)) {
             // skip
         } elseif ('}' == $char) {
+            if (!empty($this->buffer)) {
+                $this->triggerListenersWithCurrentBuffer();
+            }
             $this->state = self::NONE;
         } else {
             $this->throwExceptionIfBufferIsEmpty($char);

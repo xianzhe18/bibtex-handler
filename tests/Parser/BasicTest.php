@@ -52,4 +52,32 @@ class BasicTest extends TestCase
         $this->assertSame(0, $context['offset']);
         $this->assertSame(24, $context['length']);
     }
+
+    /**
+     * @group regresssion
+     * @group bug33
+     * @link https://github.com/renanbr/bibtex-parser/issues/33
+     */
+    public function testCitationKeyMustNotBeIgnored()
+    {
+        $listener = new DummyListener;
+
+        $parser = new Parser();
+        $parser->addListener($listener);
+        $parser->parseString('@article{imhere}');
+
+        $this->assertCount(2, $listener->calls);
+
+        list($text, $context) = $listener->calls[0];
+        $this->assertSame(Parser::TYPE, $context['state']);
+        $this->assertSame('article', $text);
+        $this->assertSame(1, $context['offset']);
+        $this->assertSame(7, $context['length']);
+
+        list($text, $context) = $listener->calls[1];
+        $this->assertSame(Parser::KEY, $context['state']);
+        $this->assertSame('imhere', $text);
+        $this->assertSame(9, $context['offset']);
+        $this->assertSame(6, $context['length']);
+    }
 }
