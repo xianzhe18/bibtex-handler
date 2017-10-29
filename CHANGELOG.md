@@ -1,5 +1,14 @@
 # Changes in BibTex Parser
 
+## [1.0.1] - 2017-10-29
+
+### Fixed
+
+- Issue [#33] Citation key is ignored
+
+[1.0.1]: https://github.com/renanbr/bibtex-parser/releases/tag/1.0.1
+[#33]: https://github.com/renanbr/bibtex-parser/issues/33
+
 ## [1.0.0] - 2017-10-11
 
 ### Removed
