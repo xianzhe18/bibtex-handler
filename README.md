@@ -2,9 +2,9 @@
 
 This is a [BibTeX](http://mirrors.ctan.org/biblio/bibtex/base/btxdoc.pdf) parser written in PHP.
 
-[![Build Status](https://travis-ci.org/renanbr/bibtex-parser.svg?branch=1.x)](https://travis-ci.org/renanbr/bibtex-parser)
+[![Build Status](https://travis-ci.org/renanbr/bibtex-parser.svg?branch=master)](https://travis-ci.org/renanbr/bibtex-parser)
 
-## Install
+## Installation
 
 ```bash
 composer require renanbr/bibtex-parser ^2@dev
@@ -15,107 +15,177 @@ composer require renanbr/bibtex-parser ^2@dev
 ## Usage
 
 ```php
-use RenanBr\BibTexParser\Parser;
 use RenanBr\BibTexParser\Listener;
+use RenanBr\BibTexParser\Parser;
 
-$parser = new Parser();                     // Create a Parser instance
-$listener = new Listener();                 // Create a Listener instance
-$parser->addListener($listener);            // Attach the Listener to the Parser
-$parser->parseFile('/path/to/example.bib'); // Parse a file, or string $parser->parseString()
-$entries = $listener->export();             // Get data from the Listener
+require 'vendor/autoload.php';
 
-$entries[0]['type'];         // article
-$entries[0]['citation-key']; // Ovadia2011
-$entries[0]['title'];        // Managing Citations With Cost-Free Tools
-$entries[0]['journal'];      // Behavioral {\&} Social Sciences Librarian
+$bibtex = <<<BIBTEX
+@article{einstein1916relativity,
+  title={Relativity: The Special and General Theory},
+  author={Einstein, Albert},
+  year={1916}
+}
+BIBTEX;
+
+$parser = new Parser();          // Create a Parser
+$listener = new Listener();      // Create and configure a Listener
+$parser->addListener($listener); // Attach the Listener to the Parser
+$parser->parseString($bibtex);   // or parseFile('/path/to/file.bib')
+$entries = $listener->export();  // Get processed data from the Listener
+
+print_r($entries);
 ```
 
-Below we have the `example.bib` source file used in the sample above.
+This will output:
+
+```
+Array
+(
+    [0] => Array
+        (
+            [type] => article
+            [citation-key] => einstein1916relativity
+            [title] => Relativity: The Special and General Theory
+            [author] => Einstein, Albert
+            [year] => 1916
+        )
+)
+```
+
+## Vocabulary
+
+BibTeX is all about "entry", "tag's name" and "tag's content".
+
+> A BibTeX **entry** consists of the type (the word after @), a citation-key and a number of tags which define various characteristics of the specific BibTeX entry. (...) A BibTeX **tag** is specified by its **name** followed by an equals-sign and the **content**.
+
+Source: http://www.bibtex.org/Format/
+
+Note: This library considers "type" and "citation-key" as tags. This behavior can be change if you implement your own Listener (more info at the end of this document).
+
+## Processors
+
+This library contains three main parts:
+
+- `Parser` class, responsible for detecting units inside a BibTeX input;
+- `Listener` class, responsible for gathering units and transforming them into a list of entries;
+- `Processor` classes, responsible for manipulating entries.
+
+Despite we can't configure the `Parser`, you can append as many `Processor` as you want to the `Listener`. If you need more than this, considering implementing your own `Listener` (more info at the end of this document).
+
+Before showing the available processors, get awareness that `Listener` provides, by default, these features:
+
+- Found entries are reachable through `export()` method;
+- [Tag content concatenation](http://www.bibtex.org/Format/);
+- [Tag content abbreviation handling](http://www.bibtex.org/Format/);
+- Publication's type is exposed as `type` tag;
+- Citation key is exposed as `citation-key` tag;
+- Original entry text is exposed as `_original` tag.
+
+`Processor` is a [callable] that receives an entry as argument and returns a modified entry. You can append processors through `Listener::addProcessor()` before exporting the contents. This project is shipped with some useful processors.
+
+### Tag name case
+
+In BibTeX the tag's names aren't case-sensitive. This library exposes entries as array, but in PHP array keys are case-sensitive. To avoid this misunderstanding, you can force the tags' character case using `TagNameCaseProcessor`.
+
+```php
+use RenanBr\BibTexParser\Processor\TagNameCaseProcessor;
+
+$listener->addProcessor(new TagNameCaseProcessor(CASE_UPPER)); // or CASE_LOWER
+```
 
 ```bib
-@article{Ovadia2011,
-    author = {Ovadia, Steven},
-    doi = {10.1080/01639269.2011.565408},
-    issn = {0163-9269},
-    journal = {Behavioral {\&} Social Sciences Librarian},
-    month = {apr},
-    number = {2},
-    pages = {107--111},
-    title = {Managing Citations With Cost-Free Tools},
-    url = {http://www.tandfonline.com/doi/abs/10.1080/01639269.2011.565408},
-    volume = {30},
-    year = {2011}
+@article{
+  title={BibTeX rocks}
 }
 ```
 
-### Configuring the Listener
-
-The `RenanBr\BibTexParser\Listener` class provides, by default, these features:
-
-- `export()` returns all entries found;
-- [`citation-key` auto detection](http://www.bibtex.org/Format/);
-- [Tag value concatenation](http://www.bibtex.org/Format/);
-- [Abbreviation handling](http://www.bibtex.org/Format/);
-- The type of publication is exposed in the `type` key;
-- The original text of each entry is exposed in the `_original` key.
-
-Besides that you can configure it in two ways:
-
-- Tag name case; and
-- Tag value processors.
-
-If you need more than this, considering implementing your own listener (more info at the end of this document).
-
-#### Tag name case
-
-You can change the character case of tags' names through `setTagNameCase()` before exporting the contents.
-
-```php
-$listener->setTagNameCase(CASE_UPPER); // or CASE_LOWER
-$entries = $listener->export();
-$entries[0]['TYPE'];
+```
+Array
+(
+    [0] => Array
+        (
+            [TYPE] => article
+            [TITLE] => BibTeX rocks
+        )
+)
 ```
 
-#### Tag value processors
+### Authors and editors
 
-You can change tags' values by adding one or more processors through `addTagValueProcessor()` before exporting the contents.
-This project is shipped with some useful processors out of the box.
-
-##### Authors and Editors
-
-BibTeX recognizes four parts of an author's name: First Von Last Jr.
-If you would like to parse the author and editor names included in your entries, you can use the `RenanBr\BibTexParser\Processor\NamesProcessor` class.
-Before exporting the contents, add this processor:
+BibTeX recognizes four parts of an author's name: First Von Last Jr. If you would like to parse the `author` and `editor` tags included in your entries, you can use the `NamesProcessor` class.
 
 ```php
 use RenanBr\BibTexParser\Processor\NamesProcessor;
 
-$listener->addTagValueProcessor(new NamesProcessor());
-$entries = $listener->export();
+$listener->addProcessor(new NamesProcessor());
 ```
 
-The resulting `$entries[0]['author']` and `$entries[0]['editor']` will then be arrays with each name separated in the four parts above.
+```bib
+@article{
+  title={Relativity: The Special and General Theory},
+  author={Einstein, Albert}
+}
+```
 
-##### Keywords
+```
+Array
+(
+    [0] => Array
+        (
+            [type] => article
+            [title] => Relativity: The Special and General Theory
+            [author] => Array
+                (
+                    [0] => Array
+                        (
+                            [first] => Albert
+                            [von] =>
+                            [last] => Einstein
+                            [jr] =>
+                        )
+                )
+        )
+)
+```
+
+### Keywords
 
 The `keywords` tag contains a list of expressions represented as text, you might want to read them as an array instead.
-You can achieve it adding `RenanBr\BibTexParser\Processor\KeywordsProcessor` before exporting the contents:
 
 ```php
-use RenanBr\BibTexParser\Processor\KeywordsProcessor;
+RenanBr\BibTexParser\Processor\KeywordsProcessor;
 
-$listener->addTagValueProcessor(new KeywordsProcessor());
-$entries = $listener->export();
+$listener->addProcessor(new KeywordsProcessor());
 ```
 
-The resulting `$entries[0]['keywords']` will then be an array.
+```bib
+@misc{
+  title={The End of Theory: The Data Deluge Makes the Scientific Method Obsolete},
+  keywords={big data, data deluge, scientific method}
+}
+```
 
-##### LaTeX to Unicode
+```
+Array
+(
+    [0] => Array
+        (
+            [type] => misc
+            [title] => The End of Theory: The Data Deluge Makes the Scientific Method Obsolete
+            [keywords] => Array
+                (
+                    [0] => big data
+                    [1] => data deluge
+                    [2] => scientific method
+                )
+        )
+)
+```
 
-BibTeX files store LaTeX contents.
-You might want to read them as unicode instead.
-The `RenanBr\BibTexParser\Processor\LatexToUnicodeProcessor` class solves this problem.
-Before adding the processor to the listener you must:
+### LaTeX to unicode
+
+BibTeX files store LaTeX contents. You might want to read them as unicode instead. The `LatexToUnicodeProcessor` class solves this problem, but before adding the processor to the listener you must:
 
 - [install Pandoc](http://pandoc.org/installing.html) in your system; and
 - add [ryakad/pandoc-php](https://github.com/ryakad/pandoc-php) as a dependency of your project.
@@ -123,40 +193,89 @@ Before adding the processor to the listener you must:
 ```php
 use RenanBr\BibTexParser\Processor\LatexToUnicodeProcessor;
 
-$listener->addTagValueProcessor(new LatexToUnicodeProcessor());
-$entries = $listener->export();
+$listener->addProcessor(new LatexToUnicodeProcessor());
 ```
 
-Notes:
+```bib
+@article{
+  title={Caf\\'{e}s and bars}
+}
+```
 
-- Order matters, add this processor as the last;
-- This processor may throw a `Pandoc\PandocException`.
+```
+Array
+(
+    [0] => Array
+        (
+            [type] => article
+            [title] => Cafés and bars
+        )
+)
+```
 
-##### Custom
+Note: Order matters, add this processor as the last.
 
-The `addTagValueProcessor()` method expects a `callable` as argument.
-In the example shown below, we append the text `with laser` to the `title` tags for all entries.
+### Custom
+
+The `Listener::addProcessor()` method expects a [callable] as argument. In the example shown below, we append the text `with laser` to the `title` tags for all entries.
 
 ```php
-$listener->addTagValueProcessor(function (&$value, $tag) {
-    if ($tag == 'title') {
-        $value .= ' with laser';
-    }
+$listener->addProcessor(function (array $entry): array {
+    $entry['title'] .= ' with laser';
+    return $entry;
 });
+```
+
+```
+@article{
+  title={BibTeX rocks}
+}
+```
+
+```
+Array
+(
+    [0] => Array
+        (
+            [type] => article
+            [title] => BibTeX rocks with laser
+        )
+)
+```
+
+## Handling errors
+
+This library throws two types of exception: `ParserException` and `ProcessorException`. The first one may happen during the data extraction. When it occurs it probably means the parsed BibTeX isn't valid. The second exception may be throwed during the data processing. When it occurs it means the listener's processors can't handle properly the data found. Both implement `ExceptionInterface`.
+
+```php
+use RenanBr\BibTexParser\Exception\ExceptionInterface;
+use RenanBr\BibTexParser\Exception\ParserException;
+use RenanBr\BibTexParser\Exception\ProcessorException;
+
+try {
+    // ... parser and listener configuration
+
+    $parser->parseFile('/path/to/file.bib');
+    $entries = $listener->export();
+} catch (ParserException $exception) {
+    // The BibTeX isn't valid
+} catch (ProcessorException $exception) {
+    // Listener's processors aren't able to handle data found
+} catch (ExceptionInterface $exception) {
+    // Alternatively, you can use this exception to catch all of them at once
+}
 ```
 
 ## Advanced usage
 
-This library has two main parts:
+The core of this library is constituted of these classes:
 
-- Parser, represented by the `RenanBr\BibTexParser\Parser` class; and
-- Listener, represented by the `Renan\BibTexParser\ListenerInterface` interface.
+- `RenanBr\BibTexParser\Parser`: responsible for detecting units inside a BibTeX input;
+- `RenanBr\BibTexParser\ListenerInterface`: responsible for treating units found.
 
-The parser class is able to detect BibTeX units, such as "type", "tag name", "tag value".
-As the parser finds an unite, listeners are triggered.
+You can attach listeners to the parser through `Parser::addListener()`. The parser is able to detect BibTeX units, such as "type", "tag's name", "tag's content". As the parser finds an unit, listeners are triggered.
 
-You can code your own listener!
-All you have to do is handle unites.
+You can code your own listener! All you have to do is handle units.
 
 ```php
 interface RenanBr\BibTexParser\ListenerInterface
@@ -165,23 +284,30 @@ interface RenanBr\BibTexParser\ListenerInterface
      * Called when an unit is found.
      *
      * @param string $text    The original content of the unit found.
-     *                        Escaped characters will not be sent.
+     *                        Escape character will not be sent.
+     * @param string $type    The type of unit found.
+     *                        It can assume one of Parser's constant value.
      * @param array  $context Contains details of the unit found.
      */
-    public function bibTexUnitFound(string $text, array $context): void;
+    public function bibTexUnitFound(string $text, string $type, array $context): void;
 }
 ```
 
-The `$context` variable explained:
-- The `state` key contains the current parser's state.
-  It may assume:
-  - `Parser::TYPE`
-  - `Parser::KEY` (tag name)
-  - `Parser::RAW_VALUE` (tag value)
-  - `Parser::BRACED_VALUE` (tag value)
-  - `Parser::QUOTED_VALUE` (tag value)
-  - `Parser::ORIGINAL_ENTRY`
-- `offset` contains the text beginning position.
+`$type` may assume one of these values:
+
+- `Parser::TYPE`
+- `Parser::CITATION_KEY`
+- `Parser::TAG_NAME`
+- `Parser::RAW_TAG_CONTENT`
+- `Parser::BRACED_TAG_CONTENT`
+- `Parser::QUOTED_TAG_CONTENT`
+- `Parser::ENTRY`
+
+`$context` is an array with these keys:
+
+- `offset` contains the `$text`'s beginning position.
   It may be useful, for example, to [seek on a file pointer](https://php.net/fseek);
-- `length` contains the original text length.
+- `length` contains the original `$text`'s length.
   It may differ from string length sent to the listener because may there are escaped characters.
+
+[callable]: https://php.net/manual/en/language.types.callable.php
