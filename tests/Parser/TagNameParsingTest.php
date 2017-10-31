@@ -35,7 +35,7 @@ class TagNameParsingTest extends TestCase
         $this->assertSame('noTagContent', $text);
 
         list($text, $type, $context) = $listener->calls[1];
-        $this->assertSame(Parser::TAG_NAME, $type);
+        $this->assertSame(Parser::CITATION_KEY, $type);
         $this->assertSame('foo', $text);
 
         list($text, $type, $context) = $listener->calls[2];

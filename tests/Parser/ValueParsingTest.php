@@ -38,7 +38,7 @@ class ValueParsingTest extends TestCase
         $this->assertSame('valuesBasic', $text);
 
         list($text, $type, $context) = $listener->calls[1];
-        $this->assertSame(Parser::TAG_NAME, $type);
+        $this->assertSame(Parser::CITATION_KEY, $type);
         $this->assertSame('kNull', $text);
 
         list($text, $type, $context) = $listener->calls[2];

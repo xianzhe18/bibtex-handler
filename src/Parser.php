@@ -16,6 +16,7 @@ use RenanBr\BibTexParser\Exception\ParserException;
 class Parser
 {
     public const TYPE = 'type';
+    public const CITATION_KEY = 'citation_key';
     public const TAG_NAME = 'tag_name';
     public const RAW_TAG_CONTENT = 'raw_tag_content';
     public const BRACED_TAG_CONTENT = 'braced_tag_content';
@@ -24,6 +25,7 @@ class Parser
 
     private const NONE = 'none';
     private const COMMENT = 'comment';
+    private const FIRST_TAG_NAME = 'first_tag_name';
     private const POST_TYPE = 'post_type';
     private const POST_TAG_NAME = 'post_tag_name';
     private const PRE_TAG_CONTENT = 'pre_tag_content';
@@ -33,6 +35,9 @@ class Parser
 
     /** @var string */
     private $buffer;
+
+    /** @var array */
+    private $firstTagSnapshot;
 
     /** @var string */
     private $originalEntry;
@@ -59,7 +64,7 @@ class Parser
     private $tagContentDelimiter;
 
     /** @var int */
-    private $braceLevel = 0;
+    private $braceLevel;
 
     /** @var ListenerInterface[] */
     private $listeners = [];
@@ -129,6 +134,7 @@ class Parser
     {
         $this->state = self::NONE;
         $this->buffer = '';
+        $this->firstTagSnapshot = null;
         $this->originalEntry = '';
         $this->originalEntryOffset = null;
         $this->line = 1;
@@ -139,6 +145,8 @@ class Parser
         $this->valueDelimiter = null;
         $this->braceLevel = 0;
     }
+
+    // ----- Readers -----------------------------------------------------------
 
     private function read(string $char): void
     {
@@ -157,6 +165,7 @@ class Parser
             case self::POST_TYPE:
                 $this->readPostType($char);
                 break;
+            case self::FIRST_TAG_NAME:
             case self::TAG_NAME:
                 $this->readTagName($char);
                 break;
@@ -212,7 +221,7 @@ class Parser
     private function readPostType(string $char): void
     {
         if ('{' === $char) {
-            $this->state = self::TAG_NAME;
+            $this->state = self::FIRST_TAG_NAME;
         } elseif (!$this->isWhitespace($char)) {
             throw ParserException::unexpectedCharacter($char, $this->line, $this->column);
         }
@@ -223,15 +232,24 @@ class Parser
         if (preg_match('/^[a-zA-Z0-9_\+:\-]$/', $char)) {
             $this->appendToBuffer($char);
         } elseif ($this->isWhitespace($char) && empty($this->buffer)) {
-            // skip
-        } elseif ('}' === $char) {
+            // Skips because we didn't start reading
+        } elseif ('}' === $char && empty($this->buffer)) {
+            // No tag name found, $char is just closing current entry
             $this->state = self::NONE;
         } else {
             $this->throwExceptionIfBufferIsEmpty($char);
-            $this->triggerListenersWithCurrentBuffer();
 
-            // once $char isn't a valid character
-            // it must be interpreted as POST_TYPE
+            if (self::FIRST_TAG_NAME === $this->state) {
+                // Takes a snapshot of current state to be triggered late as
+                // tag name or citation key, see readPostTagName()
+                $this->firstTagSnapshot = $this->takeSnapshot();
+            } else {
+                // Current buffer is a simple tag name
+                $this->triggerListenersWithCurrentBuffer();
+            }
+
+            // Once $char isn't a valid tag name character, it must be
+            // interpreted as post tag name
             $this->state = self::POST_TAG_NAME;
             $this->readPostTagName($char);
         }
@@ -240,10 +258,14 @@ class Parser
     private function readPostTagName(string $char): void
     {
         if ('=' === $char) {
+            // First tag name isn't a citation key, because it has content
+            $this->triggerFirstTagSnapshotAs(self::TAG_NAME);
             $this->state = self::PRE_TAG_CONTENT;
         } elseif ('}' === $char) {
+            $this->triggerFirstTagSnapshotAs(self::CITATION_KEY);
             $this->state = self::NONE;
         } elseif (',' === $char) {
+            $this->triggerFirstTagSnapshotAs(self::CITATION_KEY);
             $this->state = self::TAG_NAME;
         } elseif (!$this->isWhitespace($char)) {
             throw ParserException::unexpectedCharacter($char, $this->line, $this->column);
@@ -359,12 +381,32 @@ class Parser
         }
     }
 
-    private function throwExceptionIfBufferIsEmpty(string $char): void
+    // ----- Triggers ----------------------------------------------------------
+
+    private function triggerListeners(string $text, string $type, array $context): void
     {
-        if (empty($this->buffer)) {
-            throw ParserException::unexpectedCharacter($char, $this->line, $this->column);
+        foreach ($this->listeners as $listener) {
+            $listener->bibTexUnitFound($text, $type, $context);
         }
     }
+
+    private function triggerListenersWithCurrentBuffer(): void
+    {
+        list('text' => $text, 'context' => $context) = $this->takeSnapshot();
+        $this->triggerListeners($text, $this->state, $context);
+    }
+
+    private function triggerFirstTagSnapshotAs(string $type): void
+    {
+        if (empty($this->firstTagSnapshot)) {
+            return;
+        }
+        list('text' => $text, 'context' => $context) = $this->firstTagSnapshot;
+        $this->firstTagSnapshot = null;
+        $this->triggerListeners($text, $type, $context);
+    }
+
+    // ----- Buffer tools ------------------------------------------------------
 
     private function appendToBuffer(string $char): void
     {
@@ -374,23 +416,29 @@ class Parser
         $this->buffer .= $char;
     }
 
-    private function triggerListenersWithCurrentBuffer(): void
+    private function throwExceptionIfBufferIsEmpty(string $char): void
     {
-        $context = [
-            'offset' => $this->bufferOffset,
-            'length' => $this->offset - $this->bufferOffset,
-        ];
-        $this->triggerListeners($this->buffer, $this->state, $context);
-        $this->bufferOffset = null;
-        $this->buffer = '';
-    }
-
-    private function triggerListeners(string $text, string $type, array $context): void
-    {
-        foreach ($this->listeners as $listener) {
-            $listener->bibTexUnitFound($text, $type, $context);
+        if (empty($this->buffer)) {
+            throw ParserException::unexpectedCharacter($char, $this->line, $this->column);
         }
     }
+
+    private function takeSnapshot(): array
+    {
+        $snapshot = [
+            'text' => $this->buffer,
+            'context' => [
+                'offset' => $this->bufferOffset,
+                'length' => $this->offset - $this->bufferOffset,
+            ],
+        ];
+        $this->bufferOffset = null;
+        $this->buffer = '';
+
+        return $snapshot;
+    }
+
+    // ----- Auxiliaries -------------------------------------------------------
 
     private function isWhitespace(string $char): bool
     {

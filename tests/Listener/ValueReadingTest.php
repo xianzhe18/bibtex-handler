@@ -33,7 +33,7 @@ class ValueReadingTest extends TestCase
 
         $entry = $entries[0];
         $this->assertSame('valuesBasic', $entry['type']);
-        $this->assertNull($entry['kNull']);
+        $this->assertSame('kNull', $entry['citation-key']);
         $this->assertNull($entry['kStillNull']);
         $this->assertSame('raw', $entry['kRaw']);
         $this->assertSame(' braced value ', $entry['kBraced']);
