@@ -66,12 +66,16 @@ class Listener implements ListenerInterface
                 $this->entries[] = ['type' => $text];
                 break;
 
+            case Parser::CITATION_KEY:
+                $index = count($this->entries) - 1;
+                $this->entries[$index]['citation-key'] = $text;
+                break;
+
             case PARSER::TAG_NAME:
                 // Saves tag into the current entry
-                end($this->entries);
-                $position = key($this->entries);
+                $index = count($this->entries) - 1;
                 $this->currentTagName = $text;
-                $this->entries[$position][$this->currentTagName] = null;
+                $this->entries[$index][$this->currentTagName] = null;
                 break;
 
             case PARSER::RAW_TAG_CONTENT:
@@ -88,16 +92,14 @@ class Listener implements ListenerInterface
             case PARSER::QUOTED_TAG_CONTENT:
                 // Appends content into the current tag
                 if (null !== $text) {
-                    end($this->entries);
-                    $position = key($this->entries);
-                    $this->entries[$position][$this->currentTagName] .= $text;
+                    $index = count($this->entries) - 1;
+                    $this->entries[$index][$this->currentTagName] .= $text;
                 }
                 break;
 
             case Parser::ENTRY:
-                end($this->entries);
-                $position = key($this->entries);
-                $this->entries[$position]['_original'] = $text;
+                $index = count($this->entries) - 1;
+                $this->entries[$index]['_original'] = $text;
                 break;
         }
     }
