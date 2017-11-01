@@ -1,8 +1,11 @@
 # BibTeX Parser
 
+[![Build Status](https://travis-ci.org/renanbr/bibtex-parser.svg?branch=1.x)](https://travis-ci.org/renanbr/bibtex-parser)
+
 This is a [BibTeX](http://mirrors.ctan.org/biblio/bibtex/base/btxdoc.pdf) parser written in PHP.
 
-[![Build Status](https://travis-ci.org/renanbr/bibtex-parser.svg?branch=1.x)](https://travis-ci.org/renanbr/bibtex-parser)
+- Documentation for version 1.x : this document itself
+- [Documentation for version 2.x](https://github.com/renanbr/bibtex-parser/blob/master/README.md)
 
 ## Install
 
