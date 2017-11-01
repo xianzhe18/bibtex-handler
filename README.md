@@ -1,16 +1,17 @@
 # BibTeX Parser
 
+[![Build Status](https://travis-ci.org/renanbr/bibtex-parser.svg?branch=master)](https://travis-ci.org/renanbr/bibtex-parser)
+
 This is a [BibTeX](http://mirrors.ctan.org/biblio/bibtex/base/btxdoc.pdf) parser written in PHP.
 
-[![Build Status](https://travis-ci.org/renanbr/bibtex-parser.svg?branch=master)](https://travis-ci.org/renanbr/bibtex-parser)
+- [Documentation for version 1.x](https://github.com/renanbr/bibtex-parser/blob/1.x/README.md)
+- Documentation for version 2.x : this document itself
 
 ## Installation
 
 ```bash
 composer require renanbr/bibtex-parser ^2@dev
 ```
-
-[Read documentation for version 1](https://github.com/renanbr/bibtex-parser/blob/1.x/README.md)
 
 ## Usage
 
@@ -61,9 +62,11 @@ BibTeX is all about "entry", "tag's name" and "tag's content".
 
 Source: http://www.bibtex.org/Format/
 
-Note: This library considers "type" and "citation-key" as tags. This behavior can be change if you implement your own Listener (more info at the end of this document).
+Note: This library considers "type" and "citation-key" as tags. This behavior can be changed implementing your own Listener (more info at the end of this document).
 
 ## Processors
+
+`Processor` is a [callable] that receives an entry as argument and returns a modified entry.
 
 This library contains three main parts:
 
@@ -71,22 +74,22 @@ This library contains three main parts:
 - `Listener` class, responsible for gathering units and transforming them into a list of entries;
 - `Processor` classes, responsible for manipulating entries.
 
-Despite we can't configure the `Parser`, you can append as many `Processor` as you want to the `Listener`. If you need more than this, considering implementing your own `Listener` (more info at the end of this document).
+Despite you can't configure the `Parser`, you can append as many `Processor` as you want to the `Listener` through `Listener::addProcessor()` before exporting the contents. Be aware that `Listener` provides, by default, these features:
 
-Before showing the available processors, get awareness that `Listener` provides, by default, these features:
-
-- Found entries are reachable through `export()` method;
+- Found entries are reachable through `Listener::export()` method;
 - [Tag content concatenation](http://www.bibtex.org/Format/);
+    - e.g. `hello # " world"` tag's content will generate `hello world` [string]
 - [Tag content abbreviation handling](http://www.bibtex.org/Format/);
+    - e.g. `@string{foo="bar"} @misc{bar=foo}` will make `$entries[1]['bar']` assume `bar` as value
 - Publication's type is exposed as `type` tag;
 - Citation key is exposed as `citation-key` tag;
 - Original entry text is exposed as `_original` tag.
 
-`Processor` is a [callable] that receives an entry as argument and returns a modified entry. You can append processors through `Listener::addProcessor()` before exporting the contents. This project is shipped with some useful processors.
+This project is shipped with some useful processors.
 
 ### Tag name case
 
-In BibTeX the tag's names aren't case-sensitive. This library exposes entries as array, but in PHP array keys are case-sensitive. To avoid this misunderstanding, you can force the tags' character case using `TagNameCaseProcessor`.
+In BibTeX the tag's names aren't case-sensitive. This library exposes entries as [array], in which keys are case-sensitive. To avoid this misunderstanding, you can force the tags' name character case using `TagNameCaseProcessor`.
 
 ```php
 use RenanBr\BibTexParser\Processor\TagNameCaseProcessor;
@@ -151,10 +154,10 @@ Array
 
 ### Keywords
 
-The `keywords` tag contains a list of expressions represented as text, you might want to read them as an array instead.
+The `keywords` tag contains a list of expressions represented as [string], you might want to read them as an [array] instead.
 
 ```php
-RenanBr\BibTexParser\Processor\KeywordsProcessor;
+use RenanBr\BibTexParser\Processor\KeywordsProcessor;
 
 $listener->addProcessor(new KeywordsProcessor());
 ```
@@ -310,4 +313,6 @@ interface RenanBr\BibTexParser\ListenerInterface
 - `length` contains the original `$text`'s length.
   It may differ from string length sent to the listener because may there are escaped characters.
 
+[array]: https://php.net/manual/language.types.array.php
 [callable]: https://php.net/manual/en/language.types.callable.php
+[string]: https://php.net/manual/language.types.string.php
