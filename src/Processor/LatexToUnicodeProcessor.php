@@ -12,6 +12,8 @@
 namespace RenanBr\BibTexParser\Processor;
 
 use Pandoc\Pandoc;
+use Pandoc\PandocException;
+use RenanBr\BibTexParser\Exception\ProcessorException;
 
 /**
  * Translates LaTeX texts to unicode.
@@ -48,13 +50,24 @@ class LatexToUnicodeProcessor
 
     private function decode(string $text): string
     {
-        if (!$this->pandoc) {
-            $this->pandoc = new Pandoc();
-        }
+        try {
+            if (!$this->pandoc) {
+                $this->pandoc = new Pandoc();
+            }
 
-        return $this->pandoc->runWith($text, [
-            'from' => 'latex',
-            'to' => 'plain',
-        ]);
+            return $this->pandoc->runWith($text, [
+                'from' => 'latex',
+                'to' => 'plain',
+            ]);
+        } catch (PandocException $exception) {
+            throw new ProcessorException(
+                sprintf(
+                    'Error while processing LaTeX to Unicode: %s',
+                    $exception->getMessage()
+                ),
+                null,
+                $exception
+            );
+        }
     }
 }
