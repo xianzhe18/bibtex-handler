@@ -55,4 +55,24 @@ class BasicTest extends TestCase
         $this->assertSame(0, $context['offset']);
         $this->assertSame(24, $context['length']);
     }
+
+    /**
+     * @group regression
+     * @group bug39
+     * @link https://github.com/renanbr/bibtex-parser/issues/39
+     */
+    public function testOriginalEntryTriggeringWhenLastCharClosesAnEntry(): void
+    {
+        $listener = new DummyListener();
+
+        $parser = new Parser();
+        $parser->addListener($listener);
+        $parser->parseString('@misc{title="findme"}');
+
+        $this->assertCount(4, $listener->calls);
+
+        list($text, $type) = $listener->calls[3];
+        $this->assertSame('@misc{title="findme"}', $text);
+        $this->assertSame(Parser::ENTRY, $type);
+    }
 }

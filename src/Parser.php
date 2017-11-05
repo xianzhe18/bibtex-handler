@@ -40,7 +40,7 @@ class Parser
     private $firstTagSnapshot;
 
     /** @var string */
-    private $originalEntry;
+    private $originalEntryBuffer;
 
     /** @var int */
     private $originalEntryOffset;
@@ -135,7 +135,7 @@ class Parser
         $this->state = self::NONE;
         $this->buffer = '';
         $this->firstTagSnapshot = null;
-        $this->originalEntry = '';
+        $this->originalEntryBuffer = null;
         $this->originalEntryOffset = null;
         $this->line = 1;
         $this->column = 1;
@@ -356,28 +356,30 @@ class Parser
 
     private function readOriginalEntry(string $char, string $previousState): void
     {
-        // check whether we are reading an entry character or not
-        // $isEntryChar is TRUE when previous or current state indicates it
-        $isEntryChar =
-            ($previousState !== self::NONE && $previousState !== self::COMMENT) ||
-            ($this->state !== self::NONE && $this->state !== self::COMMENT)
-        ;
+        // Checks whether we are reading an entry character or not
+        $nonEntryStates = [self::NONE, self::COMMENT];
+        $isPreviousStateEntry = !in_array($previousState, $nonEntryStates, true);
+        $isCurrentStateEntry = !in_array($this->state, $nonEntryStates, true);
+        $isEntry = $isPreviousStateEntry || $isCurrentStateEntry;
+        if (!$isEntry) {
+            return;
+        }
 
-        if ($isEntryChar) {
-            // append to the buffer
-            if (empty($this->originalEntry)) {
-                $this->originalEntryOffset = $this->offset;
-            }
-            $this->originalEntry .= $char;
-        } elseif (!empty($this->originalEntry)) {
-            // send original value to the listeners
-            $context = [
+        // Appends $char to the original entry buffer
+        if (empty($this->originalEntryBuffer)) {
+            $this->originalEntryOffset = $this->offset;
+        }
+        $this->originalEntryBuffer .= $char;
+
+        // Sends original entry to the listeners when $char closes an entry
+        $isClosingEntry = $isPreviousStateEntry && !$isCurrentStateEntry;
+        if ($isClosingEntry) {
+            $this->triggerListeners($this->originalEntryBuffer, self::ENTRY, [
                 'offset' => $this->originalEntryOffset,
-                'length' => $this->offset - $this->originalEntryOffset,
-            ];
-            $this->triggerListeners($this->originalEntry, self::ENTRY, $context);
+                'length' => $this->offset - $this->originalEntryOffset + 1,
+            ]);
+            $this->originalEntryBuffer = '';
             $this->originalEntryOffset = null;
-            $this->originalEntry = '';
         }
     }
 
