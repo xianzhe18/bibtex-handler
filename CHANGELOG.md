@@ -1,5 +1,14 @@
 # Changes in BibTex Parser
 
+## [1.0.2] - 2017-11-05
+
+### Fixed
+
+- Issue [#39] Parser::ORIGINAL_ENTRY isn't triggered
+
+[1.0.2]: https://github.com/renanbr/bibtex-parser/releases/tag/1.0.2
+[#39]: https://github.com/renanbr/bibtex-parser/issues/33
+
 ## [1.0.1] - 2017-10-29
 
 ### Fixed
