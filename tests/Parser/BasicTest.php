@@ -66,7 +66,8 @@ class BasicTest extends TestCase
         $parser->addListener($listener);
         $parser->parseString('@article{imhere}');
 
-        $this->assertCount(2, $listener->calls);
+        // 3 because original entry is sent as well
+        $this->assertCount(3, $listener->calls);
 
         list($text, $context) = $listener->calls[0];
         $this->assertSame(Parser::TYPE, $context['state']);
@@ -79,5 +80,25 @@ class BasicTest extends TestCase
         $this->assertSame('imhere', $text);
         $this->assertSame(9, $context['offset']);
         $this->assertSame(6, $context['length']);
+    }
+
+    /**
+     * @group regression
+     * @group bug39
+     * @link https://github.com/renanbr/bibtex-parser/issues/39
+     */
+    public function testOriginalEntryTriggeringWhenLastCharClosesAnEntry()
+    {
+        $listener = new DummyListener();
+
+        $parser = new Parser();
+        $parser->addListener($listener);
+        $parser->parseString('@misc{title="findme"}');
+
+        $this->assertCount(4, $listener->calls);
+
+        list($text, $context) = $listener->calls[3];
+        $this->assertSame('@misc{title="findme"}', $text);
+        $this->assertSame(Parser::ORIGINAL_ENTRY, $context['state']);
     }
 }

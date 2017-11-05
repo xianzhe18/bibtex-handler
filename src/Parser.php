@@ -334,29 +334,31 @@ class Parser
 
     private function readOriginalEntry($char, $previousState)
     {
-        // check whether we are reading an entry character or not
-        // $isEntryChar is TRUE when previous or current state indicates it
-        $isEntryChar =
-            ($previousState != self::NONE && $previousState != self::COMMENT) ||
-            ($this->state != self::NONE && $this->state != self::COMMENT)
-        ;
+        // Checks whether we are reading an entry character or not
+        $nonEntryStates = [self::NONE, self::COMMENT];
+        $isPreviousStateEntry = !in_array($previousState, $nonEntryStates);
+        $isCurrentStateEntry = !in_array($this->state, $nonEntryStates);
+        $isEntry = $isPreviousStateEntry || $isCurrentStateEntry;
+        if (!$isEntry) {
+            return;
+        }
 
-        if ($isEntryChar) {
-            // append to the buffer
-            if (empty($this->originalEntry)) {
-                $this->originalEntryOffset = $this->offset;
-            }
-            $this->originalEntry .= $char;
-        } elseif (!empty($this->originalEntry)) {
-            // send original value to the listeners
-            $context = [
+        // Appends $char to the original entry buffer
+        if (empty($this->originalEntry)) {
+            $this->originalEntryOffset = $this->offset;
+        }
+        $this->originalEntry .= $char;
+
+        // Sends original entry to the listeners when $char closes an entry
+        $isClosingEntry = $isPreviousStateEntry && !$isCurrentStateEntry;
+        if ($isClosingEntry) {
+            $this->triggerListeners($this->originalEntry, [
                 'state' => self::ORIGINAL_ENTRY,
                 'offset' => $this->originalEntryOffset,
-                'length' => $this->offset - $this->originalEntryOffset,
-            ];
-            $this->triggerListeners($this->originalEntry, $context);
-            $this->originalEntryOffset = null;
+                'length' => $this->offset - $this->originalEntryOffset + 1,
+            ]);
             $this->originalEntry = '';
+            $this->originalEntryOffset = null;
         }
     }
 
