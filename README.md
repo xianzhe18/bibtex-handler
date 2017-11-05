@@ -4,10 +4,11 @@
 
 This is a [BibTeX](http://mirrors.ctan.org/biblio/bibtex/base/btxdoc.pdf) parser written in PHP.
 
-- [Documentation for version 1.x](https://github.com/renanbr/bibtex-parser/blob/1.x/README.md)
-- Documentation for version 2.x : this document itself
+You are browsing the documentation of **BibTeX Parser 2.x**, the latest version.
 
-## Installation
+[Documentation for version 1.x is available here](https://github.com/renanbr/bibtex-parser/blob/1.x/README.md).
+
+## Installing
 
 ```bash
 composer require renanbr/bibtex-parser ^2@dev
