@@ -5,7 +5,7 @@
 This is a [BibTeX](http://mirrors.ctan.org/biblio/bibtex/base/btxdoc.pdf) parser written in PHP.
 
 
-You are browsing the documentation of **BibTeX Parser 1.x**, the latest version.
+You are browsing the documentation of **BibTeX Parser 1.x**.
 
 [Documentation for version 2.x is available here](https://github.com/renanbr/bibtex-parser/blob/master/README.md).
 
