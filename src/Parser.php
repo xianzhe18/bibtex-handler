@@ -142,7 +142,7 @@ class Parser
         $this->offset = 0;
         $this->mayConcatenateTagContent = false;
         $this->isTagContentEscaped = false;
-        $this->valueDelimiter = null;
+        $this->tagContentDelimiter = null;
         $this->braceLevel = 0;
     }
 
@@ -288,14 +288,14 @@ class Parser
             if ($this->mayConcatenateTagContent) {
                 throw ParserException::unexpectedCharacter($char, $this->line, $this->column);
             }
-            $this->valueDelimiter = '"';
+            $this->tagContentDelimiter = '"';
             $this->state = self::QUOTED_TAG_CONTENT;
         } elseif ('{' === $char) {
             // this verification is here for the same reason of the first case
             if ($this->mayConcatenateTagContent) {
                 throw ParserException::unexpectedCharacter($char, $this->line, $this->column);
             }
-            $this->valueDelimiter = '}';
+            $this->tagContentDelimiter = '}';
             $this->state = self::BRACED_TAG_CONTENT;
         } elseif ('#' === $char || ',' === $char || '}' === $char) {
             if (!$this->mayConcatenateTagContent) {
@@ -331,14 +331,14 @@ class Parser
     {
         if ($this->isTagContentEscaped) {
             $this->isTagContentEscaped = false;
-            if ($this->valueDelimiter !== $char && '\\' !== $char && '%' !== $char) {
+            if ($this->tagContentDelimiter !== $char && '\\' !== $char && '%' !== $char) {
                 $this->appendToBuffer('\\');
             }
             $this->appendToBuffer($char);
-        } elseif ('}' === $this->valueDelimiter && '{' === $char) {
+        } elseif ('}' === $this->tagContentDelimiter && '{' === $char) {
             $this->braceLevel++;
             $this->appendToBuffer($char);
-        } elseif ($this->valueDelimiter === $char) {
+        } elseif ($this->tagContentDelimiter === $char) {
             if (0 === $this->braceLevel) {
                 $this->triggerListenersWithCurrentBuffer();
                 $this->mayConcatenateTagContent = true;
@@ -445,5 +445,10 @@ class Parser
     private function isWhitespace(string $char): bool
     {
         return ' ' === $char || "\t" === $char || "\n" === $char || "\r" === $char;
+    }
+
+    private function isEntryState(string $state): bool
+    {
+        return self::NONE !== $state && self::COMMENT !== $state;
     }
 }
