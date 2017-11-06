@@ -123,9 +123,10 @@ class Parser
 
     private function checkFinalStatus(): void
     {
-        // it's called when parsing has been done
-        // so it checks whether the status is ok or not
-        if (self::NONE !== $this->state && self::COMMENT !== $this->state) {
+        // It throws an exception if parser was reading a entry when there is no
+        // more input to read, because this function is called when parsing has
+        // been done
+        if ($this->isEntryState($this->state)) {
             throw ParserException::unexpectedCharacter("\0", $this->line, $this->column);
         }
     }
@@ -351,9 +352,8 @@ class Parser
     private function readOriginalEntry(string $char, string $previousState): void
     {
         // Checks whether we are reading an entry character or not
-        $nonEntryStates = [self::NONE, self::COMMENT];
-        $isPreviousStateEntry = !in_array($previousState, $nonEntryStates, true);
-        $isCurrentStateEntry = !in_array($this->state, $nonEntryStates, true);
+        $isPreviousStateEntry = $this->isEntryState($previousState);
+        $isCurrentStateEntry = $this->isEntryState($this->state);
         $isEntry = $isPreviousStateEntry || $isCurrentStateEntry;
         if (!$isEntry) {
             return;
