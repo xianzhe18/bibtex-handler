@@ -275,39 +275,33 @@ class Parser
     private function readPreTagContent(string $char): void
     {
         if (preg_match('/^[a-zA-Z0-9]$/', $char)) {
-            // when $mayConcatenateTagContent is true it means there is another
-            // value defined before it, so a concatenator char is expected (or
-            // a comment as well)
-            if ($this->mayConcatenateTagContent) {
-                throw ParserException::unexpectedCharacter($char, $this->line, $this->column);
-            }
+            // When $this->mayConcatenateTagContent is true it means there is
+            // already a defined value, and parser expect a concatenator, a tag
+            // separator or a entry closing char as next $char
+            $this->throwExceptionAccordingToConcatenationAvailability($char, true);
             $this->state = self::RAW_TAG_CONTENT;
             $this->readRawTagContent($char);
         } elseif ('"' === $char) {
-            // this verification is here for the same reason of the first case
-            if ($this->mayConcatenateTagContent) {
-                throw ParserException::unexpectedCharacter($char, $this->line, $this->column);
-            }
+            // The exception is here for the same reason of the first case
+            $this->throwExceptionAccordingToConcatenationAvailability($char, true);
             $this->tagContentDelimiter = '"';
             $this->state = self::QUOTED_TAG_CONTENT;
         } elseif ('{' === $char) {
-            // this verification is here for the same reason of the first case
-            if ($this->mayConcatenateTagContent) {
-                throw ParserException::unexpectedCharacter($char, $this->line, $this->column);
-            }
+            // The exception is here for the same reason of the first case
+            $this->throwExceptionAccordingToConcatenationAvailability($char, true);
             $this->tagContentDelimiter = '}';
             $this->state = self::BRACED_TAG_CONTENT;
-        } elseif ('#' === $char || ',' === $char || '}' === $char) {
-            if (!$this->mayConcatenateTagContent) {
-                // it expects some value
-                throw ParserException::unexpectedCharacter($char, $this->line, $this->column);
-            }
+        } elseif ('#' === $char) {
+            $this->throwExceptionAccordingToConcatenationAvailability($char, false);
             $this->mayConcatenateTagContent = false;
-            if (',' === $char) {
-                $this->state = self::TAG_NAME;
-            } elseif ('}' === $char) {
-                $this->state = self::NONE;
-            }
+        } elseif (',' === $char) {
+            $this->throwExceptionAccordingToConcatenationAvailability($char, false);
+            $this->mayConcatenateTagContent = false;
+            $this->state = self::TAG_NAME;
+        } elseif ('}' === $char) {
+            $this->throwExceptionAccordingToConcatenationAvailability($char, false);
+            $this->mayConcatenateTagContent = false;
+            $this->state = self::NONE;
         }
     }
 
@@ -450,5 +444,14 @@ class Parser
     private function isEntryState(string $state): bool
     {
         return self::NONE !== $state && self::COMMENT !== $state;
+    }
+
+    private function throwExceptionAccordingToConcatenationAvailability(
+        string $char,
+        bool $availability
+    ): void {
+        if ($availability === $this->mayConcatenateTagContent) {
+            throw ParserException::unexpectedCharacter($char, $this->line, $this->column);
+        }
     }
 }
