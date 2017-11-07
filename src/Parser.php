@@ -88,7 +88,7 @@ class Parser
                 $buffer = fread($handle, 128);
                 $this->parse($buffer);
             }
-            $this->checkFinalStatus();
+            $this->throwExceptionIfReadingEntry("\0");
         } finally {
             fclose($handle);
         }
@@ -102,7 +102,7 @@ class Parser
     {
         $this->reset();
         $this->parse($string);
-        $this->checkFinalStatus();
+        $this->throwExceptionIfReadingEntry("\0");
     }
 
     private function parse(string $text): void
@@ -118,16 +118,6 @@ class Parser
                 $this->column++;
             }
             $this->offset++;
-        }
-    }
-
-    private function checkFinalStatus(): void
-    {
-        // It throws an exception if parser was reading a entry when there is no
-        // more input to read, because this function is called when parsing has
-        // been done
-        if ($this->isEntryState($this->state)) {
-            throw ParserException::unexpectedCharacter("\0", $this->line, $this->column);
         }
     }
 
@@ -241,9 +231,9 @@ class Parser
             $this->throwExceptionIfBufferIsEmpty($char);
 
             if (self::FIRST_TAG_NAME === $this->state) {
-                // Takes a snapshot of current state to be triggered late as
+                // Takes a snapshot of current state to be triggered later as
                 // tag name or citation key, see readPostTagName()
-                $this->firstTagSnapshot = $this->takeSnapshot();
+                $this->firstTagSnapshot = $this->takeBufferSnapshot();
             } else {
                 // Current buffer is a simple tag name
                 $this->triggerListenersWithCurrentBuffer();
@@ -260,13 +250,17 @@ class Parser
     {
         if ('=' === $char) {
             // First tag name isn't a citation key, because it has content
-            $this->triggerFirstTagSnapshotAs(self::TAG_NAME);
+            $this->triggerListenersWithFirstTagSnapshotAs(self::TAG_NAME);
             $this->state = self::PRE_TAG_CONTENT;
         } elseif ('}' === $char) {
-            $this->triggerFirstTagSnapshotAs(self::CITATION_KEY);
+            // First tag name is a citation key, because $char closes entry and
+            // lets first tag without value
+            $this->triggerListenersWithFirstTagSnapshotAs(self::CITATION_KEY);
             $this->state = self::NONE;
         } elseif (',' === $char) {
-            $this->triggerFirstTagSnapshotAs(self::CITATION_KEY);
+            // First tag name is a citation key, because $char moves to the next
+            // tag and lets first tag without value
+            $this->triggerListenersWithFirstTagSnapshotAs(self::CITATION_KEY);
             $this->state = self::TAG_NAME;
         } elseif (!$this->isWhitespace($char)) {
             throw ParserException::unexpectedCharacter($char, $this->line, $this->column);
@@ -276,9 +270,9 @@ class Parser
     private function readPreTagContent(string $char): void
     {
         if (preg_match('/^[a-zA-Z0-9]$/', $char)) {
-            // When $this->mayConcatenateTagContent is true it means there is
-            // already a defined value, and parser expect a concatenator, a tag
-            // separator or a entry closing char as next $char
+            // When concatenation is available it means there is already a
+            // defined value, and parser expect a concatenator, a tag separator
+            // or an entry closing char as next $char
             $this->throwExceptionAccordingToConcatenationAvailability($char, true);
             $this->state = self::RAW_TAG_CONTENT;
             $this->readRawTagContent($char);
@@ -377,7 +371,7 @@ class Parser
         }
     }
 
-    // ----- Triggers ----------------------------------------------------------
+    // ----- Listener triggers -------------------------------------------------
 
     private function triggerListeners(string $text, string $type, array $context): void
     {
@@ -388,11 +382,11 @@ class Parser
 
     private function triggerListenersWithCurrentBuffer(): void
     {
-        list('text' => $text, 'context' => $context) = $this->takeSnapshot();
+        list('text' => $text, 'context' => $context) = $this->takeBufferSnapshot();
         $this->triggerListeners($text, $this->state, $context);
     }
 
-    private function triggerFirstTagSnapshotAs(string $type): void
+    private function triggerListenersWithFirstTagSnapshotAs(string $type): void
     {
         if (empty($this->firstTagSnapshot)) {
             return;
@@ -412,14 +406,7 @@ class Parser
         $this->buffer .= $char;
     }
 
-    private function throwExceptionIfBufferIsEmpty(string $char): void
-    {
-        if (empty($this->buffer)) {
-            throw ParserException::unexpectedCharacter($char, $this->line, $this->column);
-        }
-    }
-
-    private function takeSnapshot(): array
+    private function takeBufferSnapshot(): array
     {
         $snapshot = [
             'text' => $this->buffer,
@@ -434,24 +421,38 @@ class Parser
         return $snapshot;
     }
 
-    // ----- Auxiliaries -------------------------------------------------------
+    // ----- Exception throwers ------------------------------------------------
 
-    private function isWhitespace(string $char): bool
+    private function throwExceptionAccordingToConcatenationAvailability(string $char, bool $availability): void
     {
-        return ' ' === $char || "\t" === $char || "\n" === $char || "\r" === $char;
+        if ($availability === $this->mayConcatenateTagContent) {
+            throw ParserException::unexpectedCharacter($char, $this->line, $this->column);
+        }
     }
+
+    private function throwExceptionIfBufferIsEmpty(string $char): void
+    {
+        if (empty($this->buffer)) {
+            throw ParserException::unexpectedCharacter($char, $this->line, $this->column);
+        }
+    }
+
+    private function throwExceptionIfReadingEntry(string $char): void
+    {
+        if ($this->isEntryState($this->state)) {
+            throw ParserException::unexpectedCharacter($char, $this->line, $this->column);
+        }
+    }
+
+    // ----- Auxiliaries -------------------------------------------------------
 
     private function isEntryState(string $state): bool
     {
         return self::NONE !== $state && self::COMMENT !== $state;
     }
 
-    private function throwExceptionAccordingToConcatenationAvailability(
-        string $char,
-        bool $availability
-    ): void {
-        if ($availability === $this->mayConcatenateTagContent) {
-            throw ParserException::unexpectedCharacter($char, $this->line, $this->column);
-        }
+    private function isWhitespace(string $char): bool
+    {
+        return ' ' === $char || "\t" === $char || "\n" === $char || "\r" === $char;
     }
 }
