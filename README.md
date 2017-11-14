@@ -1,4 +1,4 @@
-# BibTeX Parser
+# BibTeX Parser 2.x
 
 [![Build Status](https://travis-ci.org/renanbr/bibtex-parser.svg?branch=master)](https://travis-ci.org/renanbr/bibtex-parser)
 
@@ -6,7 +6,21 @@ This is a [BibTeX](http://mirrors.ctan.org/biblio/bibtex/base/btxdoc.pdf) parser
 
 You are browsing the documentation of **BibTeX Parser 2.x**, the latest version.
 
-[Documentation for version 1.x is available here](https://github.com/renanbr/bibtex-parser/blob/1.x/README.md).
+BibTeX Parser 2.x requires at least PHP 7.1, if you are running [an old version of PHP](https://php.net/supported-versions.php), try [BibTex Parser 1.x](https://github.com/renanbr/bibtex-parser/blob/1.x/README.md).
+
+## Table of contents
+
+* [Installing](#installing)
+* [Usage](#usage)
+* [Vocabulary](#vocabulary)
+* [Processors](#processors)
+   * [Tag name case](#tag-name-case)
+   * [Authors and editors](#authors-and-editors)
+   * [Keywords](#keywords)
+   * [LaTeX to unicode](#latex-to-unicode)
+   * [Custom](#custom)
+* [Handling errors](#handling-errors)
+* [Advanced usage](#advanced-usage)
 
 ## Installing
 
