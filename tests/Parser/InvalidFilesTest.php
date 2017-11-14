@@ -82,4 +82,18 @@ class InvalidFilesTest extends TestCase
             ],
         ];
     }
+
+    /**
+     * @group regression
+     * @group bug40
+     * @link https://github.com/renanbr/bibtex-parser/issues/40
+     */
+    public function testInvalidCharBeforeTagContentMustThrowAnException(): void
+    {
+        $parser = new Parser();
+
+        $this->expectException(ParserException::class);
+        $this->expectExceptionMessage("')' at line 1 column 11");
+        $parser->parseString('@misc{foo=)"bar"}');
+    }
 }

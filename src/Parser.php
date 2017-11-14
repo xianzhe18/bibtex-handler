@@ -297,6 +297,8 @@ class Parser
             $this->throwExceptionAccordingToConcatenationAvailability($char, false);
             $this->mayConcatenateTagContent = false;
             $this->state = self::NONE;
+        } elseif (!$this->isWhitespace($char)) {
+            throw ParserException::unexpectedCharacter($char, $this->line, $this->column);
         }
     }
 
