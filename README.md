@@ -1,13 +1,25 @@
-# BibTeX Parser
+# BibTeX Parser 1.x
 
 [![Build Status](https://travis-ci.org/renanbr/bibtex-parser.svg?branch=1.x)](https://travis-ci.org/renanbr/bibtex-parser)
 
 This is a [BibTeX](http://mirrors.ctan.org/biblio/bibtex/base/btxdoc.pdf) parser written in PHP.
 
-
 You are browsing the documentation of **BibTeX Parser 1.x**.
 
 [Documentation for version 2.x is available here](https://github.com/renanbr/bibtex-parser/blob/master/README.md).
+
+## Table of contents
+
+* [Installing](#installing)
+* [Usage](#usage)
+* [Configuring the Listener](#configuring-the-listener)
+   * [Tag name case](#tag-name-case)
+   * [Tag value processors](#tag-value-processors)
+      * [Authors and Editors](#authors-and-editors)
+      * [Keywords](#keywords)
+      * [LaTeX to Unicode](#latex-to-unicode)
+      * [Custom](#custom)
+* [Advanced usage](#advanced-usage)
 
 ## Installing
 
@@ -53,7 +65,7 @@ Below we have the `example.bib` source file used in the sample above.
 }
 ```
 
-### Configuring the Listener
+## Configuring the Listener
 
 The `RenanBr\BibTexParser\Listener` class provides, by default, these features:
 
@@ -71,7 +83,7 @@ Besides that you can configure it in two ways:
 
 If you need more than this, considering implementing your own listener (more info at the end of this document).
 
-#### Tag name case
+### Tag name case
 
 You can change the character case of tags' names through `setTagNameCase()` before exporting the contents.
 
@@ -81,12 +93,12 @@ $entries = $listener->export();
 $entries[0]['TYPE'];
 ```
 
-#### Tag value processors
+### Tag value processors
 
 You can change tags' values by adding one or more processors through `addTagValueProcessor()` before exporting the contents.
 This project is shipped with some useful processors out of the box.
 
-##### Authors and Editors
+#### Authors and Editors
 
 BibTeX recognizes four parts of an author's name: First Von Last Jr.
 If you would like to parse the author and editor names included in your entries, you can use the `RenanBr\BibTexParser\Processor\NamesProcessor` class.
@@ -101,7 +113,7 @@ $entries = $listener->export();
 
 The resulting `$entries[0]['author']` and `$entries[0]['editor']` will then be arrays with each name separated in the four parts above.
 
-##### Keywords
+#### Keywords
 
 The `keywords` tag contains a list of expressions represented as text, you might want to read them as an array instead.
 You can achieve it adding `RenanBr\BibTexParser\Processor\KeywordsProcessor` before exporting the contents:
@@ -115,7 +127,7 @@ $entries = $listener->export();
 
 The resulting `$entries[0]['keywords']` will then be an array.
 
-##### LaTeX to Unicode
+#### LaTeX to Unicode
 
 BibTeX files store LaTeX contents.
 You might want to read them as unicode instead.
@@ -137,7 +149,7 @@ Notes:
 - Order matters, add this processor as the last;
 - This processor may throw a `Pandoc\PandocException`.
 
-##### Custom
+#### Custom
 
 The `addTagValueProcessor()` method expects a `callable` as argument.
 In the example shown below, we append the text `with laser` to the `title` tags for all entries.
