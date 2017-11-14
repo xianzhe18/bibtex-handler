@@ -286,6 +286,8 @@ class Parser
             } elseif ('}' == $char) {
                 $this->state = self::NONE;
             }
+        } elseif (!$this->isWhitespace($char)) {
+            $this->throwException($char);
         }
     }
 
