@@ -1,12 +1,25 @@
-# BibTeX Parser 2.x
+<h1 align="center">PHP BibTeX Parser 2.x</h1>
+<p align="center">
+    This is a
+    <a href="https://www.ctan.org/pkg/bibtex">BibTeX</a>
+    parser written in
+    <a href="https://php.net">PHP</a>.
+</p>
+<p align="center">
+    <a href="https://www.ctan.org/pkg/bibtex">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/3/30/BibTeX_logo.svg" height="83" alt="BibTeX logo">
+    </a>
+    <a href="https://php.net">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/2/27/PHP-logo.svg" height="83" alt="PHP logo">
+    </a>
+</p>
 
 [![Build Status](https://travis-ci.org/renanbr/bibtex-parser.svg?branch=master)](https://travis-ci.org/renanbr/bibtex-parser)
-
-This is a [BibTeX](http://mirrors.ctan.org/biblio/bibtex/base/btxdoc.pdf) parser written in PHP.
+[![codecov](https://codecov.io/gh/renanbr/bibtex-parser/branch/master/graph/badge.svg)](https://codecov.io/gh/renanbr/bibtex-parser)
 
 You are browsing the documentation of **BibTeX Parser 2.x**, the latest version.
 
-BibTeX Parser 2.x requires at least PHP 7.1, if you are running [an old version of PHP](https://php.net/supported-versions.php), try [BibTex Parser 1.x](https://github.com/renanbr/bibtex-parser/blob/1.x/README.md).
+[Documentation for version 1.x is available here](https://github.com/renanbr/bibtex-parser/blob/1.x/README.md).
 
 ## Table of contents
 
@@ -238,7 +251,7 @@ Note: Order matters, add this processor as the last.
 The `Listener::addProcessor()` method expects a [callable] as argument. In the example shown below, we append the text `with laser` to the `title` tags for all entries.
 
 ```php
-$listener->addProcessor(function (array $entry): array {
+$listener->addProcessor(function (array $entry) {
     $entry['title'] .= ' with laser';
     return $entry;
 });
@@ -307,7 +320,7 @@ interface RenanBr\BibTexParser\ListenerInterface
      *                        It can assume one of Parser's constant value.
      * @param array  $context Contains details of the unit found.
      */
-    public function bibTexUnitFound(string $text, string $type, array $context): void;
+    public function bibTexUnitFound($text, $type, array $context);
 }
 ```
 
