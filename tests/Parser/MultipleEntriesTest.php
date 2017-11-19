@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 
 /*
  * This file is part of the BibTex Parser.
@@ -20,7 +20,7 @@ use RenanBr\BibTexParser\Test\DummyListener;
  */
 class MultipleEntriesTest extends TestCase
 {
-    public function testMultipleEntries(): void
+    public function testMultipleEntries()
     {
         $listener = new DummyListener();
 

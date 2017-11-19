@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 
 /*
  * This file is part of the BibTex Parser.
@@ -25,7 +25,7 @@ trait TagCoverageTrait
      * @param array  $tags     List of tags to be covered
      * @param string $strategy Can assume "whitelist" (default) or "blacklist"
      */
-    public function setTagCoverage(array $tags, string $strategy = null): void
+    public function setTagCoverage($tags, $strategy = null)
     {
         $this->tagCoverageList = $tags;
         $this->tagCoverageStrategy = $strategy ?: 'whitelist';
@@ -35,8 +35,11 @@ trait TagCoverageTrait
      * Calculates which tags are covered.
      *
      * The search performed internally is case-insensitive.
+     *
+     * @param array $tags
+     * @return array
      */
-    protected function getCoveredTags(array $tags): array
+    protected function getCoveredTags(array $tags)
     {
         // Finds for actual tag names
         $matched = [];

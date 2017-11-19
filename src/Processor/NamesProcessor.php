@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 
 /*
  * This file is part of the BibTex Parser.
@@ -32,7 +32,11 @@ class NamesProcessor
         $this->setTagCoverage(['author', 'editor']);
     }
 
-    public function __invoke(array $entry): array
+    /**
+     * @param array $entry
+     * @return array
+     */
+    public function __invoke(array $entry)
     {
         $covered = $this->getCoveredTags(array_keys($entry));
         foreach ($covered as $tag) {
@@ -49,7 +53,7 @@ class NamesProcessor
      * @return array  the extracted authors
      * @author Elmar Pitschke <elmar.pitschke@gmx.de>
      */
-    private function extractAuthors(string $entry): array
+    private function extractAuthors($entry)
     {
         // Sanitizes the entry to remove unwanted whitespace
         $entry = trim(preg_replace('/\s+/', ' ', $entry));

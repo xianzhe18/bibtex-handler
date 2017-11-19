@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 
 /*
  * This file is part of the BibTex Parser.
@@ -21,7 +21,7 @@ use RenanBr\BibTexParser\Test\DummyListener;
 class StringParsingTest extends TestCase
 {
     /** @dataProvider validFileProvider */
-    public function testStringParserAndFileParserMustWorkIdentically($file): void
+    public function testStringParserAndFileParserMustWorkIdentically($file)
     {
         $listenerFile = new DummyListener();
         $parserFile = new Parser();

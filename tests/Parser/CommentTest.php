@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 
 /*
  * This file is part of the BibTex Parser.
@@ -20,7 +20,7 @@ use RenanBr\BibTexParser\Test\DummyListener;
  */
 class CommentTest extends TestCase
 {
-    public function testCommentOnly(): void
+    public function testCommentOnly()
     {
         $listener = new DummyListener();
 
@@ -31,7 +31,7 @@ class CommentTest extends TestCase
         $this->assertCount(0, $listener->calls);
     }
 
-    public function testFileThatContainsEntryAndComment(): void
+    public function testFileThatContainsEntryAndComment()
     {
         $listener = new DummyListener();
 

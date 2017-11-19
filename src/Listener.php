@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 
 /*
  * This file is part of the BibTex Parser.
@@ -34,7 +34,7 @@ class Listener implements ListenerInterface
     /**
      * @return array All entries found during parsing process.
      */
-    public function export(): array
+    public function export()
     {
         if (!$this->processed) {
             foreach ($this->processors as $processor) {
@@ -53,12 +53,12 @@ class Listener implements ListenerInterface
      *                            The suggested signature is:
      *                                function (array $entry): array
      */
-    public function addProcessor(callable $processor): void
+    public function addProcessor(callable $processor)
     {
         $this->processors[] = $processor;
     }
 
-    public function bibTexUnitFound(string $text, string $type, array $context): void
+    public function bibTexUnitFound($text, $type, array $context)
     {
         switch ($type) {
             case Parser::TYPE:

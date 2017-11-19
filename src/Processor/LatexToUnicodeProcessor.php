@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 
 /*
  * This file is part of the BibTex Parser.
@@ -25,7 +25,11 @@ class LatexToUnicodeProcessor
     /** @var Pandoc */
     private $pandoc;
 
-    public function __invoke(array $entry): array
+    /**
+     * @param array $entry
+     * @return array
+     */
+    public function __invoke(array $entry)
     {
         $covered = $this->getCoveredTags(array_keys($entry));
         foreach ($covered as $tag) {
@@ -37,7 +41,7 @@ class LatexToUnicodeProcessor
 
             // Translate array
             if (is_array($entry[$tag])) {
-                array_walk_recursive($entry[$tag], function (&$text): void {
+                array_walk_recursive($entry[$tag], function (&$text) {
                     if (is_string($text)) {
                         $text = $this->decode($text);
                     }
@@ -48,7 +52,12 @@ class LatexToUnicodeProcessor
         return $entry;
     }
 
-    private function decode(string $text): string
+    /**
+     * @param string $entry
+     * @param mixed $text
+     * @return string
+     */
+    private function decode($text)
     {
         try {
             if (!$this->pandoc) {

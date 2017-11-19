@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 
 /*
  * This file is part of the BibTex Parser.
@@ -20,7 +20,7 @@ use RenanBr\BibTexParser\Test\DummyListener;
  */
 class BasicTest extends TestCase
 {
-    public function testBasic(): void
+    public function testBasic()
     {
         $listener = new DummyListener;
 
@@ -61,7 +61,7 @@ class BasicTest extends TestCase
      * @group bug39
      * @link https://github.com/renanbr/bibtex-parser/issues/39
      */
-    public function testOriginalEntryTriggeringWhenLastCharClosesAnEntry(): void
+    public function testOriginalEntryTriggeringWhenLastCharClosesAnEntry()
     {
         $listener = new DummyListener();
 

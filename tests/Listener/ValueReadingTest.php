@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 
 /*
  * This file is part of the BibTex Parser.
@@ -20,7 +20,7 @@ use RenanBr\BibTexParser\Parser;
  */
 class ValueReadingTest extends TestCase
 {
-    public function testMultipleNature(): void
+    public function testMultipleNature()
     {
         $listener = new Listener();
 
@@ -42,7 +42,7 @@ class ValueReadingTest extends TestCase
         $this->assertSame('', $entry['kQuotedEmpty']);
     }
 
-    public function testValueConcatenation(): void
+    public function testValueConcatenation()
     {
         $listener = new Listener();
 
@@ -62,7 +62,7 @@ class ValueReadingTest extends TestCase
         $this->assertSame('rawquotedbraced', $entry['noSpace']);
     }
 
-    public function testAbbreviation(): void
+    public function testAbbreviation()
     {
         $listener = new Listener();
 

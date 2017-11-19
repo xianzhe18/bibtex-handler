@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 
 /*
  * This file is part of the BibTex Parser.
@@ -21,7 +21,7 @@ use RenanBr\BibTexParser\Processor\TagNameCaseProcessor;
  */
 class TagNameCaseProcessorTest extends TestCase
 {
-    public function testLower(): void
+    public function testLower()
     {
         $listener = new Listener();
         $listener->addProcessor(new TagNameCaseProcessor(\CASE_LOWER));
@@ -37,7 +37,7 @@ class TagNameCaseProcessorTest extends TestCase
         $this->assertSame('bAr', $entries[0]['foo']);
     }
 
-    public function testUpper(): void
+    public function testUpper()
     {
         $listener = new Listener();
         $listener->addProcessor(new TagNameCaseProcessor(\CASE_UPPER));

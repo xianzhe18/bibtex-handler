@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 
 /*
  * This file is part of the BibTex Parser.
@@ -19,12 +19,19 @@ class TagNameCaseProcessor
     /** @var int */
     private $case;
 
-    public function __construct(int $case)
+    /**
+     * @param int $case
+     */
+    public function __construct($case)
     {
         $this->case = $case;
     }
 
-    public function __invoke(array $entry): array
+    /**
+     * @param array $entry
+     * @return array
+     */
+    public function __invoke(array $entry)
     {
         return array_change_key_case($entry, $this->case);
     }

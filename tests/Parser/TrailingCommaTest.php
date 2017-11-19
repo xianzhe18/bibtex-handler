@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 
 /*
  * This file is part of the BibTex Parser.
@@ -20,7 +20,7 @@ use RenanBr\BibTexParser\Test\DummyListener;
  */
 class TrailingCommaTest extends TestCase
 {
-    public function testTrailingComma(): void
+    public function testTrailingComma()
     {
         $listener = new DummyListener();
 

@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 
 /*
  * This file is part of the BibTex Parser.
@@ -19,7 +19,7 @@ use RenanBr\BibTexParser\Processor\NamesProcessor;
  */
 class BasicTest extends TestCase
 {
-    public function testSimple(): void
+    public function testSimple()
     {
         $authors = file_get_contents(__DIR__ . '/../../resources/authors/simple.txt');
         $processor = new NamesProcessor();
@@ -33,7 +33,7 @@ class BasicTest extends TestCase
         $this->assertSame('', $authors[0]['jr']);
     }
 
-    public function testMany(): void
+    public function testMany()
     {
         $authors = file_get_contents(__DIR__ . '/../../resources/authors/many.txt');
         $processor = new NamesProcessor();
@@ -54,7 +54,7 @@ class BasicTest extends TestCase
         $this->assertSame('', $authors[2]['jr']);
     }
 
-    public function testLast(): void
+    public function testLast()
     {
         $authors = file_get_contents(__DIR__ . '/../../resources/authors/last.txt');
         $processor = new NamesProcessor();
@@ -67,7 +67,7 @@ class BasicTest extends TestCase
         $this->assertSame('', $authors[0]['jr']);
     }
 
-    public function testOrder(): void
+    public function testOrder()
     {
         $authors = file_get_contents(__DIR__ . '/../../resources/authors/order.txt');
         $processor = new NamesProcessor();
@@ -93,7 +93,7 @@ class BasicTest extends TestCase
         $this->assertSame('', $authors[3]['jr']);
     }
 
-    public function testVon(): void
+    public function testVon()
     {
         // Tests von parts and junior parts
 
