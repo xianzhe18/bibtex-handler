@@ -1,8 +1,20 @@
-# BibTeX Parser 1.x
+<h1 align="center">PHP BibTeX Parser 1.x</h1>
+<p align="center">
+    This is a
+    <a href="https://www.ctan.org/pkg/bibtex">BibTeX</a>
+    parser written in
+    <a href="https://php.net">PHP</a>.
+</p>
+<p align="center">
+    <a href="https://www.ctan.org/pkg/bibtex">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/3/30/BibTeX_logo.svg" height="83" alt="BibTeX logo">
+    </a>
+    <a href="https://php.net">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/2/27/PHP-logo.svg" height="83" alt="PHP logo">
+    </a>
+</p>
 
 [![Build Status](https://travis-ci.org/renanbr/bibtex-parser.svg?branch=1.x)](https://travis-ci.org/renanbr/bibtex-parser)
-
-This is a [BibTeX](http://mirrors.ctan.org/biblio/bibtex/base/btxdoc.pdf) parser written in PHP.
 
 You are browsing the documentation of **BibTeX Parser 1.x**.
 
