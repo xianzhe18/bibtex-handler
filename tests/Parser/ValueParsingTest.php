@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 
 /*
  * This file is part of the BibTex Parser.
@@ -23,7 +23,7 @@ class ValueParsingTest extends TestCase
     /**
      * Tests if parser is able to handle raw, null, braced and quoted values ate the same time.
      */
-    public function testMultipleNature(): void
+    public function testMultipleNature()
     {
         $listener = new DummyListener();
 
@@ -91,7 +91,7 @@ class ValueParsingTest extends TestCase
         $this->assertSame($original, $text);
     }
 
-    public function testTagContentScaping(): void
+    public function testTagContentScaping()
     {
         $listener = new DummyListener();
 
@@ -147,7 +147,7 @@ class ValueParsingTest extends TestCase
         $this->assertSame(93, $context['length']);
     }
 
-    public function testMultipleTagContents(): void
+    public function testMultipleTagContents()
     {
         $listener = new DummyListener();
 
@@ -235,7 +235,7 @@ class ValueParsingTest extends TestCase
         $this->assertSame($original, $text);
     }
 
-    public function testTagContentSlashes(): void
+    public function testTagContentSlashes()
     {
         $listener = new DummyListener();
 
@@ -271,7 +271,7 @@ class ValueParsingTest extends TestCase
         $this->assertSame($original, $text);
     }
 
-    public function testTagContentNestedBraces(): void
+    public function testTagContentNestedBraces()
     {
         $listener = new DummyListener();
 

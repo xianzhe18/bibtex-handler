@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 
 /*
  * This file is part of the BibTex Parser.
@@ -20,7 +20,7 @@ use RenanBr\BibTexParser\Parser;
  */
 class BasicTest extends TestCase
 {
-    public function testBasicReading(): void
+    public function testBasicReading()
     {
         $listener = new Listener();
 
@@ -36,7 +36,7 @@ class BasicTest extends TestCase
         $this->assertSame('bar', $entry['foo']);
     }
 
-    public function testTypeOverriding(): void
+    public function testTypeOverriding()
     {
         $listener = new Listener();
 

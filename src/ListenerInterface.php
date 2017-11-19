@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 
 /*
  * This file is part of the BibTex Parser.
@@ -22,5 +22,5 @@ interface ListenerInterface
      *                        It can assume one of Parser's constant value.
      * @param array  $context Contains details of the unit found.
      */
-    public function bibTexUnitFound(string $text, string $type, array $context): void;
+    public function bibTexUnitFound($text, $type, array $context);
 }

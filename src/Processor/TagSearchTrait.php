@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 
 /*
  * This file is part of the BibTex Parser.
@@ -17,8 +17,12 @@ trait TagSearchTrait
      * Searchs for the actual name of a tag.
      *
      * The search performed is case-insensitive.
+     *
+     * @param string $needle
+     * @param string $haystack
+     * @return null|string
      */
-    protected function tagSearch(string $needle, array $haystack): ?string
+    protected function tagSearch($needle, array $haystack)
     {
         foreach ($haystack as $actual) {
             if (0 === strcasecmp($needle, $actual)) {

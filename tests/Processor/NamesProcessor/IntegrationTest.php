@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 
 /*
  * This file is part of the BibTex Parser.
@@ -21,7 +21,7 @@ use RenanBr\BibTexParser\Processor\NamesProcessor;
  */
 class IntegrationTest extends TestCase
 {
-    public function testUsage(): void
+    public function testUsage()
     {
         $listener = new Listener;
         $listener->addProcessor(new NamesProcessor());

@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 
 /*
  * This file is part of the BibTex Parser.
@@ -20,7 +20,7 @@ use RenanBr\BibTexParser\Processor\TagCoverageTrait;
  */
 class TagCoverageTraitTest extends TestCase
 {
-    public function testZeroConfigurationMustCoverAllTags(): void
+    public function testZeroConfigurationMustCoverAllTags()
     {
         $trait = $this->getMockForTrait(TagCoverageTrait::class);
         $coverage = $this->invokeGetCoveredTags($trait, ['bbb', 'ccc']);
@@ -28,7 +28,7 @@ class TagCoverageTraitTest extends TestCase
         $this->assertSame(['bbb', 'ccc'], $coverage);
     }
 
-    public function testWhitelistStrategy(): void
+    public function testWhitelistStrategy()
     {
         $trait = $this->getMockForTrait(TagCoverageTrait::class);
         $trait->setTagCoverage(['aaa', 'bbb'], 'whitelist');
@@ -37,7 +37,7 @@ class TagCoverageTraitTest extends TestCase
         $this->assertSame(['bbb'], $coverage);
     }
 
-    public function testDefaultStrategyMustActAsWhitelist(): void
+    public function testDefaultStrategyMustActAsWhitelist()
     {
         $trait = $this->getMockForTrait(TagCoverageTrait::class);
         $trait->setTagCoverage(['aaa', 'bbb']);
@@ -46,7 +46,7 @@ class TagCoverageTraitTest extends TestCase
         $this->assertSame(['bbb'], $coverage);
     }
 
-    public function testBlacklist(): void
+    public function testBlacklist()
     {
         $trait = $this->getMockForTrait(TagCoverageTrait::class);
         $trait->setTagCoverage(['aaa', 'bbb'], 'blacklist');
@@ -55,7 +55,7 @@ class TagCoverageTraitTest extends TestCase
         $this->assertSame(['ccc'], $coverage);
     }
 
-    public function testCaseInsensitiveMatch(): void
+    public function testCaseInsensitiveMatch()
     {
         $trait = $this->getMockForTrait(TagCoverageTrait::class);
         $trait->setTagCoverage(['aaa', 'bbb']);

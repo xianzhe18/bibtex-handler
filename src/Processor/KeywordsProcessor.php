@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 
 /*
  * This file is part of the BibTex Parser.
@@ -23,7 +23,11 @@ class KeywordsProcessor
         $this->setTagCoverage(['keywords']);
     }
 
-    public function __invoke(array $entry): array
+    /**
+     * @param array $entry
+     * @return array
+     */
+    public function __invoke(array $entry)
     {
         $covered = $this->getCoveredTags(array_keys($entry));
         foreach ($covered as $tag) {
