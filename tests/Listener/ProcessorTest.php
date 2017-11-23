@@ -62,4 +62,24 @@ class ProcessorTest extends TestCase
         $this->assertSame('basic 1 2', $entry['type']);
         $this->assertSame('bar 1 2', $entry['foo']);
     }
+
+    public function testDiscardingEntry()
+    {
+        $listener = new Listener();
+        $listener->addProcessor(function ($entry) {
+            if ('deleteMe' === $entry['type']) {
+                return null;
+            }
+
+            return $entry;
+        });
+
+        $parser = new Parser();
+        $parser->addListener($listener);
+        $parser->parseString('@keepMe{} @deleteMe{}');
+
+        $entries = $listener->export();
+        $this->assertCount(1, $entries);
+        $this->assertSame('keepMe', $entries[0]['type']);
+    }
 }

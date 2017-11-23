@@ -38,7 +38,7 @@ class Listener implements ListenerInterface
     {
         if (!$this->processed) {
             foreach ($this->processors as $processor) {
-                $this->entries = array_map($processor, $this->entries);
+                $this->entries = array_filter(array_map($processor, $this->entries));
             }
             $this->processed = true;
         }
