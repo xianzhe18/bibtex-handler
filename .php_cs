@@ -12,6 +12,7 @@ EOF;
 return PhpCsFixer\Config::create()
     ->setRiskyAllowed(true)
     ->setRules([
+        '@Symfony' => true,
         '@Symfony:risky' => true,
         'align_multiline_comment' => true,
         'array_syntax' => ['syntax' => 'short'],
