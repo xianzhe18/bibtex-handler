@@ -27,6 +27,7 @@ class LatexToUnicodeProcessor
 
     /**
      * @param array $entry
+     *
      * @return array
      */
     public function __invoke(array $entry)
@@ -54,7 +55,8 @@ class LatexToUnicodeProcessor
 
     /**
      * @param string $entry
-     * @param mixed $text
+     * @param mixed  $text
+     *
      * @return string
      */
     private function decode($text)

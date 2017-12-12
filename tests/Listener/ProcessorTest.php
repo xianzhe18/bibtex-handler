@@ -26,12 +26,13 @@ class ProcessorTest extends TestCase
         $listener->addProcessor(function ($entry) {
             $entry['type'] .= ' processed';
             $entry['foo'] .= ' processed';
+
             return $entry;
         });
 
         $parser = new Parser();
         $parser->addListener($listener);
-        $parser->parseFile(__DIR__ . '/../resources/valid/basic.bib');
+        $parser->parseFile(__DIR__.'/../resources/valid/basic.bib');
 
         $entries = $listener->export();
         $entry = $entries[0];
@@ -45,17 +46,19 @@ class ProcessorTest extends TestCase
         $listener->addProcessor(function ($entry) {
             $entry['type'] .= ' 1';
             $entry['foo'] .= ' 1';
+
             return $entry;
         });
         $listener->addProcessor(function ($entry) {
             $entry['type'] .= ' 2';
             $entry['foo'] .= ' 2';
+
             return $entry;
         });
 
         $parser = new Parser();
         $parser->addListener($listener);
-        $parser->parseFile(__DIR__ . '/../resources/valid/basic.bib');
+        $parser->parseFile(__DIR__.'/../resources/valid/basic.bib');
 
         $entries = $listener->export();
         $entry = $entries[0];

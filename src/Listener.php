@@ -32,7 +32,7 @@ class Listener implements ListenerInterface
     private $processed = false;
 
     /**
-     * @return array All entries found during parsing process.
+     * @return array all entries found during parsing process
      */
     public function export()
     {
@@ -51,7 +51,7 @@ class Listener implements ListenerInterface
      *                            The processor given must return the modified entry.
      *                            Processors will be applied in the same order in which they were added.
      *                            The suggested signature is:
-     *                                function (array $entry): array
+     *                            function (array $entry): array
      */
     public function addProcessor(callable $processor)
     {

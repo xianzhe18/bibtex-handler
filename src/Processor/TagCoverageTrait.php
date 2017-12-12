@@ -37,6 +37,7 @@ trait TagCoverageTrait
      * The search performed internally is case-insensitive.
      *
      * @param array $tags
+     *
      * @return array
      */
     protected function getCoveredTags(array $tags)

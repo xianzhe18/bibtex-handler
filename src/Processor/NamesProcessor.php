@@ -21,7 +21,8 @@ use RenanBr\BibTexParser\Exception\ProcessorException;
  * http://www.php.net/license/3_0.txt
  *
  * @author Andre Chalom <andrechalom@gmail.com>
- * @link https://github.com/pear/Structures_BibTex
+ *
+ * @see https://github.com/pear/Structures_BibTex
  */
 class NamesProcessor
 {
@@ -34,6 +35,7 @@ class NamesProcessor
 
     /**
      * @param array $entry
+     *
      * @return array
      */
     public function __invoke(array $entry)
@@ -47,10 +49,12 @@ class NamesProcessor
     }
 
     /**
-     * Extracting the authors
+     * Extracting the authors.
      *
-     * @param  string $entry The entry with the authors
-     * @return array  the extracted authors
+     * @param string $entry The entry with the authors
+     *
+     * @return array the extracted authors
+     *
      * @author Elmar Pitschke <elmar.pitschke@gmx.de>
      */
     private function extractAuthors($entry)
@@ -60,7 +64,7 @@ class NamesProcessor
 
         $authorarray = [];
         $authorarray = explode(' and ', $entry);
-        for ($i = 0; $i < count($authorarray); $i++) {
+        for ($i = 0; $i < count($authorarray); ++$i) {
             $author = trim($authorarray[$i]);
             /*The first version of how an author could be written (First von Last)
             has no commas in it*/
@@ -68,7 +72,7 @@ class NamesProcessor
             $von = '';
             $last = '';
             $jr = '';
-            if (mb_strpos($author, ',') === false) {
+            if (false === mb_strpos($author, ',')) {
                 $tmparray = [];
                 $tmparray = preg_split('/[\s\~]/', $author);
                 $size = count($tmparray);
@@ -80,7 +84,7 @@ class NamesProcessor
                 } else {
                     $invon = false;
                     $inlast = false;
-                    for ($j = 0; $j < ($size - 1); $j++) {
+                    for ($j = 0; $j < ($size - 1); ++$j) {
                         if ($inlast) {
                             $last .= ' '.$tmparray[$j];
                         } elseif ($invon) {
@@ -90,7 +94,7 @@ class NamesProcessor
                                 if ((0 === $case) || (-1 === $case)) { //Change from von to last
                                     //You only change when there is no more lower case there
                                     $islast = true;
-                                    for ($k = ($j + 1); $k < ($size - 1); $k++) {
+                                    for ($k = ($j + 1); $k < ($size - 1); ++$k) {
                                         try {
                                             $futurecase = $this->determineCase($tmparray[$k]);
                                             if (0 === $futurecase) {
@@ -144,13 +148,13 @@ class NamesProcessor
                     $last = $vonlastarray[0];
                 } else {
                     $inlast = false;
-                    for ($j = 0; $j < ($size - 1); $j++) {
+                    for ($j = 0; $j < ($size - 1); ++$j) {
                         if ($inlast) {
                             $last .= ' '.$vonlastarray[$j];
                         } else {
                             if (0 !== ($this->determineCase($vonlastarray[$j]))) { //Change from von to last
                                 $islast = true;
-                                for ($k = ($j + 1); $k < ($size - 1); $k++) {
+                                for ($k = ($j + 1); $k < ($size - 1); ++$k) {
                                     try {
                                         $case = $this->determineCase($vonlastarray[$k]);
                                         if (0 === $case) {
@@ -187,7 +191,7 @@ class NamesProcessor
     }
 
     /**
-     * Case Determination according to the needs of BibTex
+     * Case Determination according to the needs of BibTex.
      *
      * To parse the Author(s) correctly a determination is needed
      * to get the Case of a word. There are three possible values:
@@ -195,9 +199,12 @@ class NamesProcessor
      * - Lower Case (return value 0)
      * - Caseless   (return value -1)
      *
-     * @param  string         $word
+     * @param string $word
+     *
      * @throws ProcessorException
-     * @return int            The Case
+     *
+     * @return int The Case
+     *
      * @author Elmar Pitschke <elmar.pitschke@gmx.de>
      */
     private function determineCase($word)
@@ -213,11 +220,11 @@ class NamesProcessor
             while (!$found && ($i <= mb_strlen($word))) {
                 $letter = mb_substr($trimmedword, $i, 1);
                 $ord = ord($letter);
-                if ($ord === 123) { //Open brace
-                    $openbrace++;
+                if (123 === $ord) { //Open brace
+                    ++$openbrace;
                 }
-                if ($ord === 125) { //Closing brace
-                    $openbrace--;
+                if (125 === $ord) { //Closing brace
+                    --$openbrace;
                 }
                 if (($ord >= 65) && ($ord <= 90) && (0 === $openbrace)) { //The first character is uppercase
                     $ret = 1;
@@ -226,7 +233,7 @@ class NamesProcessor
                     $ret = 0;
                     $found = true;
                 } else { //Not yet found
-                    $i++;
+                    ++$i;
                 }
             }
         } else {

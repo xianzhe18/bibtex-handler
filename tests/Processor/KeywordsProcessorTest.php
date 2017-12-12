@@ -64,7 +64,7 @@ class KeywordsProcessorTest extends TestCase
 
         $parser = new Parser();
         $parser->addListener($listener);
-        $parser->parseFile(__DIR__ . '/../resources/valid/keywords-simple.bib');
+        $parser->parseFile(__DIR__.'/../resources/valid/keywords-simple.bib');
 
         $entries = $listener->export();
 

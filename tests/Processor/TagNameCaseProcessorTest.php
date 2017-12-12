@@ -28,7 +28,7 @@ class TagNameCaseProcessorTest extends TestCase
 
         $parser = new Parser();
         $parser->addListener($listener);
-        $parser->parseFile(__DIR__ . '/../resources/valid/tag-name-uppercased.bib');
+        $parser->parseFile(__DIR__.'/../resources/valid/tag-name-uppercased.bib');
 
         $entries = $listener->export();
 
@@ -44,7 +44,7 @@ class TagNameCaseProcessorTest extends TestCase
 
         $parser = new Parser();
         $parser->addListener($listener);
-        $parser->parseFile(__DIR__ . '/../resources/valid/tag-name-uppercased.bib');
+        $parser->parseFile(__DIR__.'/../resources/valid/tag-name-uppercased.bib');
 
         $entries = $listener->export();
 

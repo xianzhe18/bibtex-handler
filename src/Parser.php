@@ -76,8 +76,9 @@ class Parser
 
     /**
      * @param string $file
-     * @throws ParserException If $file given is not a valid BibTeX.
-     * @throws \ErrorException If $file given is not readable.
+     *
+     * @throws ParserException if $file given is not a valid BibTeX
+     * @throws \ErrorException if $file given is not readable
      */
     public function parseFile($file)
     {
@@ -96,7 +97,8 @@ class Parser
 
     /**
      * @param string $string
-     * @throws ParserException If $string given is not a valid BibTeX.
+     *
+     * @throws ParserException if $string given is not a valid BibTeX
      */
     public function parseString($string)
     {
@@ -111,16 +113,16 @@ class Parser
     private function parse($text)
     {
         $length = mb_strlen($text);
-        for ($position = 0; $position < $length; $position++) {
+        for ($position = 0; $position < $length; ++$position) {
             $char = mb_substr($text, $position, 1);
             $this->read($char);
             if ("\n" === $char) {
-                $this->line++;
+                ++$this->line;
                 $this->column = 1;
             } else {
-                $this->column++;
+                ++$this->column;
             }
-            $this->offset++;
+            ++$this->offset;
         }
     }
 
@@ -360,7 +362,7 @@ class Parser
             }
             $this->appendToBuffer($char);
         } elseif ('}' === $this->tagContentDelimiter && '{' === $char) {
-            $this->braceLevel++;
+            ++$this->braceLevel;
             $this->appendToBuffer($char);
         } elseif ($this->tagContentDelimiter === $char) {
             if (0 === $this->braceLevel) {
@@ -368,7 +370,7 @@ class Parser
                 $this->mayConcatenateTagContent = true;
                 $this->state = self::PRE_TAG_CONTENT;
             } else {
-                $this->braceLevel--;
+                --$this->braceLevel;
                 $this->appendToBuffer($char);
             }
         } elseif ('\\' === $char) {
@@ -415,7 +417,7 @@ class Parser
     /**
      * @param string $text
      * @param string $type
-     * @param array $context
+     * @param array  $context
      */
     private function triggerListeners($text, $type, array $context)
     {
@@ -481,7 +483,7 @@ class Parser
 
     /**
      * @param string $char
-     * @param bool $availability
+     * @param bool   $availability
      */
     private function throwExceptionAccordingToConcatenationAvailability($char, $availability)
     {
@@ -514,6 +516,7 @@ class Parser
 
     /**
      * @param string $state
+     *
      * @return bool
      */
     private function isEntryState($state)
@@ -523,6 +526,7 @@ class Parser
 
     /**
      * @param string $char
+     *
      * @return bool
      */
     private function isWhitespace($char)

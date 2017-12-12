@@ -26,7 +26,7 @@ class CommentTest extends TestCase
 
         $parser = new Parser();
         $parser->addListener($listener);
-        $parser->parseFile(__DIR__ . '/../resources/valid/comment-only.bib');
+        $parser->parseFile(__DIR__.'/../resources/valid/comment-only.bib');
 
         $this->assertCount(0, $listener->calls);
     }
@@ -37,7 +37,7 @@ class CommentTest extends TestCase
 
         $parser = new Parser();
         $parser->addListener($listener);
-        $parser->parseFile(__DIR__ . '/../resources/valid/comment.bib');
+        $parser->parseFile(__DIR__.'/../resources/valid/comment.bib');
 
         $this->assertCount(4, $listener->calls);
 

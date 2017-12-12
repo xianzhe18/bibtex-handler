@@ -20,6 +20,7 @@ trait TagSearchTrait
      *
      * @param string $needle
      * @param string $haystack
+     *
      * @return null|string
      */
     protected function tagSearch($needle, array $haystack)
