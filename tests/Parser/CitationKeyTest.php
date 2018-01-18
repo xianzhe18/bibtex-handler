@@ -37,8 +37,8 @@ class CitationKeyTest extends TestCase
         $this->assertCount(3, $listener->calls);
         list($text, $context) = $listener->calls[1];
 
-        $this->assertSame('DBLP:journals/npl/CaamanoSBD16', $context['state']);
-        $this->assertSame(Parser::KEY, $type);
+        $this->assertSame(Parser::KEY, $context['state']);
+        $this->assertSame('DBLP:journals/npl/CaamanoSBD16', $text);
     }
 
     /**
@@ -61,7 +61,7 @@ class CitationKeyTest extends TestCase
         $this->assertCount(3, $listener->calls);
         list($text, $context) = $listener->calls[1];
 
-        $this->assertSame('Kyriakakis:2016:EMI:3003733.3003777', $context['state']);
-        $this->assertSame(Parser::KEY, $type);
+        $this->assertSame(Parser::KEY, $context['state']);
+        $this->assertSame('Kyriakakis:2016:EMI:3003733.3003777', $text);
     }
 }
