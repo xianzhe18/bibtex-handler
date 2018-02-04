@@ -1,5 +1,14 @@
 # Changes in BibTex Parser
 
+## [1.0.4] - 2018-02-04
+
+### Fixed
+
+- Issue [#44]: Parsing CitationKey with : and / in them (DBPL and ACM)
+
+[1.0.4]: https://github.com/renanbr/bibtex-parser/releases/tag/1.0.4
+[#44]: https://github.com/renanbr/bibtex-parser/issues/44
+
 ## [1.0.3] - 2017-11-14
 
 ### Fixed
