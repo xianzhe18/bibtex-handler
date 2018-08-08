@@ -37,6 +37,9 @@ class Parser
     /** @var int */
     private $originalEntryOffset;
 
+    /** @var bool */
+    private $skipOriginalEntryReading;
+
     /** @var int */
     private $line;
 
@@ -128,6 +131,7 @@ class Parser
         $this->buffer = '';
         $this->originalEntry = '';
         $this->originalEntryOffset = null;
+        $this->skipOriginalEntryReading = false;
         $this->line = 1;
         $this->column = 1;
         $this->offset = 0;
@@ -197,6 +201,18 @@ class Parser
             $this->appendToBuffer($char);
         } else {
             $this->throwExceptionIfBufferIsEmpty($char);
+
+            // Skips @comment type
+            if ('comment' === mb_strtolower($this->buffer)) {
+                $this->skipOriginalEntryReading = true;
+                $this->buffer = '';
+                $this->bufferOffset = null;
+                $this->state = self::COMMENT;
+                $this->readComment($char);
+
+                return;
+            }
+
             $this->triggerListenersWithCurrentBuffer();
 
             // once $char isn't a valid character
@@ -336,6 +352,14 @@ class Parser
 
     private function readOriginalEntry($char, $previousState)
     {
+        if ($this->skipOriginalEntryReading) {
+            $this->originalEntry = '';
+            $this->originalEntryOffset = null;
+            $this->skipOriginalEntryReading = false;
+
+            return;
+        }
+
         // Checks whether we are reading an entry character or not
         $nonEntryStates = [self::NONE, self::COMMENT];
         $isPreviousStateEntry = !in_array($previousState, $nonEntryStates);
