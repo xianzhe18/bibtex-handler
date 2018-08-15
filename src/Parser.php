@@ -31,6 +31,9 @@ class Parser
     /** @var string */
     private $buffer;
 
+    /** @var int */
+    private $bufferOffset;
+
     /** @var string */
     private $originalEntry;
 
@@ -70,9 +73,9 @@ class Parser
     }
 
     /**
-     * @param  string                              $file
-     * @throws RenanBr\BibTexParser\ParseException If $file given is not a valid BibTeX.
-     * @throws ErrorException                      If $file given is not readable.
+     * @param  string          $file
+     * @throws ParseException  If $file given is not a valid BibTeX.
+     * @throws \ErrorException If $file given is not readable.
      */
     public function parseFile($file)
     {
@@ -90,8 +93,8 @@ class Parser
     }
 
     /**
-     * @param  string                              $string
-     * @throws RenanBr\BibTexParser\ParseException If $string given is not a valid BibTeX.
+     * @param  string         $string
+     * @throws ParseException If $string given is not a valid BibTeX.
      */
     public function parseString($string)
     {

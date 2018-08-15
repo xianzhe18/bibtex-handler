@@ -31,8 +31,8 @@ class NamesProcessor extends AbstractProcessor
     /**
      * Entry point for this class
      *
-     * @param string $&value The current tag value, will be modified in-place
-     * @param string $tag    The current tag. This function will only process "author" tags
+     * @param string $value The current tag value, will be modified in-place
+     * @param string $tag   The current tag. This function will only process "author" tags
      */
     public function __invoke(&$value, $tag)
     {

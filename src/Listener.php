@@ -60,12 +60,12 @@ class Listener implements ListenerInterface
     }
 
     /**
-     * @param  $processor Function or array of functions to be applied to every member
-     *                    of an BibTeX entry. Uses array_walk() internally.
-     *                    The suggested signature for each function argument is:
-     *                        function (string &$value, string $tag);
-     *                    Note that functions will be applied in the same order
-     *                    in which they were added.
+     * @param  callable                  $processor Function or array of functions to be applied to every member
+     *                                              of an BibTeX entry. Uses array_walk() internally.
+     *                                              The suggested signature for each function argument is:
+     *                                              function (string &$value, string $tag);
+     *                                              Note that functions will be applied in the same order
+     *                                              in which they were added.
      * @throws \InvalidArgumentException
      */
     public function addTagValueProcessor($processor)
@@ -106,7 +106,7 @@ class Listener implements ListenerInterface
                 $this->entries[] = ['type' => $text];
                 break;
 
-            case PARSER::KEY:
+            case Parser::KEY:
                 // save key into last entry
                 end($this->entries);
                 $position = key($this->entries);
@@ -114,12 +114,13 @@ class Listener implements ListenerInterface
                 $this->entries[$position][$this->currentKey] = null;
                 break;
 
-            case PARSER::RAW_VALUE:
+            case Parser::RAW_VALUE:
                 $text = $this->processRawValue($text);
                 // break;
 
-            case PARSER::BRACED_VALUE:
-            case PARSER::QUOTED_VALUE:
+                // no break
+            case Parser::BRACED_VALUE:
+            case Parser::QUOTED_VALUE:
                 if (null !== $text) {
                     // append value into current key of last entry
                     end($this->entries);

@@ -13,7 +13,6 @@ namespace RenanBr\BibTexParser\Test\Processor\AbstractProcessor;
 
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
-use RenanBr\BibTexParser\Parser;
 use RenanBr\BibTexParser\Processor\AbstractProcessor;
 
 class TagCoverageTest extends TestCase

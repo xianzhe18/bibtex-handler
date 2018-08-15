@@ -19,8 +19,8 @@ class LatexToUnicodeProcessor extends AbstractProcessor
     private $pandoc;
 
     /**
-     * @param string|array &$value The current tag value, will be modified in-place
-     * @param string       $tag    The current tag name, by default this method will process all tags
+     * @param string|array $value The current tag value, will be modified in-place
+     * @param string       $tag   The current tag name, by default this method will process all tags
      */
     public function __invoke(&$value, $tag)
     {
