@@ -36,13 +36,16 @@ class Parser
     /** @var string */
     private $buffer;
 
-    /** @var array */
+    /** @var null|int */
+    private $bufferOffset;
+
+    /** @var null|array */
     private $firstTagSnapshot;
 
-    /** @var string */
+    /** @var null|string */
     private $originalEntryBuffer;
 
-    /** @var int */
+    /** @var null|int */
     private $originalEntryOffset;
 
     /** @var bool */
@@ -63,7 +66,7 @@ class Parser
     /** @var bool */
     private $mayConcatenateTagContent;
 
-    /** @var string */
+    /** @var null|string */
     private $tagContentDelimiter;
 
     /** @var int */
