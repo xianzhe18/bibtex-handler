@@ -23,43 +23,30 @@ class CommentTest extends TestCase
 
         $parser = new Parser();
         $parser->addListener($listener);
-        $parser->parseFile(__DIR__ . '/../resources/valid/comment-only.bib');
+        $parser->parseFile(__DIR__.'/../resources/valid/comment-only.bib');
 
         $this->assertCount(0, $listener->calls);
     }
 
-    public function testFileThatContainsEntryAndComment()
+    public function testCommenEntryMustBeIgnored()
     {
         $listener = new DummyListener();
 
         $parser = new Parser();
         $parser->addListener($listener);
-        $parser->parseFile(__DIR__ . '/../resources/valid/comment.bib');
+        $parser->parseFile(__DIR__.'/../resources/valid/comment-entry.bib');
 
-        $this->assertCount(4, $listener->calls);
+        $this->assertCount(0, $listener->calls);
+    }
 
-        list($text, $context) = $listener->calls[0];
-        $this->assertSame(Parser::TYPE, $context['state']);
-        $this->assertSame('comment', $text);
-        $this->assertSame(19, $context['offset']);
-        $this->assertSame(7, $context['length']);
+    public function testCommenEntryJabRefStyleMustBeIgnored()
+    {
+        $listener = new DummyListener();
 
-        list($text, $context) = $listener->calls[1];
-        $this->assertSame(Parser::KEY, $context['state']);
-        $this->assertSame('foo', $text);
-        $this->assertSame(27, $context['offset']);
-        $this->assertSame(3, $context['length']);
+        $parser = new Parser();
+        $parser->addListener($listener);
+        $parser->parseFile(__DIR__.'/../resources/valid/comment-jabref.bib');
 
-        list($text, $context) = $listener->calls[2];
-        $this->assertSame(Parser::RAW_VALUE, $context['state']);
-        $this->assertSame('bar', $text);
-        $this->assertSame(33, $context['offset']);
-        $this->assertSame(3, $context['length']);
-
-        list($text, $context) = $listener->calls[3];
-        $this->assertSame(Parser::ORIGINAL_ENTRY, $context['state']);
-        $this->assertSame('@comment{foo = bar}', $text);
-        $this->assertSame(18, $context['offset']);
-        $this->assertSame(19, $context['length']);
+        $this->assertCount(0, $listener->calls);
     }
 }
