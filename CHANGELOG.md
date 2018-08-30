@@ -1,5 +1,14 @@
 # Changes in BibTex Parser
 
+## [1.0.5] - 2018-08-30
+
+### Fixed
+
+- Issue [#49]: @Comment cause ParserException::unexpectedCharacter
+
+[1.0.5]: https://github.com/renanbr/bibtex-parser/releases/tag/1.0.5
+[#49]:https://github.com/renanbr/bibtex-parser/issues/49
+
 ## [1.0.4] - 2018-02-04
 
 ### Fixed
