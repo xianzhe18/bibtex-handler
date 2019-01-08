@@ -11,6 +11,8 @@
 
 namespace RenanBr\BibTexParser;
 
+use ErrorException;
+
 class Parser
 {
     const NONE = 'none';
@@ -74,12 +76,15 @@ class Parser
 
     /**
      * @param  string          $file
-     * @throws ParseException  If $file given is not a valid BibTeX.
-     * @throws \ErrorException If $file given is not readable.
+     * @throws ParserException If $file given is not a valid BibTeX
+     * @throws ErrorException  If $file given is not readable
      */
     public function parseFile($file)
     {
-        $handle = fopen($file, 'r');
+        $handle = @fopen($file, 'r');
+        if (!$handle) {
+            throw new ErrorException(sprintf('Unable to open %s', $file));
+        }
         try {
             $this->reset();
             while (!feof($handle)) {
