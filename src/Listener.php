@@ -28,22 +28,22 @@ class Listener implements ListenerInterface
     /** @var array */
     private $processors = [];
 
-    /** @var bool */
-    private $processed = false;
+    /** @var array */
+    private $processed = [];
 
     /**
      * @return array all entries found during parsing process
      */
     public function export()
     {
-        if (!$this->processed) {
-            foreach ($this->processors as $processor) {
-                $this->entries = array_filter(array_map($processor, $this->entries));
-            }
-            $this->processed = true;
+        $offset = count($this->processed);
+        $missing = array_slice($this->entries, $offset);
+        foreach ($this->processors as $processor) {
+            $missing = array_filter(array_map($processor, $missing));
         }
+        $this->processed = array_merge($this->processed, $missing);
 
-        return $this->entries;
+        return $this->processed;
     }
 
     /**
