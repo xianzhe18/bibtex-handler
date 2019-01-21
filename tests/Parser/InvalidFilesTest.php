@@ -11,6 +11,7 @@
 
 namespace RenanBr\BibTexParser\Test\Parser;
 
+use ErrorException;
 use PHPUnit\Framework\TestCase;
 use RenanBr\BibTexParser\Exception\ParserException;
 use RenanBr\BibTexParser\Parser;
@@ -24,11 +25,7 @@ class InvalidFilesTest extends TestCase
     {
         $parser = new Parser();
 
-        // Keeps compatibility with phpunit 5 and 6
-        $warningClass = class_exists('\PHPUnit_Framework_Error_Warning')
-            ? '\PHPUnit_Framework_Error_Warning'
-            : '\PHPUnit\Framework\Error\Warning';
-        $this->expectException($warningClass);
+        $this->expectException(ErrorException::class);
 
         $parser->parseFile(__DIR__.'/../resources/valid/does-not-exist');
     }
