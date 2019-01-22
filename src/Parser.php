@@ -37,16 +37,16 @@ class Parser
     /** @var string */
     private $buffer;
 
-    /** @var null|int */
+    /** @var int|null */
     private $bufferOffset;
 
-    /** @var null|array */
+    /** @var array|null */
     private $firstTagSnapshot;
 
-    /** @var null|string */
+    /** @var string|null */
     private $originalEntryBuffer;
 
-    /** @var null|int */
+    /** @var int|null */
     private $originalEntryOffset;
 
     /** @var bool */
@@ -67,7 +67,7 @@ class Parser
     /** @var bool */
     private $mayConcatenateTagContent;
 
-    /** @var null|string */
+    /** @var string|null */
     private $tagContentDelimiter;
 
     /** @var int */
@@ -85,7 +85,7 @@ class Parser
      * @param string $file
      *
      * @throws ParserException if $file given is not a valid BibTeX
-     * @throws ErrorException if $file given is not readable
+     * @throws ErrorException  if $file given is not readable
      */
     public function parseFile($file)
     {

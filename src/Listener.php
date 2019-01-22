@@ -36,8 +36,8 @@ class Listener implements ListenerInterface
      */
     public function export()
     {
-        $offset = count($this->processed);
-        $missing = array_slice($this->entries, $offset);
+        $offset = \count($this->processed);
+        $missing = \array_slice($this->entries, $offset);
         foreach ($this->processors as $processor) {
             $missing = array_filter(array_map($processor, $missing));
         }
@@ -67,13 +67,13 @@ class Listener implements ListenerInterface
                 break;
 
             case Parser::CITATION_KEY:
-                $index = count($this->entries) - 1;
+                $index = \count($this->entries) - 1;
                 $this->entries[$index]['citation-key'] = $text;
                 break;
 
             case Parser::TAG_NAME:
                 // Saves tag into the current entry
-                $index = count($this->entries) - 1;
+                $index = \count($this->entries) - 1;
                 $this->currentTagName = $text;
                 $this->entries[$index][$this->currentTagName] = null;
                 break;
@@ -92,13 +92,13 @@ class Listener implements ListenerInterface
             case Parser::QUOTED_TAG_CONTENT:
                 // Appends content into the current tag
                 if (null !== $text) {
-                    $index = count($this->entries) - 1;
+                    $index = \count($this->entries) - 1;
                     $this->entries[$index][$this->currentTagName] .= $text;
                 }
                 break;
 
             case Parser::ENTRY:
-                $index = count($this->entries) - 1;
+                $index = \count($this->entries) - 1;
                 $this->entries[$index]['_original'] = $text;
                 break;
         }
