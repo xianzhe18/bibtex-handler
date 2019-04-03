@@ -259,6 +259,8 @@ class Parser
     {
         if (preg_match('/^[a-zA-Z0-9_\+:\-\.\/\/\.]$/', $char)) {
             $this->appendToBuffer($char);
+        } elseif (preg_match('/^[,]$/', $char)) {
+            // Do Nothing
         } elseif ($this->isWhitespace($char) && empty($this->buffer)) {
             // Skips because we didn't start reading
         } elseif ('}' === $char && empty($this->buffer)) {
