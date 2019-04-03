@@ -1,4 +1,8 @@
-<h1 align="center">PHP BibTeX Parser 2.x</h1>
+<h1 align="center">PHP BibTeX Handler 1.x</h1>
+<p align="center">
+    This is a clone of
+    <a href="https://github.com/renanbr/bibtex-parser">renanbr/bibtex-parser</a>.
+</p>
 <p align="center">
     This is a
     <a href="https://www.ctan.org/pkg/bibtex">BibTeX</a>
