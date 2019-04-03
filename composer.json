@@ -1,12 +1,12 @@
 {
-    "name": "renanbr/bibtex-parser",
-    "description": "BibTex Parser provides an API to read .bib files programmatically",
+    "name": "xianzhe18/bibtex-parser",
+    "description": "BibTex Parser provides an API to read .bib files programmatically (forked from renanbr/bibtex-parser)",
     "keywords": ["bib", "bibtex", "latex", "parser", "bibliography", "citation", "cite"],
     "type": "library",
     "license": "MIT",
     "authors": [{
-        "name": "Renan de Lima Barbosa",
-        "email": "renandelima@gmail.com"
+        "name": "Renan de Lima Barbosa, Wang Xianzhe",
+        "email": "renandelima@gmail.com, xianzhe_wang@yahoo.com"
     }],
     "autoload": {
         "psr-4": {
