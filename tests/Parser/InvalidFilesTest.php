@@ -1,20 +1,11 @@
 <?php
 
-/*
- * This file is part of the BibTex Parser.
- *
- * (c) Renan de Lima Barbosa <renandelima@gmail.com>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
-namespace RenanBr\BibTexParser\Test\Parser;
+namespace Xianzhe18\BibTexParser\Test\Parser;
 
 use ErrorException;
 use PHPUnit\Framework\TestCase;
-use RenanBr\BibTexParser\Exception\ParserException;
-use RenanBr\BibTexParser\Parser;
+use Xianzhe18\BibTexParser\Exception\ParserException;
+use Xianzhe18\BibTexParser\Parser;
 
 /**
  * @covers \RenanBr\BibTexParser\Parser

@@ -18,13 +18,6 @@
     </a>
 </p>
 
-[![Build Status](https://travis-ci.org/renanbr/bibtex-parser.svg?branch=master)](https://travis-ci.org/renanbr/bibtex-parser)
-[![codecov](https://codecov.io/gh/renanbr/bibtex-parser/branch/master/graph/badge.svg)](https://codecov.io/gh/renanbr/bibtex-parser)
-
-You are browsing the documentation of **BibTeX Parser 2.x**, the latest version.
-
-[Documentation for version 1.x is available here](https://github.com/renanbr/bibtex-parser/blob/1.x/README.md).
-
 ## Table of contents
 
 * [Installing](#installing)
@@ -42,14 +35,14 @@ You are browsing the documentation of **BibTeX Parser 2.x**, the latest version.
 ## Installing
 
 ```bash
-composer require renanbr/bibtex-parser ^2
+composer require xianzhe18/bibtex-handler
 ```
 
 ## Usage
 
 ```php
-use RenanBr\BibTexParser\Listener;
-use RenanBr\BibTexParser\Parser;
+use Xianzhe18\BibTexParser\Listener;
+use Xianzhe18\BibTexParser\Parser;
 
 require 'vendor/autoload.php';
 
@@ -283,9 +276,9 @@ Array
 This library throws two types of exception: `ParserException` and `ProcessorException`. The first one may happen during the data extraction. When it occurs it probably means the parsed BibTeX isn't valid. The second exception may be throwed during the data processing. When it occurs it means the listener's processors can't handle properly the data found. Both implement `ExceptionInterface`.
 
 ```php
-use RenanBr\BibTexParser\Exception\ExceptionInterface;
-use RenanBr\BibTexParser\Exception\ParserException;
-use RenanBr\BibTexParser\Exception\ProcessorException;
+use Xianzhe18\BibTexParser\Exception\ExceptionInterface;
+use Xianzhe18\BibTexParser\Exception\ParserException;
+use Xianzhe18\BibTexParser\Exception\ProcessorException;
 
 try {
     // ... parser and listener configuration
@@ -305,15 +298,15 @@ try {
 
 The core of this library is constituted of these classes:
 
-- `RenanBr\BibTexParser\Parser`: responsible for detecting units inside a BibTeX input;
-- `RenanBr\BibTexParser\ListenerInterface`: responsible for treating units found.
+- `Xianzhe18\BibTexParser\Parser`: responsible for detecting units inside a BibTeX input;
+- `Xianzhe18\BibTexParser\ListenerInterface`: responsible for treating units found.
 
 You can attach listeners to the parser through `Parser::addListener()`. The parser is able to detect BibTeX units, such as "type", "tag's name", "tag's content". As the parser finds an unit, listeners are triggered.
 
 You can code your own listener! All you have to do is handle units.
 
 ```php
-interface RenanBr\BibTexParser\ListenerInterface
+interface Xianzhe18\BibTexParser\ListenerInterface
 {
     /**
      * Called when an unit is found.
