@@ -29,6 +29,7 @@
    * [Keywords](#keywords)
    * [LaTeX to unicode](#latex-to-unicode)
    * [Custom](#custom)
+* [Convert entries back to bibTex](#convert-entries-bib)
 * [Handling errors](#handling-errors)
 * [Advanced usage](#advanced-usage)
 
@@ -269,6 +270,27 @@ Array
             [title] => BibTeX rocks with laser
         )
 )
+```
+
+## Convert entries back to bibTex
+
+This library can convert entries back to bibTex format.
+```php
+$parser = new Parser();          // Create a Parser
+$listener = new Listener();      // Create and configure a Listener
+
+$listener->addProcessor(function (array $entry) { // Custom processor
+    $entry['some-key'] = 'some-value';
+    return $entry;
+});
+
+$parser->addListener($listener); // Attach the Listener to the Parser
+$parser->parseString($bibtex);   // or parseFile('/path/to/file.bib')
+$entries = $listener->export();  // Get processed data from the Listener
+
+$newBibtex = $parser->convertIntoBibTex($entries);
+
+echo $newBibtex;
 ```
 
 ## Handling errors
