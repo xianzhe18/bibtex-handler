@@ -5,8 +5,8 @@
     "type": "library",
     "license": "MIT",
     "authors": [{
-        "name": "Renan de Lima Barbosa, Wang Xianzhe",
-        "email": "renandelima@gmail.com, xianzhe_wang@yahoo.com"
+        "name": "Wang Xianzhe",
+        "email": "xianzhe_wang@yahoo.com"
     }],
     "autoload": {
         "psr-4": {
@@ -26,7 +26,7 @@
         "ryakad/pandoc-php": "^1.0"
     },
     "suggest": {
-        "ryakad/pandoc-php": "Needed to support LaTeX decoder in class RenanBr\\BibTexParser\\Processor\\LatexToUnicodeProcessor"
+        "ryakad/pandoc-php": "Needed to support LaTeX decoder in class Xianzhe18\\BibTexParser\\Processor\\LatexToUnicodeProcessor"
     },
     "config": {
         "sort-packages": true
