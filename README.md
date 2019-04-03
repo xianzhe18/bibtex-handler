@@ -29,7 +29,7 @@
    * [Keywords](#keywords)
    * [LaTeX to unicode](#latex-to-unicode)
    * [Custom](#custom)
-* [Convert entries back to bibTex](#convert-entries-bib)
+* [Convert entries back to bibTex](#convert-entries-back-to-bibtex)
 * [Handling errors](#handling-errors)
 * [Advanced usage](#advanced-usage)
 
