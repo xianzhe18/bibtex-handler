@@ -1,5 +1,5 @@
 {
-    "name": "xianzhe18/bibtex-parser",
+    "name": "xianzhe18/bibtex-handler",
     "description": "BibTex Parser provides an API to read .bib files programmatically (forked from renanbr/bibtex-parser)",
     "keywords": ["bib", "bibtex", "latex", "parser", "bibliography", "citation", "cite"],
     "type": "library",
