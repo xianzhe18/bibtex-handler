@@ -67,6 +67,33 @@ class Parser
     /** @var ListenerInterface[] */
     private $listeners = [];
 
+    public function convertIntoBibTex($entries) {
+        $bibStr = '';
+
+        foreach ($entries as $entry) {
+            foreach ($entry as $key => $value) {
+                if ($key === self::TYPE) {
+                    $bibStr = $bibStr . "@$value{";
+                } elseif ($key === 'citation-key') {
+                    $bibStr = $bibStr . $value . ",\n";
+                } elseif ($key === '_original') {
+                    // Do nothing
+                } else {
+                    if (is_array($value)) {
+                        $valueStr = implode(',', $value);
+                    } else {
+                        $valueStr = $value;
+                    }
+                    $bibStr = $bibStr . "$key = {" . $valueStr . "},\n";
+                }
+            }
+
+            $bibStr = substr($bibStr, 0, -2) . "\n}\n";
+        }
+
+        return $bibStr;
+    }
+
     public function addListener(ListenerInterface $listener)
     {
         $this->listeners[] = $listener;
@@ -259,7 +286,7 @@ class Parser
     {
         if (preg_match('/^[a-zA-Z0-9_\+:\-\.\/\/\.]$/', $char)) {
             $this->appendToBuffer($char);
-        } elseif (preg_match('/^[,]$/', $char)) {
+        } elseif (preg_match('/^[,]$/', $char) && empty($this->buffer)) {
             // Do Nothing
         } elseif ($this->isWhitespace($char) && empty($this->buffer)) {
             // Skips because we didn't start reading
