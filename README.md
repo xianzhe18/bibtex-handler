@@ -1,4 +1,4 @@
-<h1 align="center">PHP BibTeX Handler 1.x</h1>
+<h1 align="center">PHP BibTeX Handler 2.x</h1>
 <p align="center">
     This is a clone of
     <a href="https://github.com/renanbr/bibtex-parser">renanbr/bibtex-parser</a>.
