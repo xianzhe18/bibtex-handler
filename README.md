@@ -117,7 +117,7 @@ This project is shipped with some useful processors.
 In BibTeX the tag's names aren't case-sensitive. This library exposes entries as [array], in which keys are case-sensitive. To avoid this misunderstanding, you can force the tags' name character case using `TagNameCaseProcessor`.
 
 ```php
-use RenanBr\BibTexParser\Processor\TagNameCaseProcessor;
+use Xianzhe18\BibTexParser\Processor\TagNameCaseProcessor;
 
 $listener->addProcessor(new TagNameCaseProcessor(CASE_UPPER)); // or CASE_LOWER
 ```
@@ -144,7 +144,7 @@ Array
 BibTeX recognizes four parts of an author's name: First Von Last Jr. If you would like to parse the `author` and `editor` tags included in your entries, you can use the `NamesProcessor` class.
 
 ```php
-use RenanBr\BibTexParser\Processor\NamesProcessor;
+use Xianzhe18\BibTexParser\Processor\NamesProcessor;
 
 $listener->addProcessor(new NamesProcessor());
 ```
@@ -182,7 +182,7 @@ Array
 The `keywords` tag contains a list of expressions represented as [string], you might want to read them as an [array] instead.
 
 ```php
-use RenanBr\BibTexParser\Processor\KeywordsProcessor;
+use Xianzhe18\BibTexParser\Processor\KeywordsProcessor;
 
 $listener->addProcessor(new KeywordsProcessor());
 ```
@@ -219,7 +219,7 @@ BibTeX files store LaTeX contents. You might want to read them as unicode instea
 - add [ryakad/pandoc-php](https://github.com/ryakad/pandoc-php) as a dependency of your project.
 
 ```php
-use RenanBr\BibTexParser\Processor\LatexToUnicodeProcessor;
+use Xianzhe18\BibTexParser\Processor\LatexToUnicodeProcessor;
 
 $listener->addProcessor(new LatexToUnicodeProcessor());
 ```
