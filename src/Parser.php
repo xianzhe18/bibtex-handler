@@ -71,12 +71,10 @@ class Parser
         $bibStr = '';
 
         foreach ($entries as $entry) {
+            $bibStr = $bibStr . '@' . $entry['type'] . '{' . $entry['citation-key'] . ",\n";
+
             foreach ($entry as $key => $value) {
-                if ($key === self::TYPE) {
-                    $bibStr = $bibStr . "@$value{";
-                } elseif ($key === 'citation-key') {
-                    $bibStr = $bibStr . $value . ",\n";
-                } elseif ($key === '_original') {
+                if ($key === self::TYPE || $key === 'citation-key' || $key === '_original') {
                     // Do nothing
                 } else {
                     if (is_array($value)) {
