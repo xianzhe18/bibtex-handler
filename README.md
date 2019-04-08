@@ -1,12 +1,12 @@
 <h1 align="center">PHP BibTeX Handler 2.x</h1>
 <p align="center">
-    This is a clone of
+    This is forked from
     <a href="https://github.com/renanbr/bibtex-parser">renanbr/bibtex-parser</a>.
 </p>
 <p align="center">
     This is a
     <a href="https://www.ctan.org/pkg/bibtex">BibTeX</a>
-    parser written in
+    handler written in
     <a href="https://php.net">PHP</a>.
 </p>
 <p align="center">
@@ -291,6 +291,33 @@ $entries = $listener->export();  // Get processed data from the Listener
 $newBibtex = $parser->convertIntoBibTex($entries);
 
 echo $newBibtex;
+```
+
+```
+Array
+(
+    [0] => Array
+        (
+            [type] => article
+            [citation-key] => STEEL081011
+            [author] => Steel
+        )
+)
+
+```
+
+```php
+$parser = new Parser();          // Create a Parser
+
+$bibtex = $parser->convertIntoBibTex($entries);
+
+echo $newBibtex;
+```
+
+```
+@article{STEEL081011,
+  author={Steel}
+}
 ```
 
 ## Handling errors
