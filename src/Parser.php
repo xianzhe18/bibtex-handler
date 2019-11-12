@@ -282,7 +282,7 @@ class Parser
      */
     private function readTagName($char)
     {
-        if (preg_match('/^[a-zA-Z0-9_\+:\-\.\/\/\.]$/', $char)) {
+        if (preg_match('/^[\pL0-9_\+:\-\.\/\/\.]$/u', $char)) {
             $this->appendToBuffer($char);
         } elseif (preg_match('/^[,]$/', $char) && empty($this->buffer)) {
             // Do Nothing
@@ -330,7 +330,8 @@ class Parser
             $this->triggerListenersWithFirstTagSnapshotAs(self::CITATION_KEY);
             $this->state = self::TAG_NAME;
         } elseif (!$this->isWhitespace($char)) {
-            throw ParserException::unexpectedCharacter($char, $this->line, $this->column);
+            $this->state = self::TAG_NAME;
+//            throw ParserException::unexpectedCharacter($char, $this->line, $this->column);
         }
     }
 
@@ -580,6 +581,6 @@ class Parser
      */
     private function isWhitespace($char)
     {
-        return ' ' === $char || "\t" === $char || "\n" === $char || "\r" === $char;
+        return ' ' === $char || "\t" === $char || "\n" === $char || "\r" === $char || "\0" === $char;
     }
 }
